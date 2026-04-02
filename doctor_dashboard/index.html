@@ -1,363 +1,325 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>KeepBeat Pro | Clinical Dashboard</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KeepBeat Pro | Clinical Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary-red": "#E53935",
-                        "primary-pink": "#F06292",
-                        "accent-purple": "#9C27B0",
-                        "dark-bg": "#1A1A1A",
-                        "neutral-gray": "#F5F5F5",
-                        "text-primary": "#212121",
-                        "text-secondary": "#757575",
-                        "success-green": "#4CAF50",
-                        "warning-orange": "#FF9800",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary": "#8a30b0",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#e4bebc",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#fffbff",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#e7e8e9",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary-fixed-dim": "#bdc2ff",
+                        "on-tertiary-fixed": "#320047",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#ffb3ac",
+                        "on-secondary-fixed": "#000767",
+                        "surface-tint": "#ba1a20",
+                        "primary-container": "#da3433",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#ffb3ac",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#4c56af",
+                        "inverse-on-surface": "#f0f1f2",
+                        "secondary-container": "#959efd",
+                        "surface": "#f8f9fa",
+                        "on-primary-fixed": "#410003",
+                        "surface-dim": "#d9dadb",
+                        "on-primary-fixed-variant": "#930010",
+                        "on-secondary-container": "#27308a",
+                        "on-surface": "#191c1d",
+                        "secondary-fixed": "#e0e0ff",
+                        "background": "#f8f9fa",
+                        "on-background": "#191c1d",
+                        "tertiary-fixed-dim": "#ebb2ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#a54dcc",
+                        "primary-fixed": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#721199",
+                        "primary": "#b6171e",
+                        "on-surface-variant": "#5b403f",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "on-secondary-fixed-variant": "#343d96",
+                        "surface-container": "#edeeef",
+                        "outline": "#8f6f6e",
+                        "tertiary-fixed": "#f8d8ff"
                     },
                     fontFamily: {
-                        "headline": ["Inter", "sans-serif"], // Inter Bold (24/20/18)
-                        "body": ["Inter", "sans-serif"],     // Inter Regular (14/16)
-                        "metrics": ["Inter", "sans-serif"],  // Inter SemiBold (32px)
+                        "headline": ["Manrope"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Inter"]
                     },
-                    borderRadius: {
-                        "xl": "16px"
-                    }
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
                 },
             },
         }
     </script>
-    <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
-        body { font-family: 'Inter', sans-serif; background-color: #F5F5F5; color: #212121; }
-        
-        /* Metric Card specific shadow */
-        .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
-        .card-hover { transition: all 0.2s ease-in-out; }
-        .card-hover:hover { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); transform: translateY(-2px) scale(1.01); }
-
-        /* Smooth ECG Wave */
+<style>
+        .clay-card-primary {
+            background: linear-gradient(135deg, #b6171e 0%, #da3433 100%);
+            box-shadow: 0px 20px 40px rgba(186, 26, 32, 0.12), 
+                        inset 4px 4px 8px rgba(255, 255, 255, 0.3),
+                        inset -4px -4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .glass-module {
+            background: rgba(243, 244, 245, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
         @keyframes slide-ecg {
             0% { transform: translateX(0); }
             100% { transform: translateX(-1000px); }
         }
-        .ecg-anim-group { animation: slide-ecg 3.5s linear infinite; }
-        
-        /* Custom Scrollbar for Alert List */
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
+        .ecg-anim-group {
+            animation: slide-ecg 3s linear infinite;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
-
-    <!-- Sidebar Navigation (Desktop) -->
-    <aside class="w-[240px] bg-white shadow-lg flex flex-col h-full z-20 hidden lg:flex flex-shrink-0">
-        <!-- Logo -->
-        <a href="#" class="flex px-6 pt-8 pb-6 items-center border-b border-gray-100">
-            <svg width="200" height="48" viewBox="0 0 200 60" class="h-10 w-auto">
-                <path d="M30,50 Q20,30 30,20 T50,20 Q60,30 50,50 Z" fill="#E53935"/>
-                <path d="M25,35 L30,35 L33,25 L36,45 L39,35 L55,35" stroke="white" stroke-width="2" fill="none"/>
-                <text x="65" y="42" font-family="'Inter', sans-serif" font-weight="800" font-size="28" fill="#212121">KeepBeat <tspan font-weight="500" fill="#E53935">Pro</tspan></text>
-            </svg>
-        </a>
-
-        <!-- Menu Items -->
-        <nav class="flex flex-col gap-2 mt-6 px-3 flex-grow">
-            <!-- Active State -->
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-pink-50 border-l-4 border-primary-red text-primary-red font-bold transition-all">
-                <span class="material-symbols-outlined text-[20px]">dashboard</span>
-                <span class="text-[15px]">Dashboard</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 border-transparent text-text-secondary hover:bg-gray-50 hover:text-text-primary font-medium tracking-tight transition-all">
-                <span class="material-symbols-outlined text-[20px]">groups</span>
-                <span class="text-[15px]">Patients</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 border-transparent text-text-secondary hover:bg-gray-50 hover:text-text-primary font-medium tracking-tight transition-all">
-                <span class="material-symbols-outlined text-[20px]">analytics</span>
-                <span class="text-[15px]">Analytics</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 border-transparent text-text-secondary hover:bg-gray-50 hover:text-text-primary font-medium tracking-tight transition-all">
-                <span class="material-symbols-outlined text-[20px]">notifications_active</span>
-                <span class="text-[15px]">Alerts</span>
-                <span class="ml-auto bg-primary-red text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 border-transparent text-text-secondary hover:bg-gray-50 hover:text-text-primary font-medium tracking-tight transition-all mt-auto mb-2">
-                <span class="material-symbols-outlined text-[20px]">settings</span>
-                <span class="text-[15px]">Settings</span>
-            </a>
-        </nav>
-        
-        <!-- User Profile minimal -->
-        <div class="p-4 bg-gray-50 m-4 rounded-xl flex items-center gap-3 mt-auto border border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors" onclick="window.location.href='/login.html'">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-gray-300">
-                <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="Dr. Julian" class="w-full h-full object-cover">
+<body class="bg-surface text-on-surface overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Sidebar Navigation Drawer (WEB) -->
+<aside class="hidden md:flex h-screen w-72 border-r border-zinc-200/50 dark:border-zinc-800/50 flex-col p-4 gap-2 bg-zinc-50 dark:bg-zinc-950">
+<div class="font-['Manrope'] font-extrabold text-2xl text-red-700 mb-8 px-4 mt-2 hover:text-red-800 transition-colors cursor-pointer" onclick="window.location.href='/login.html'">
+                KeepBeat <span class="text-xs ml-1 bg-red-100 text-red-800 rounded-full px-2 py-0.5">Logout</span>
             </div>
-            <div>
-                <p class="font-bold text-sm text-text-primary tracking-tight">Dr. Julian S.</p>
-                <p class="text-[11px] text-text-secondary font-medium">Cardiology</p>
-            </div>
-            <span class="material-symbols-outlined text-text-secondary ml-auto text-lg hover:text-primary-red">logout</span>
-        </div>
-    </aside>
+<nav class="flex flex-col gap-2 flex-grow">
+<!-- Navigation Drawer Rule: Active is Patient Overview -->
+<a class="bg-white dark:bg-zinc-900 text-red-600 dark:text-red-400 shadow-sm rounded-xl font-bold flex items-center gap-3 px-4 py-3 transition-all duration-200 translate-x-1" href="/index.html">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Patient Overview</span>
+</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="/correlations.html">
+<span class="material-symbols-outlined" data-icon="Timeline">timeline</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Correlations</span>
+</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="/ai-diagnostics.html">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">AI Diagnostics</span>
+</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="memory">memory</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Device Logs</span>
+</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto p-4 bg-surface-container rounded-2xl flex items-center gap-4">
+<div class="h-10 w-10 rounded-full overflow-hidden bg-zinc-300">
+<img class="h-full w-full object-cover" data-alt="professional portrait of a senior cardiologist in a white clinical coat looking confident and friendly" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBizfKe_xyPrdy-5TAjyCwRALgQQcQJRmmj2VFhxrCkO5NhY7CdU4gDDVE4ULBx4fD8KZc-pbr-WzJHgtHWrmjaiAdB3DP-ki2e-DyKPHH6ueyLOZzOyLU4Mhr3k70ficKI-bBAoZjmWlvsBod_-bEL8q-JCukgp7-o0NdNZtrULmlB1Y0F08b4Wu7i9H2-Fag86z_zQFyISxn6tF1fxuFdFTXVp4Cmcj-LBXSKA_37Z5ljp-61xRhmEen__w-Sl6COyvt0miEeOYk"/>
+</div>
+<div>
+<p class="font-['Plus_Jakarta_Sans'] font-bold text-sm text-on-surface">Dr. Heart Precision</p>
+<p class="font-['Inter'] text-[10px] text-on-surface-variant uppercase tracking-wider">Cardiology Dept.</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col h-screen overflow-y-auto relative pb-24 md:pb-8">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 md:relative bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl flex justify-between items-center px-6 h-16 shadow-[0_20px_40px_rgba(186,26,32,0.08)]">
+<div class="flex items-center gap-4">
+<div class="h-10 w-10 rounded-full border-2 border-primary-container overflow-hidden">
+<img class="h-full w-full object-cover" data-alt="profile avatar of a senior patient with warm lighting and a natural professional aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuCDmH0F5Y8ObMuUMncKslB5SoUv10dHJdVX2AoS-BT33lfGMkaYCmITgwpaDOI7Qo2nn6VObilXI3eLcN2YqczJ8pa_XIXuu49NiXEq-SFVOqK6BSM0YhEp4VIpYUsN1ZJIFijDF5OPF3Q6fvbh-Bb4B-c7ErjWcJJGnqbyyls65dwVS935Y12-QRViDF4gzVP2pX5HlkuuVGr3xbahOJ3Ji6rdgMl2PwytTT44HtD0beX8aTYJg078e1Bn-44bklDKrUudubAW8"/>
+</div>
+<div class="font-['Manrope'] font-bold tracking-tight text-lg text-on-surface">
+                        Patient: Sarah Jenkins <span class="text-on-surface-variant font-medium text-sm ml-2">ID: #TP-8842</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 px-3 py-1 bg-secondary-container rounded-full">
+<span class="material-symbols-outlined text-on-secondary-container text-sm" data-icon="cloud_done">cloud_done</span>
+<span class="text-[10px] font-bold text-on-secondary-container uppercase font-label">Sync Active</span>
+</div>
+<button class="h-10 w-10 flex items-center justify-center rounded-xl hover:bg-zinc-100 transition-all text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="cloud_off">cloud_off</span>
+</button>
+</div>
+</header>
+<!-- Bento Content Grid -->
+<div class="p-6 md:p-8 mt-16 md:mt-0 grid grid-cols-1 md:grid-cols-12 gap-8 max-w-[1600px] mx-auto w-full">
+<!-- Digital Twin Main Metric -->
+<div class="md:col-span-8 clay-card-primary p-8 rounded-[2rem] flex flex-col justify-between min-h-[400px]">
+<div class="flex justify-between items-start">
+<div>
+<span class="bg-white/20 text-white font-label font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md">Live Telemetry</span>
+<h2 class="font-headline font-extrabold text-4xl text-white mt-4">Coronary Flow Analysis</h2>
+</div>
+<div class="text-right">
+<p class="font-headline font-black text-7xl text-white tracking-tighter" id="bpm-value">72<span class="text-3xl ml-1 font-medium opacity-80 text-white">BPM</span></p>
+<p class="text-white/70 font-body font-semibold mt-1">Normal Sinus Rhythm</p>
+</div>
+</div>
+<!-- Continuous ECG Wave -->
+<div class="w-full h-48 mt-8 flex flex-col md:flex-row items-end gap-4">
+    <div class="flex-grow flex items-center justify-start relative overflow-hidden bg-white/10 rounded-2xl h-full shadow-inner border border-white/20 w-full">
+        <!-- SVG Container twice as wide to allow seamless scrolling -->
+        <svg class="h-full stroke-white/40 fill-none ecg-anim-group w-[2000px] flex-shrink-0" viewbox="0 0 2000 100" preserveAspectRatio="none">
+            <!-- First loop -->
+            <path d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke-width="2"></path>
+            <path class="opacity-80 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke="white" stroke-width="4"></path>
+            <!-- Second loop for seamless tiling -->
+            <g transform="translate(1000, 0)">
+                <path d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke-width="2"></path>
+                <path class="opacity-80 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke-width="4"></path>
+            </g>
+        </svg>
+    </div>
+</div>
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto pb-12 relative w-full h-full">
-        <!-- Optional Top Nav for Mobile/Search -->
-        <header class="h-16 bg-white/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-8 border-b border-gray-100 shadow-sm lg:hidden">
-            <h1 class="font-bold text-xl text-primary-red tracking-tight">KeepBeat <span class="font-medium text-text-primary">Pro</span></h1>
-            <span class="material-symbols-outlined">menu</span>
-        </header>
-
-        <div class="p-8 max-w-7xl mx-auto space-y-6">
-            
-            <div class="flex justify-between items-end mb-6">
-                <div>
-                    <h1 class="font-bold text-[28px] text-text-primary tracking-tight mb-1">Overview Dashboard</h1>
-                    <p class="text-text-secondary text-sm">Real-time facility monitoring & patient telemetry.</p>
-                </div>
-            </div>
-
-            <!-- ROW 1: 3 METRIC CARDS -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <!-- MetricCard: Total Patients (Normal Variant) -->
-                <div class="bg-white rounded-xl card-shadow p-5 relative overflow-hidden card-hover border border-gray-100">
-                    <div class="flex justify-between items-start mb-2">
-                        <!-- Top-left Icon (Pink variant) -->
-                        <div class="h-10 w-10 rounded-full bg-pink-50 flex items-center justify-center">
-                            <span class="material-symbols-outlined fill text-primary-pink text-xl">groups</span>
-                        </div>
-                        <!-- Top-right Trend -->
-                        <div class="flex items-center text-success-green bg-green-50 px-2 py-0.5 rounded border border-green-100 gap-1">
-                            <span class="material-symbols-outlined text-[14px]">trending_up</span>
-                            <span class="text-xs font-bold text-success-green">+5.2%</span>
-                        </div>
-                    </div>
-                    <!-- Center large value + Bottom Label -->
-                    <div class="mt-4">
-                        <p class="text-[32px] font-semibold text-text-primary tracking-tight leading-none">124 <span class="text-sm font-medium text-text-secondary tracking-normal">active</span></p>
-                        <p class="text-sm text-text-secondary font-medium tracking-tight mt-1">Total Patients Monitored</p>
-                    </div>
-                </div>
-
-                <!-- MetricCard: Critical Alerts (Critical Variant) -->
-                <div class="bg-white rounded-xl card-shadow p-5 border-l-4 border-l-primary-red relative overflow-hidden card-hover">
-                    <div class="flex justify-between items-start mb-2">
-                        <!-- Top-left Icon (Red variant) -->
-                        <div class="h-10 w-10 rounded-full bg-red-50 flex items-center justify-center animate-pulse">
-                            <span class="material-symbols-outlined fill text-primary-red text-xl">emergency</span>
-                        </div>
-                        <!-- Top-right Trend -->
-                        <div class="flex items-center text-primary-red bg-red-50 px-2 py-0.5 rounded border border-red-100 gap-1">
-                            <span class="material-symbols-outlined text-[14px]">arrow_upward</span>
-                            <span class="text-xs font-bold text-primary-red">+2</span>
-                        </div>
-                    </div>
-                    <!-- Center large value + Bottom Label -->
-                    <div class="mt-4">
-                        <p class="text-[32px] font-semibold text-text-primary tracking-tight leading-none">3 <span class="text-sm font-medium text-text-secondary tracking-normal">requires action</span></p>
-                        <p class="text-sm text-text-secondary font-medium tracking-tight mt-1">Critical Cardiac Alerts</p>
-                    </div>
-                </div>
-
-                <!-- MetricCard: Battery Warnings (Warning Variant) -->
-                <div class="bg-white rounded-xl card-shadow p-5 border-l-4 border-l-warning-orange relative overflow-hidden card-hover">
-                    <div class="flex justify-between items-start mb-2">
-                        <!-- Top-left Icon (Orange variant) -->
-                        <div class="h-10 w-10 rounded-full bg-orange-50 flex items-center justify-center">
-                            <span class="material-symbols-outlined fill text-warning-orange text-xl">battery_alert</span>
-                        </div>
-                        <!-- Top-right Trend -->
-                        <div class="flex items-center text-success-green bg-green-50 px-2 py-0.5 rounded border border-green-100 gap-1">
-                            <span class="material-symbols-outlined text-[14px]">arrow_downward</span>
-                            <span class="text-xs font-bold text-success-green">-1</span>
-                        </div>
-                    </div>
-                    <!-- Center large value + Bottom Label -->
-                    <div class="mt-4">
-                        <p class="text-[32px] font-semibold text-text-primary tracking-tight leading-none">7 <span class="text-sm font-medium text-text-secondary tracking-normal">devices</span></p>
-                        <p class="text-sm text-text-secondary font-medium tracking-tight mt-1">Low Battery Warnings</p>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ROW 2: Alerts (Left - 2 Cols) & Quick Actions (Right - 1 Col) -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                <!-- Left: Recent Alerts (AlertTimeline component style) -->
-                <div class="lg:col-span-2 bg-white rounded-xl card-shadow p-6 border border-gray-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="font-bold text-[18px] text-text-primary">Recent Alert Timeline</h2>
-                        <button class="text-sm text-primary-red font-semibold hover:underline">View All</button>
-                    </div>
-                    
-                    <div class="space-y-5 max-h-[250px] overflow-y-auto custom-scrollbar pr-2">
-                        <!-- Alert Item (Critical) -->
-                        <div class="flex items-start gap-4">
-                            <div class="mt-1 h-3 w-3 rounded-full bg-primary-red ring-4 ring-red-50 flex-shrink-0 animate-pulse"></div>
-                            <div class="flex-grow">
-                                <h4 class="font-bold text-[15px] text-text-primary">Sustained Ventricular Tachycardia</h4>
-                                <p class="text-sm text-text-secondary mt-0.5">Patient <span class="font-semibold text-text-primary">#TP-8842</span> (Sarah Jenkins) <span class="mx-1">•</span> Rate > 160 bpm</p>
-                            </div>
-                            <span class="text-xs font-bold text-text-secondary">2m ago</span>
-                        </div>
-                        
-                        <!-- Alert Item (Warning) -->
-                        <div class="flex items-start gap-4">
-                            <div class="mt-1 h-3 w-3 rounded-full bg-warning-orange ring-4 ring-orange-50 flex-shrink-0"></div>
-                            <div class="flex-grow">
-                                <h4 class="font-bold text-[15px] text-text-primary">Glucose Level Threshold Crossed</h4>
-                                <p class="text-sm text-text-secondary mt-0.5">Patient <span class="font-semibold text-text-primary">#DM-1102</span> (Marcus T.) <span class="mx-1">•</span> 68 mg/dL (Low)</p>
-                            </div>
-                            <span class="text-xs font-bold text-text-secondary">45m ago</span>
-                        </div>
-
-                        <!-- Alert Item (AI Prediction) -->
-                        <div class="flex items-start gap-4">
-                            <div class="mt-1 flex items-center justify-center h-4 w-4 rounded-full bg-accent-purple bg-opacity-20 flex-shrink-0">
-                                <span class="material-symbols-outlined text-accent-purple text-[10px]">auto_awesome</span>
-                            </div>
-                            <div class="flex-grow">
-                                <h4 class="font-bold text-[15px] text-accent-purple">KeepBeat AI: Predicted Arrhythmia Risk</h4>
-                                <p class="text-sm text-text-secondary mt-0.5">Patient <span class="font-semibold text-text-primary">#TP-2401</span> shows high probability of AFib in next 24h.</p>
-                            </div>
-                            <span class="text-xs font-bold text-text-secondary">1h ago</span>
-                        </div>
-                        
-                        <!-- Alert Item (Normal info) -->
-                        <div class="flex items-start gap-4">
-                            <div class="mt-1 h-3 w-3 rounded-full bg-gray-300 ring-4 ring-gray-100 flex-shrink-0"></div>
-                            <div class="flex-grow">
-                                <h4 class="font-bold text-[15px] text-text-primary">Device Firmware Updated</h4>
-                                <p class="text-sm text-text-secondary mt-0.5">System-wide auto-push successful for 42 regional devices.</p>
-                            </div>
-                            <span class="text-xs font-bold text-text-secondary">2h ago</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: Quick Actions -->
-                <div class="lg:col-span-1 bg-white rounded-xl card-shadow p-6 border border-gray-100 flex flex-col">
-                    <h2 class="font-bold text-[18px] text-text-primary mb-6">Quick Actions</h2>
-                    <div class="space-y-3 flex-grow">
-                        <button class="w-full text-left p-3 rounded-lg border border-gray-100 hover:border-primary-red hover:bg-pink-50 transition-all flex items-center gap-3 group">
-                            <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center group-hover:bg-primary-red transition-all">
-                                <span class="material-symbols-outlined text-primary-red text-sm group-hover:text-white">sos</span>
-                            </div>
-                            <span class="font-semibold text-text-primary text-[14px]">Emergency Intervention</span>
-                        </button>
-                        
-                        <button class="w-full text-left p-3 rounded-lg border border-gray-100 hover:border-accent-purple hover:bg-purple-50 transition-all flex items-center gap-3 group">
-                            <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center group-hover:bg-accent-purple transition-all">
-                                <span class="material-symbols-outlined text-accent-purple text-sm group-hover:text-white">insights</span>
-                            </div>
-                            <span class="font-semibold text-text-primary text-[14px]">Run AI Diagnostic Batch</span>
-                        </button>
-
-                        <button class="w-full text-left p-3 rounded-lg border border-gray-100 hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center gap-3 group">
-                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-500 transition-all">
-                                <span class="material-symbols-outlined text-blue-500 text-sm group-hover:text-white">person_add</span>
-                            </div>
-                            <span class="font-semibold text-text-primary text-[14px]">Admit New Patient</span>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ROW 3: Chart Cards (ECG + Glucose) -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- ChartCard: ECG -->
-                <div class="bg-white rounded-xl card-shadow p-6 border border-gray-100 card-hover">
-                    <!-- Header: Title + Time Range Pills -->
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-success-green">monitor_heart</span>
-                            <h2 class="font-bold text-[18px] text-text-primary">Live ECG Stream</h2>
-                        </div>
-                        <div class="flex bg-gray-100 p-1 rounded-lg">
-                            <button class="px-3 py-1 bg-white shadow-sm rounded-md text-xs font-bold text-success-green">Live</button>
-                            <button class="px-3 py-1 text-text-secondary rounded-md text-xs font-medium hover:text-text-primary">24h</button>
-                            <button class="px-3 py-1 text-text-secondary rounded-md text-xs font-medium hover:text-text-primary">7d</button>
-                        </div>
-                    </div>
-
-                    <!-- Body: ECG Green waveform on dark grid -->
-                    <div class="w-full h-48 bg-dark-bg rounded-lg relative overflow-hidden flex items-center border border-gray-800">
-                        <!-- Subtle Background Grid -->
-                        <div class="absolute inset-0" style="background-image: linear-gradient(to right, rgba(76, 175, 80, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(76, 175, 80, 0.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
-                        <!-- Continuous Sine/ECG Waveform (SVG simulation) -->
-                        <svg class="h-full stroke-success-green fill-none ecg-anim-group w-[2000px] flex-shrink-0" viewBox="0 0 2000 100" preserveAspectRatio="none">
-                            <path class="drop-shadow-[0_0_4px_rgba(76,175,80,0.8)]" d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke-width="2.5"></path>
-                            <!-- Seamless connection -->
-                            <g transform="translate(1000, 0)">
-                                <path class="drop-shadow-[0_0_4px_rgba(76,175,80,0.8)]" d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke-width="2.5"></path>
-                            </g>
-                        </svg>
-                        
-                        <div class="absolute bottom-2 left-3 bg-black/60 px-2 py-1 rounded text-[10px] text-success-green font-bold tracking-widest uppercase">Patient #TP-8842</div>
-                    </div>
-                </div>
-
-                <!-- ChartCard: Glucose Trends -->
-                <div class="bg-white rounded-xl card-shadow p-6 border border-gray-100 card-hover">
-                    <!-- Header -->
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-blue-500">water_drop</span>
-                            <h2 class="font-bold text-[18px] text-text-primary">Combined Glucose Trend</h2>
-                        </div>
-                        <div class="flex bg-gray-100 p-1 rounded-lg">
-                            <button class="px-3 py-1 text-text-secondary rounded-md text-xs font-medium hover:text-text-primary">Live</button>
-                            <button class="px-3 py-1 bg-white shadow-sm rounded-md text-xs font-bold text-blue-600">24h</button>
-                            <button class="px-3 py-1 text-text-secondary rounded-md text-xs font-medium hover:text-text-primary">7d</button>
-                        </div>
-                    </div>
-
-                    <!-- Body: Glucose line chart visualization -->
-                    <div class="w-full h-48 bg-gray-50 rounded-lg relative overflow-hidden border border-gray-200">
-                        <!-- Y-axis markers -->
-                        <div class="absolute inset-0 pt-4 pb-4 px-2 flex flex-col justify-between pointer-events-none z-10">
-                            <div class="border-t border-gray-200 w-full relative"><span class="absolute -top-3 right-0 text-[9px] text-gray-400 font-bold bg-gray-50 pl-1">180</span></div>
-                            <div class="border-t border-gray-200 w-full relative"><span class="absolute -top-3 right-0 text-[9px] text-gray-400 font-bold bg-gray-50 pl-1">120</span></div>
-                            <div class="border-t border-red-500 border-dashed w-full relative"><span class="absolute -top-3 right-0 text-[9px] text-red-500 font-bold bg-gray-50 pl-1 tracking-widest">70 mg/dL Threshold</span></div>
-                            <div class="border-t border-gray-200 w-full relative"></div>
-                        </div>
-
-                        <!-- Area / Line curve mock -->
-                        <svg class="w-full h-full absolute inset-0 z-0" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="glucoseGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"></stop>
-                                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"></stop>
-                                </linearGradient>
-                            </defs>
-                            <path d="M0 60 Q 10 50, 20 55 T 40 40 T 60 70 T 80 45 T 100 50 L 100 100 L 0 100 Z" fill="url(#glucoseGrad)"></path>
-                            <path d="M0 60 Q 10 50, 20 55 T 40 40 T 60 70 T 80 45 T 100 50" stroke="#3b82f6" stroke-width="2" fill="none" class="drop-shadow-[0_2px_4px_rgba(59,130,246,0.3)]"></path>
-                            <!-- Alert point dipping below threshold (which is ~75% down the grid) -->
-                            <circle cx="60" cy="70" r="3" fill="#E53935" stroke="white" stroke-width="1.5" class="animate-pulse"></circle>
-                        </svg>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </main>
-
-</body>
-</html>
+</div>
+<!-- AI Insights Panel -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="glass-module p-6 rounded-[2rem] border border-white/40 flex-grow shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-tertiary text-3xl" data-icon="psychology" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<h3 class="font-headline font-bold text-xl text-on-surface">AI Insights</h3>
+</div>
+<div class="space-y-4">
+<div class="bg-tertiary-fixed p-4 rounded-2xl flex gap-4 border border-tertiary-fixed-dim/20">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant" data-icon="bolt">bolt</span>
+<div>
+<p class="font-body font-bold text-sm text-on-tertiary-fixed">Elevated Stress Response</p>
+<p class="font-label text-xs text-on-tertiary-fixed-variant opacity-80 mt-1">Detected cortisol spikes coinciding with late-night PVC clusters.</p>
+</div>
+</div>
+<div class="bg-surface-container-high p-4 rounded-2xl flex gap-4 border border-zinc-200">
+<span class="material-symbols-outlined text-secondary" data-icon="auto_awesome">auto_awesome</span>
+<div>
+<p class="font-body font-bold text-sm text-on-surface">Calibration Optimal</p>
+<p class="font-label text-xs text-on-surface-variant mt-1">Device auto-tuned for low-altitude environment. Efficiency +4.2%.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Battery Prediction Widget -->
+<div class="bg-surface-container-lowest p-6 rounded-[2rem] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-outline-variant/10">
+<div class="flex justify-between items-center mb-4">
+<p class="font-label font-bold text-[10px] uppercase tracking-widest text-on-surface-variant">Power Reservation</p>
+<span class="material-symbols-outlined text-tertiary" data-icon="analytics">analytics</span>
+</div>
+<div class="flex items-end justify-between">
+<div>
+<h4 class="font-headline font-black text-3xl text-on-surface">Nov 2028</h4>
+<p class="font-label font-semibold text-[10px] text-tertiary-container uppercase tracking-tighter mt-1">Predicted Failure Date</p>
+</div>
+<div class="text-right">
+<p class="font-headline font-bold text-xl text-on-surface-variant" id="battery-value">88%</p>
+<div class="w-24 h-2 bg-surface-container rounded-full mt-2 overflow-hidden">
+<div class="h-full bg-gradient-to-r from-tertiary to-tertiary-container w-[88%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Historical Correlations Section -->
+<div class="md:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- ECG History -->
+<div class="bg-surface-container-lowest p-8 rounded-[2rem] shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-8 opacity-5">
+<span class="material-symbols-outlined text-9xl" data-icon="monitor_heart">monitor_heart</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline font-bold text-xl">Heart Rate History</h3>
+<div class="flex gap-2">
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-lg text-xs font-bold">Continuous Telemetry</span>
+</div>
+</div>
+<div class="h-40 flex items-end gap-2">
+<!-- Chart placeholders -->
+<div class="w-full bg-surface-container-low h-full rounded-2xl overflow-hidden relative border border-zinc-100">
+<div class="absolute bottom-0 left-0 w-full h-[60%] bg-gradient-to-t from-primary/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-primary"></div>
+<!-- Simple path for visual -->
+<svg class="absolute inset-0 w-full h-full stroke-primary fill-none opacity-40" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0 80 Q 25 20, 50 60 T 100 40" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<p class="font-label text-xs text-on-surface-variant mt-4 text-center">Last 30 Days Variance: <span class="text-primary font-bold">±4 BPM</span></p>
+</div>
+</div>
+<!-- Glucose Correlations -->
+<div class="bg-surface-container-lowest p-8 rounded-[2rem] shadow-sm relative overflow-hidden text-on-surface">
+<div class="absolute top-0 right-0 p-8 opacity-5">
+<span class="material-symbols-outlined text-9xl" data-icon="bloodtype">bloodtype</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline font-bold text-xl text-on-surface">Glucose Index</h3>
+<div class="flex gap-2">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-lg text-xs font-bold">High Accuracy</span>
+</div>
+</div>
+<div class="h-40 flex items-end gap-2">
+<div class="w-full bg-surface-container-low h-full rounded-2xl overflow-hidden relative border border-zinc-100">
+<div class="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-secondary/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-secondary"></div>
+<svg class="absolute inset-0 w-full h-full stroke-secondary fill-none opacity-40" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0 60 Q 25 80, 50 40 T 100 70" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<p class="font-label text-xs text-on-surface-variant mt-4 text-center">Avg Stable Glycemia: <span class="text-secondary font-bold">94 mg/dL</span></p>
+</div>
+</div>
+</div>
+<!-- Footer / Status Info -->
+<div class="md:col-span-12 flex flex-col md:flex-row justify-between items-center py-6 border-t border-zinc-100 mt-8 gap-4">
+<div class="flex items-center gap-4">
+<p class="font-label text-[10px] uppercase tracking-widest text-zinc-400 font-bold">Firmware: v2.4.1-Delta</p>
+<span class="h-1 w-1 bg-zinc-300 rounded-full"></span>
+<p class="font-label text-[10px] uppercase tracking-widest text-zinc-400 font-bold">Last Uplink: 2m Ago</p>
+</div>
+<div class="flex gap-6">
+<button class="font-body font-bold text-sm text-primary hover:bg-primary-fixed px-4 py-2 rounded-xl transition-all">Export Clinical Log</button>
+<button class="font-body font-bold text-sm text-zinc-500 hover:text-on-surface">View Metadata</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom NavBar (MOBILE ONLY) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-2xl rounded-t-[2rem] h-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+<!-- Active: Twin -->
+<a class="flex flex-col items-center justify-center bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 rounded-2xl px-5 py-2 scale-95 duration-200" href="#">
+<span class="material-symbols-outlined text-red-600" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1">Twin</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="emergency">emergency</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1">Settings</span>
+</a>
+</nav>
+</div>
+<script type="module" src="/main.js"></script>
+</body></html>
