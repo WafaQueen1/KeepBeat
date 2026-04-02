@@ -7,7 +7,7 @@ class CloudSyncService {
   static const String _baseUrl = 'http://10.0.2.2:8000/api/v1/telemetry';
 
   /// Periodically or manually pushes local buffered data to the cloud
-  Future<void> syncData() async {
+  Future<void> syncData({String patientId = 'PT_001'}) async {
     final repo = LocalDataRepository();
     final unsyncedLogs = await repo.getUnsyncedDataLogs();
 
@@ -20,7 +20,7 @@ class CloudSyncService {
       final items = unsyncedLogs.map((log) {
         return {
           "timestamp": DateTime.fromMillisecondsSinceEpoch((log['timestamp'] * 1000).toInt(), isUtc: true).toIso8601String(),
-          "patient_id": "PT_001", // Hardcoded for prototype, replace with actual
+          "patient_id": patientId, // Now dynamically mapped instead of hardcoded
           "device_id": log['sensor_id'],
           "sensor_type": log['data_type'],
           "value": log['value'],

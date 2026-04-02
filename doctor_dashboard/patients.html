@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>KeepBeat - Patients</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b6171e",
+                        "primary-container": "#da3433",
+                        "on-primary-container": "#fffbff",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#444748",
+                        "surface": "#ffffff",
+                        "surface-container-high": "#f0f1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "outline": "#707779",
+                        "outline-variant": "#c0c7c8",
+                        "secondary": "#4c56af",
+                        "secondary-container": "#dde1ff",
+                        "on-secondary-container": "#00105b",
+                        "tertiary": "#8a30b0",
+                        "tertiary-container": "#f8d8ff",
+                        "on-tertiary-container": "#30004a",
+                        "inverse-surface": "#2e3132",
+                        "inverse-on-surface": "#eff1f1"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Inter"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .clay-card {
+            box-shadow: 0 20px 40px rgba(186, 26, 32, 0.05), inset 0 2px 4px rgba(255,255,255,0.8);
+            border: 1px solid rgba(186, 26, 32, 0.08);
+            background: linear-gradient(145deg, #ffffff, #fafafa);
+        }
+        
+        /* Modal Styles */
+        #add-patient-modal {
+            backdrop-filter: blur(8px);
+            background-color: rgba(25, 28, 29, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Sidebar Navigation Drawer (WEB) -->
+<aside class="hidden md:flex h-screen w-72 border-r border-zinc-200/50 flex-col p-4 gap-2 bg-zinc-50">
+    <div class="font-['Manrope'] font-extrabold text-2xl text-red-700 mb-8 px-4 mt-2 cursor-default">
+        KeepBeat
+    </div>
+    <nav class="flex flex-col gap-2 flex-grow">
+        <a class="text-zinc-500 hover:text-zinc-900 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 rounded-xl transition-all" href="/index.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Patient Overview</span>
+        </a>
+        <a class="bg-white text-red-600 shadow-sm rounded-xl font-bold flex items-center gap-3 px-4 py-3 transition-all duration-200 translate-x-1" href="/patients.html">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">supervisor_account</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Patients</span>
+        </a>
+        <a class="text-zinc-500 hover:text-zinc-900 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 rounded-xl transition-all" href="/correlations.html">
+            <span class="material-symbols-outlined">timeline</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Correlations</span>
+        </a>
+        <a class="text-zinc-500 hover:text-zinc-900 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 rounded-xl transition-all" href="/ai-diagnostics.html">
+            <span class="material-symbols-outlined">psychology</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">AI Diagnostics</span>
+        </a>
+        <a class="text-zinc-500 hover:text-zinc-900 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 rounded-xl transition-all" href="/settings.html">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Settings</span>
+        </a>
+    </nav>
+    <div class="mt-auto p-4 bg-surface-container-high rounded-2xl flex flex-col gap-4">
+        <div class="flex items-center gap-4">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-zinc-300">
+                <img class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBizfKe_xyPrdy-5TAjyCwRALgQQcQJRmmj2VFhxrCkO5NhY7CdU4gDDVE4ULBx4fD8KZc-pbr-WzJHgtHWrmjaiAdB3DP-ki2e-DyKPHH6ueyLOZzOyLU4Mhr3k70ficKI-bBAoZjmWlvsBod_-bEL8q-JCukgp7-o0NdNZtrULmlB1Y0F08b4Wu7i9H2-Fag86z_zQFyISxn6tF1fxuFdFTXVp4Cmcj-LBXSKA_37Z5ljp-61xRhmEen__w-Sl6COyvt0miEeOYk"/>
+            </div>
+            <div>
+                <p id="doctor-name-display" class="font-['Plus_Jakarta_Sans'] font-bold text-sm text-on-surface">Dr. Heart Precision</p>
+                <p class="font-['Inter'] text-[10px] text-on-surface-variant uppercase tracking-wider">Cardiology</p>
+            </div>
+        </div>
+        <button onclick="localStorage.clear(); window.location.href='/login.html'" class="w-full flex items-center justify-center gap-2 py-2 border border-zinc-200 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
+            <span class="material-symbols-outlined text-[16px]">logout</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-bold text-xs uppercase tracking-wider">Logout</span>
+        </button>
+    </div>
+</aside>
+
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col h-screen overflow-y-auto relative pb-24 md:pb-8 bg-zinc-50/30">
+    <!-- Top App Bar -->
+    <header class="sticky top-0 w-full z-40 bg-white/60 backdrop-blur-xl flex justify-between items-center px-6 h-16 shadow-[0_20px_40px_rgba(186,26,32,0.04)] border-b border-zinc-100">
+        <div class="flex items-center gap-4">
+            <h2 class="font-headline font-bold text-xl text-on-surface">Patient Management</h2>
+        </div>
+        <button onclick="document.getElementById('add-patient-modal').classList.remove('hidden');" class="h-10 px-5 bg-primary rounded-xl text-white font-bold text-sm shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">person_add</span>
+            Add Patient
+        </button>
+    </header>
+
+    <div class="p-6 md:p-8 max-w-[1600px] mx-auto w-full">
+        <div class="max-w-7xl mx-auto space-y-8">
+            <!-- Header Section -->
+            <div>
+                <h1 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface">Active Roster.</h1>
+                <p class="text-zinc-500 font-medium mt-1">Select a patient to monitor their real-time biometric twin context.</p>
+            </div>
+
+            <!-- Datatable Card -->
+            <div class="bg-white rounded-[2rem] clay-card overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-zinc-50/50 border-b border-zinc-100">
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Patient Details</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Medical ID</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Diagnosis / Affiliation</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Last Sync</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patients-table-body" class="divide-y divide-zinc-100">
+                        <!-- Filled by JS -->
+                        <tr><td colspan="5" class="p-8 text-center text-zinc-500 font-medium">Loading active patients...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<!-- Add Patient Modal -->
+<div id="add-patient-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-zinc-100/50 flex flex-col transform transition-all">
+        <div class="px-8 py-6 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
+            <h3 class="font-headline font-extrabold text-xl text-on-surface">Register New Patient</h3>
+            <button onclick="document.getElementById('add-patient-modal').classList.add('hidden');" class="text-zinc-400 hover:text-zinc-700 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <form id="add-patient-form" class="p-8 space-y-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-label text-[11px] font-bold tracking-widest text-on-surface-variant uppercase mb-1">Full Name</label>
+                    <input id="pt-name" class="w-full h-12 px-4 rounded-xl bg-surface-container-high border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all" type="text" required placeholder="e.g. John Doe"/>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-label text-[11px] font-bold tracking-widest text-on-surface-variant uppercase mb-1">Date of Birth</label>
+                        <input id="pt-dob" class="w-full h-12 px-4 rounded-xl bg-surface-container-high border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all" type="date" required/>
+                    </div>
+                    <div>
+                        <label class="block font-label text-[11px] font-bold tracking-widest text-on-surface-variant uppercase mb-1">Medical Device / Serial</label>
+                        <input id="pt-medical-id" class="w-full h-12 px-4 rounded-xl bg-surface-container-high border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all" type="text" required placeholder="#TP-XXXX"/>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-label text-[11px] font-bold tracking-widest text-on-surface-variant uppercase mb-1">Hospital / Affiliation</label>
+                    <input id="pt-affiliation" class="w-full h-12 px-4 rounded-xl bg-surface-container-high border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all" type="text" required placeholder="General Cardiology Dept."/>
+                </div>
+                
+                <div>
+                    <label class="block font-label text-[11px] font-bold tracking-widest text-on-surface-variant uppercase mb-1">Primary Diagnosis Notes</label>
+                    <textarea id="pt-notes" rows="3" class="w-full p-4 rounded-xl bg-surface-container-high border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all resize-none" placeholder="e.g. Type 2 Diabetes, Dual-chamber pacing."></textarea>
+                </div>
+            </div>
+            
+            <div id="add-error" class="hidden text-red-600 text-sm font-bold"></div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-100">
+                <button type="button" onclick="document.getElementById('add-patient-modal').classList.add('hidden');" class="h-12 px-6 rounded-xl text-zinc-600 font-bold hover:bg-zinc-100 transition-colors">Cancel</button>
+                <button id="add-submit-btn" type="submit" class="h-12 px-8 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary-container transition-transform active:scale-95">Register Patient</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const docName = localStorage.getItem('doctor_name');
+        const docId = localStorage.getItem('doctor_id');
+        
+        if (!docId) {
+            window.location.href = '/login.html';
+            return;
+        }
+
+        if (docName) {
+            document.getElementById('doctor-name-display').innerText = docName;
+        }
+
+        fetchPatients(docId);
+
+        document.getElementById('add-patient-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('add-submit-btn');
+            btn.innerText = "Registering...";
+            document.getElementById('add-error').classList.add('hidden');
+
+            const payload = {
+                doctor_id: docId,
+                full_name: document.getElementById('pt-name').value,
+                dob: document.getElementById('pt-dob').value,
+                medical_id: document.getElementById('pt-medical-id').value,
+                affiliation: document.getElementById('pt-affiliation').value,
+                diagnosis_notes: document.getElementById('pt-notes').value,
+            };
+
+            try {
+                const res = await fetch('http://127.0.0.1:8000/api/v1/patients', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    document.getElementById('add-patient-modal').classList.add('hidden');
+                    document.getElementById('add-patient-form').reset();
+                    fetchPatients(docId);
+                } else {
+                    document.getElementById('add-error').innerText = "Failed to add patient.";
+                    document.getElementById('add-error').classList.remove('hidden');
+                }
+            } catch (err) {
+                document.getElementById('add-error').innerText = "Network Error.";
+                document.getElementById('add-error').classList.remove('hidden');
+            } finally {
+                btn.innerText = "Register Patient";
+            }
+        });
+    });
+
+    async function fetchPatients(docId) {
+        const tbody = document.getElementById('patients-table-body');
+        try {
+            const res = await fetch(`http://127.0.0.1:8000/api/v1/patients?doctor_id=${docId}`);
+            if (!res.ok) throw new Error('Network response not ok');
+            const patients = await res.json();
+
+            if (patients.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-zinc-500 font-medium">No patients enrolled yet. Click 'Add Patient' to begin.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = patients.map(p => `
+                <tr class="hover:bg-zinc-50/50 transition-colors group">
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm border-2 border-white shadow-sm">${p.full_name.charAt(0)}</div>
+                            <div>
+                                <p class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">${p.full_name}</p>
+                                <p class="text-xs text-zinc-500 font-medium mt-0.5">DOB: ${p.dob}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-zinc-600">${p.medical_id}</span>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <p class="text-sm font-semibold text-zinc-800">${p.diagnosis_notes}</p>
+                        <p class="text-xs text-zinc-500 font-medium">${p.affiliation}</p>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <div class="flex items-center gap-1.5 text-xs font-bold ${p.last_sync ? 'text-emerald-600' : 'text-zinc-400'}">
+                            <span class="material-symbols-outlined text-[14px]">${p.last_sync ? 'cloud_done' : 'cloud_off'}</span>
+                            ${p.last_sync ? new Date(p.last_sync).toLocaleString() : 'Never Synced'}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <button onclick="openPatient('${p.id}', '${p.full_name}', '${p.medical_id}')" class="px-5 py-2 rounded-xl bg-white border border-zinc-200 text-sm font-bold hover:border-primary hover:text-primary transition-all shadow-sm">Open Context</button>
+                    </td>
+                </tr>
+            `).join('');
+
+        } catch(err) {
+            tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-500 font-bold">Failed to load patients. Is the FastAPI server running?</td></tr>`;
+        }
+    }
+
+    function openPatient(id, name, medicalId) {
+        localStorage.setItem('selectedPatientId', id);
+        localStorage.setItem('selectedPatientName', name);
+        localStorage.setItem('selectedPatientMedicalId', medicalId);
+        window.location.href = '/index.html';
+    }
+</script>
+</body>
+</html>
