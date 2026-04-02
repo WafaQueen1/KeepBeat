@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>KeepBeat Pro - Registration</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b6171e",
+                        "primary-container": "#da3433",
+                        "on-primary-container": "#fffbff",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#444748",
+                        "surface": "#ffffff",
+                        "surface-container-high": "#f0f1f2",
+                        "outline": "#707779",
+                        "outline-variant": "#c0c7c8",
+                        "primary-fixed": "#ffdad6",
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1.5rem", "3xl": "2rem", "4xl": "2.5rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #fdf0f5; }
+        
+        .split-layout {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* 3D Visual Section (Full Screen Background) */
+        #canvas-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #030303;
+            z-index: 1;
+        }
+
+        /* Forms Section (Right - Light/White overlay) */
+        .login-section {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 10;
+        }
+
+        /* Gradient mask for the light side, allowing some particles to show through */
+        .login-section::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 15%, rgba(255,255,255,1) 35%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .fade-overlay {
+            display: none; /* Removing the old overlay since we handle it via login-section */
+        }
+
+        .form-field-shadow {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02), inset 0 1px 2px rgba(0,0,0,0.01);
+        }
+
+        @media (max-width: 1024px) {
+            .login-section { width: 100%; }
+            /* When mobile, mostly hide the 3D background */
+            .login-section::after { background: rgba(255,255,255,0.9); }
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface">
+
+    <div class="split-layout">
+        
+        <!-- Full Screen Dark Medical Visualization -->
+        <div id="canvas-bg">
+            <!-- Technical Branding -->
+            <div class="absolute top-10 left-10 z-10 flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">monitor_heart</span>
+                <span class="font-headline font-extrabold text-2xl tracking-tighter text-white/90">KeepBeat <span class="text-primary font-black">Pro</span></span>
+            </div>
+
+            <!-- Clinical Messaging -->
+            <div class="absolute bottom-20 left-10 z-[15] w-full max-w-md pointer-events-none">
+                <h1 class="font-headline text-5xl font-black text-white leading-tight mb-4">Empowering The Next Era of Cardiovascular Care.</h1>
+                <p class="font-body text-sm text-white/70 leading-relaxed font-medium">Join an elite network of cardiologists leveraging AI-driven diagnostics and real-time patient twin monitoring.</p>
+            </div>
+            
+            <!-- Standardized Protocol Badge -->
+            <div class="absolute bottom-8 left-10 z-[15] flex items-center gap-2 pointer-events-none">
+                <span class="material-symbols-outlined text-green-400 text-lg">verified</span>
+                <span class="font-label text-[10px] tracking-widest uppercase text-white/60 font-bold">STANDARDIZED CLINICAL PROTOCOL</span>
+            </div>
+        </div>
+
+        <!-- Right Side: Professional Registration Form -->
+        <div class="login-section">
+            <div class="w-full max-w-[460px] space-y-8 overflow-y-auto max-h-screen py-8 pl-4 pr-4 custom-scrollbar relative z-20">
+                
+                <!-- Clinical Header (Fixed missing text due to blur) -->
+                <div class="text-left space-y-2 mb-2 relative z-30">
+                    <h2 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface">Registration</h2>
+                    <p class="font-body text-on-surface-variant text-sm font-medium">Initialize your medical workstation access.</p>
+                </div>
+
+                <!-- Form Card -->
+                <div class="bg-white border border-outline-variant/30 rounded-[2rem] p-8 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.06)] relative z-20">
+                    <form class="space-y-4" onsubmit="event.preventDefault(); window.location.href='/login.html';">
+                        
+                        <!-- Full Medical Name -->
+                        <div class="space-y-1.5">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="name">Full Medical Name</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">person</span>
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="name" placeholder="Dr. Julian Sterling" type="text" />
+                            </div>
+                        </div>
+
+                        <!-- Medical License Number -->
+                        <div class="space-y-1.5">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="license">Medical License Number</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">badge</span>
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="license" placeholder="LIC-9902-XJ" type="text" />
+                            </div>
+                        </div>
+                        
+                        <!-- Hospital Affiliation -->
+                        <div class="space-y-1.5">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="hospital">Hospital Affiliation</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">apartment</span>
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="hospital" placeholder="Central Heart Institute" type="text" />
+                            </div>
+                        </div>
+
+                        <!-- Institutional Email -->
+                        <div class="space-y-1.5">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="email">Institutional Email</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">mail</span>
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="email" placeholder="j.sterling@chi.med" type="email" />
+                            </div>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="space-y-1.5 pb-2">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="password">Security Key</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">lock</span>
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all tracking-widest form-field-shadow text-lg" id="password" placeholder="••••••••" type="password" />
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button class="w-full h-14 bg-primary text-white font-headline font-bold text-[15px] rounded-xl shadow-[0_10px_20px_rgba(182,23,30,0.25)] hover:bg-primary-container hover:scale-[0.99] transition-all flex items-center justify-center gap-2" type="submit">
+                            <span>Request Practitioner Access</span>
+                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                        </button>
+                        
+                        <!-- Verification text -->
+                        <div class="flex items-center justify-center gap-2 bg-[#f4effc] rounded-xl py-2 mt-2 border border-[#e8dcf8]">
+                            <span class="material-symbols-outlined text-[#8952e0] text-[14px]">auto_awesome</span>
+                            <span class="font-label text-[9px] font-extrabold tracking-widest text-[#7c43d4] uppercase">Verification usually takes 2-4 hours</span>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Bottom Action -->
+                <div class="text-center mt-6">
+                    <p class="font-body text-[13px] text-on-surface-variant font-medium">
+                        Already an authenticated provider? 
+                        <a class="text-primary hover:text-primary-container transition-colors ml-1 font-bold" href="/login.html">Secure Sign In &rarr;</a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Integration -->
+    <script type="module" src="/register.js"></script>
+    <style>
+        /* CustomScrollbar for overflow prevention */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: #bdbdbd; }
+    </style>
+</body>
+</html>
