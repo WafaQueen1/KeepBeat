@@ -1,4 +1,5 @@
 import './style.css';
+import { renderNavigation, renderHeader } from './navigation.js';
 
 // Context Retrieval
 const docId = localStorage.getItem('doctor_id');
@@ -6,28 +7,33 @@ if (!docId) {
     window.location.href = '/login.html'; // Require auth
 }
 
-const docName = localStorage.getItem('doctor_name');
-if (docName) {
-    const docDisplay = document.getElementById('doctor-name-display');
-    if (docDisplay) docDisplay.innerText = docName;
+// Check role globally to prevent unauthorized admin access
+const role = localStorage.getItem('doctor_role') || 'doctor';
+if (window.location.pathname === '/admin.html' && role !== 'admin') {
+    window.location.href = '/index.html';
+} else if ((window.location.pathname === '/' || window.location.pathname === '/index.html') && role === 'admin') {
+    window.location.href = '/admin.html';
 }
 
 const patientId = localStorage.getItem('selectedPatientId');
-const patientName = localStorage.getItem('selectedPatientName');
-const medicalId = localStorage.getItem('selectedPatientMedicalId');
 
-if (!patientId && window.location.pathname !== '/patients.html' && window.location.pathname !== '/login.html') {
+// Disappearing content fixes:
+// Render navigation and header for current page
+const isPatientRequired = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname === '/correlations.html' || window.location.pathname === '/ai-diagnostics.html';
+
+if (isPatientRequired && !patientId) {
     window.location.href = '/patients.html'; // Force select patient
 }
 
-if (patientName && medicalId) {
-    const ptDisplay = document.getElementById('patient-name-display');
-    if (ptDisplay) {
-        ptDisplay.innerHTML = `Patient: ${patientName} <span class="text-on-surface-variant font-medium text-sm ml-2">ID: ${medicalId}</span>`;
-    }
+if (window.location.pathname === '/admin.html' || window.location.pathname === '/patients.html') {
+    renderHeader(window.location.pathname === '/admin.html' ? 'Admin Panel' : 'Patient Management');
+} else {
+    renderHeader(); // Auto-generates based on current selected patient
 }
+renderNavigation();
 
 // KeepBeat API Endpoint dynamically mapped
+
 const API_URL = `http://127.0.0.1:8000/api/v1/telemetry/${patientId || 'PT_001'}?limit=10`;
 
 const bpmElement = document.getElementById('bpm-value');

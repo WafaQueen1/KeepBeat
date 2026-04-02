@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>KeepBeat - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b6171e",
+                        "primary-container": "#da3433",
+                        "on-primary-container": "#fffbff",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#444748",
+                        "surface": "#ffffff",
+                        "surface-container-high": "#f0f1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "outline": "#707779",
+                        "outline-variant": "#c0c7c8",
+                        "secondary": "#4c56af",
+                        "secondary-container": "#dde1ff",
+                        "on-secondary-container": "#00105b",
+                        "tertiary": "#8a30b0",
+                        "tertiary-container": "#f8d8ff",
+                        "on-tertiary-container": "#30004a",
+                        "inverse-surface": "#2e3132",
+                        "inverse-on-surface": "#eff1f1"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Inter"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .clay-card {
+            box-shadow: 0 20px 40px rgba(186, 26, 32, 0.05), inset 0 2px 4px rgba(255,255,255,0.8);
+            border: 1px solid rgba(186, 26, 32, 0.08);
+            background: linear-gradient(145deg, #ffffff, #fafafa);
+        }
+        .modal-glass {
+            backdrop-filter: blur(8px);
+            background-color: rgba(25, 28, 29, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<div class="flex h-screen w-full">
+<aside class="kb-sidebar"></aside>
+
+<main class="flex-grow flex flex-col h-screen overflow-y-auto relative pb-24 md:pb-8 bg-zinc-50/30">
+    <header class="kb-header"></header>
+
+    <div class="p-6 md:p-8 max-w-[1600px] mx-auto w-full space-y-12">
+        <!-- PENDING REGISTRATIONS SECTION -->
+        <div class="space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface">Registration Requests</h1>
+                    <p class="text-zinc-500 font-medium mt-1">Pending doctor accounts waiting for your approval.</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[2rem] clay-card overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-indigo-50/50 border-b border-indigo-100">
+                            <th class="py-5 px-6 font-label text-xs font-bold text-indigo-900 uppercase tracking-widest">Doctor Name</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-indigo-900 uppercase tracking-widest">Email</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-indigo-900 uppercase tracking-widest">Date Requested</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-indigo-900 uppercase tracking-widest text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-doctors-table-body" class="divide-y divide-zinc-100">
+                        <tr><td colspan="4" class="p-8 text-center text-zinc-500 font-medium">Checking queue...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PENDING PATIENTS SECTION -->
+        <div class="space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface">Patient Link Requests</h1>
+                    <p class="text-zinc-500 font-medium mt-1">Pending patient accounts waiting for doctor assignment approval.</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[2rem] clay-card overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-indigo-50/50 border-b border-indigo-100">
+                            <th class="py-5 px-6 font-label text-xs font-bold text-indigo-900 uppercase tracking-widest">Patient Name</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-indigo-900 uppercase tracking-widest">Requested Doctor</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-indigo-900 uppercase tracking-widest">Date Requested</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-indigo-900 uppercase tracking-widest text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-patients-table-body" class="divide-y divide-zinc-100">
+                        <tr><td colspan="4" class="p-8 text-center text-zinc-500 font-medium">Checking queue...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="h-px bg-zinc-200/60 w-full rounded-full"></div>
+
+        <!-- DOCTORS SECTION -->
+        <div id="doctors-section" class="space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface">Doctor Management</h1>
+                    <p class="text-zinc-500 font-medium mt-1">Manage approved clinical professionals.</p>
+                </div>
+                <button onclick="document.getElementById('add-doctor-modal').classList.remove('hidden');" class="h-10 px-5 bg-tertiary rounded-xl text-white font-bold text-sm shadow-md shadow-tertiary/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">medical_services</span>
+                    Register Doctor
+                </button>
+            </div>
+
+            <div class="bg-white rounded-[2rem] clay-card overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-zinc-50/50 border-b border-zinc-100">
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Doctor Name</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Email</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Status</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="doctors-table-body" class="divide-y divide-zinc-100">
+                        <tr><td colspan="4" class="p-8 text-center text-zinc-500 font-medium">Loading doctors...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="h-px bg-zinc-200/60 w-full rounded-full"></div>
+
+        <!-- PATIENTS SECTION -->
+        <div id="patients-section" class="space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface">Global Patient Registry</h1>
+                    <p class="text-zinc-500 font-medium mt-1">View and manage all patients across the platform (Admin Access Only).</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[2rem] clay-card overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-zinc-50/50 border-b border-zinc-100">
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Patient Details</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Medical ID</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Assigned Doctor</th>
+                            <th class="py-5 px-6 font-label text-xs font-bold text-zinc-500 uppercase tracking-widest">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-patients-table-body" class="divide-y divide-zinc-100">
+                        <tr><td colspan="4" class="p-8 text-center text-zinc-500 font-medium">Loading patients...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+</div>
+
+<!-- Add Doctor Modal -->
+<div id="add-doctor-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden p-4 modal-glass">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-zinc-100/50 flex flex-col">
+        <div class="px-8 py-6 border-b border-zinc-100 flex justify-between items-center bg-zinc-50/50">
+            <h3 class="font-headline font-extrabold text-xl text-on-surface">Register New Doctor</h3>
+            <button onclick="document.getElementById('add-doctor-modal').classList.add('hidden');" class="text-zinc-400 hover:text-zinc-700 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        
+        <form id="add-doctor-form" class="p-8 space-y-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-label text-[11px] font-bold tracking-widest text-on-surface-variant uppercase mb-1">Full Name</label>
+                    <input id="doc-name" class="w-full h-12 px-4 rounded-xl bg-surface-container-high border-transparent focus:border-tertiary/20 focus:ring-0 text-on-surface font-medium transition-all" type="text" required placeholder="Dr. Jane Smith"/>
+                </div>
+                
+                <div>
+                    <label class="block font-label text-[11px] font-bold tracking-widest text-on-surface-variant uppercase mb-1">Email Address</label>
+                    <input id="doc-email" class="w-full h-12 px-4 rounded-xl bg-surface-container-high border-transparent focus:border-tertiary/20 focus:ring-0 text-on-surface font-medium transition-all" type="email" required placeholder="doctor@keepbeat.com"/>
+                </div>
+
+                    <div class="col-span-2">
+                        <label class="block font-label text-[11px] font-bold tracking-widest text-on-surface-variant uppercase mb-1">Password</label>
+                        <input id="doc-password" class="w-full h-12 px-4 rounded-xl bg-surface-container-high border-transparent focus:border-tertiary/20 focus:ring-0 text-on-surface font-medium transition-all" type="password" required/>
+                    </div>
+            </div>
+            
+            <div id="add-doc-error" class="hidden text-red-600 text-sm font-bold"></div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-100">
+                <button type="button" onclick="document.getElementById('add-doctor-modal').classList.add('hidden');" class="h-12 px-6 rounded-xl text-zinc-600 font-bold hover:bg-zinc-100 transition-colors">Cancel</button>
+                <button id="add-doc-submit-btn" type="submit" class="h-12 px-8 bg-tertiary text-white rounded-xl font-bold shadow-lg shadow-tertiary/20 hover:brightness-110 transition-transform active:scale-95">Register</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<nav class="kb-mobile-nav"></nav>
+<script type="module" src="/main.js"></script>
+<script>
+    const API_BASE = "http://127.0.0.1:8000/api/v1";
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const role = localStorage.getItem('doctor_role');
+        if (role !== 'admin') {
+            window.location.href = '/login.html';
+            return;
+        }
+        
+        fetchDoctors();
+        fetchPendingDoctors();
+        fetchPendingPatients();
+        fetchAllPatients();
+
+        // ADD DOCTOR modal submission
+        const addDocForm = document.getElementById('add-doctor-form');
+        if (addDocForm) {
+            addDocForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('add-doc-submit-btn');
+                const originalText = btn.innerText;
+                btn.innerText = "Registering...";
+                document.getElementById('add-doc-error').classList.add('hidden');
+
+                const payload = {
+                    full_name: document.getElementById('doc-name').value,
+                    email: document.getElementById('doc-email').value,
+                    password: document.getElementById('doc-password').value,
+                    status: 'approved'
+                };
+
+                try {
+                    const res = await fetch(`${API_BASE}/doctors`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (res.ok) {
+                        document.getElementById('add-doctor-modal').classList.add('hidden');
+                        document.getElementById('add-doctor-form').reset();
+                        fetchDoctors();
+                    } else {
+                        const err = await res.json();
+                        document.getElementById('add-doc-error').innerText = err.detail || "Failed to add doctor.";
+                        document.getElementById('add-doc-error').classList.remove('hidden');
+                    }
+                } catch (err) {
+                    document.getElementById('add-doc-error').innerText = "Network Error.";
+                    document.getElementById('add-doc-error').classList.remove('hidden');
+                } finally {
+                    btn.innerText = originalText;
+                }
+            });
+        }
+    });
+
+    // DOCTOR CRUD
+    async function fetchDoctors() {
+        const tbody = document.getElementById('doctors-table-body');
+        try {
+            const res = await fetch(`${API_BASE}/doctors`);
+            if (!res.ok) throw new Error('API Error');
+            const doctors = await res.json();
+
+            tbody.innerHTML = doctors.map(d => `
+                <tr class="hover:bg-zinc-50/50 transition-colors group">
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary font-bold text-sm border-2 border-white shadow-sm">${d.full_name.charAt(0)}</div>
+                            <p class="font-headline font-bold text-on-surface">${d.full_name}</p>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${d.email}</td>
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wider">${d.status}</span>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <button onclick="deleteDoctor('${d.id}')" class="h-8 w-8 inline-flex items-center justify-center rounded border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors" title="Delete">
+                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch(err) {
+            tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-red-500 font-bold">Failed to load doctors.</td></tr>`;
+        }
+    }
+
+    async function fetchPendingDoctors() {
+        const tbody = document.getElementById('pending-doctors-table-body');
+        try {
+            const res = await fetch(`${API_BASE}/admin/pending_doctors`);
+            if (!res.ok) throw new Error('API Error');
+            const doctors = await res.json();
+
+            if (doctors.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-zinc-400 font-bold">No pending requests.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = doctors.map(d => `
+                <tr class="hover:bg-zinc-50/50 transition-colors group">
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm border-2 border-white shadow-sm">${d.full_name.charAt(0)}</div>
+                            <p class="font-headline font-bold text-on-surface">${d.full_name}</p>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${d.email}</td>
+                    <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${new Date(d.created_at).toLocaleDateString()}</td>
+                    <td class="py-4 px-6 border-t border-zinc-100 text-right space-x-2">
+                        <button onclick="approveDoctor('${d.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-emerald-200 text-emerald-700 font-bold text-xs hover:bg-emerald-50 hover:border-emerald-300 transition-colors" title="Approve">
+                            APPROVE
+                        </button>
+                        <button onclick="rejectDoctor('${d.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-red-200 text-red-700 font-bold text-xs hover:bg-red-50 hover:border-red-300 transition-colors" title="Decline">
+                            DECLINE
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch(err) {
+            tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-red-500 font-bold">Failed to load pending requests.</td></tr>`;
+        }
+    }
+
+    async function fetchPendingPatients() {
+        const tbody = document.getElementById('pending-patients-table-body');
+        try {
+            const res = await fetch(`${API_BASE}/admin/pending_patients`);
+            if (!res.ok) throw new Error('API Error');
+            const patients = await res.json();
+
+            if (patients.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-zinc-400 font-bold">No pending patients.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = patients.map(p => `
+                <tr class="hover:bg-zinc-50/50 transition-colors group">
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm border-2 border-white shadow-sm">${p.full_name.charAt(0)}</div>
+                            <p class="font-headline font-bold text-on-surface">${p.full_name}</p>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">DOC ID: ${p.doctor_id}</td>
+                    <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${new Date(p.created_at).toLocaleDateString()}</td>
+                    <td class="py-4 px-6 border-t border-zinc-100 text-right space-x-2">
+                        <button onclick="approvePatient('${p.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-emerald-200 text-emerald-700 font-bold text-xs hover:bg-emerald-50 hover:border-emerald-300 transition-colors" title="Approve">
+                            APPROVE
+                        </button>
+                        <button onclick="rejectPatient('${p.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-red-200 text-red-700 font-bold text-xs hover:bg-red-50 hover:border-red-300 transition-colors" title="Decline">
+                            DECLINE
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch(err) {
+            tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-red-500 font-bold">Failed to load pending patients.</td></tr>`;
+        }
+    }
+
+    async function approveDoctor(id) {
+        try {
+            await fetch(`http://127.0.0.1:8000/api/v1/admin/approve_doctor/${id}`, { method: 'PUT' });
+            fetchPendingDoctors();
+            fetchDoctors();
+        } catch (e) {
+            alert('Failed to approve doctor');
+        }
+    }
+
+    async function rejectDoctor(id) {
+        if (!confirm("Are you sure you want to reject and remove this doctor request?")) return;
+        try {
+            const res = await fetch(`${API_BASE}/admin/reject_doctor/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Reject failed');
+            fetchPendingDoctors();
+        } catch (e) {
+            console.error('Reject Doctor Error:', e);
+            alert('Failed to reject doctor');
+        }
+    }
+
+    async function deleteDoctor(id) {
+        if (!confirm("Are you sure you want to completely remove this doctor account? This will also remove all their patients and medical records.")) return;
+        try {
+            const res = await fetch(`${API_BASE}/doctors/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'Delete failed');
+            }
+            fetchDoctors();
+            fetchAllPatients(); // Refresh linked patients list
+        } catch (e) {
+            console.error('Delete Doctor Error:', e);
+            alert('Failed to delete doctor: ' + e.message);
+        }
+    }
+
+    // PATIENT CRUD
+    async function fetchAllPatients() {
+        const tbody = document.getElementById('admin-patients-table-body');
+        try {
+            const res = await fetch(`${API_BASE}/patients/all`);
+            if (!res.ok) throw new Error('API Error');
+            const patients = await res.json();
+
+            tbody.innerHTML = patients.map(p => `
+                <tr class="hover:bg-zinc-50/50 transition-colors group">
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm border-2 border-white shadow-sm">${p.full_name.charAt(0)}</div>
+                            <p class="font-headline font-bold text-on-surface">${p.full_name}</p>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-bold text-zinc-600 uppercase tracking-wider">${p.medical_id}</span>
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100 text-sm font-medium text-zinc-600">
+                        ${p.doctor_name}
+                    </td>
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <button onclick="deletePatient('${p.id}')" class="h-8 w-8 inline-flex items-center justify-center rounded border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors" title="Delete">
+                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch(err) {
+            tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-red-500 font-bold">Failed to load patients.</td></tr>`;
+        }
+    }
+
+    async function deletePatient(id) {
+        if (!confirm("Are you sure you want to permanently delete this patient record?")) return;
+        try {
+            const res = await fetch(`${API_BASE}/patients/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || 'Delete failed');
+            }
+            fetchAllPatients();
+        } catch (e) {
+            console.error('Delete Patient Error:', e);
+            alert('Failed to delete patient: ' + e.message);
+        }
+    }
+
+    async function approvePatient(id) {
+        try {
+            await fetch(`http://127.0.0.1:8000/api/v1/admin/approve_patient/${id}`, { method: 'PUT' });
+            fetchPendingPatients();
+            fetchAllPatients();
+        } catch (e) {
+            alert('Failed to approve patient');
+        }
+    }
+
+    async function rejectPatient(id) {
+        if (!confirm("Are you sure you want to reject this patient request?")) return;
+        try {
+            await fetch(`http://127.0.0.1:8000/api/v1/admin/reject_patient/${id}`, { method: 'DELETE' });
+            fetchPendingPatients();
+            fetchAllPatients();
+        } catch (e) {
+            alert('Failed to reject patient');
+        }
+    }
+</script>
+</body>
+</html>

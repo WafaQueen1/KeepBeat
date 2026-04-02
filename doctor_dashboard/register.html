@@ -132,52 +132,98 @@
 
                 <!-- Form Card -->
                 <div class="bg-white border border-outline-variant/30 rounded-[2rem] p-8 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.06)] relative z-20">
-                    <form class="space-y-4" onsubmit="event.preventDefault(); window.location.href='/login.html';">
+                    <form class="space-y-4" id="registration-form">
                         
-                        <!-- Full Medical Name -->
+                        <!-- Role Selector -->
+                        <div class="flex p-1 bg-surface-container-high rounded-xl mb-4">
+                            <button type="button" onclick="setRole('doctor')" id="role-btn-doctor" class="flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all">Doctor</button>
+                            <button type="button" onclick="setRole('patient')" id="role-btn-patient" class="flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all">Patient</button>
+                        </div>
+                        <input type="hidden" id="user-role" value="doctor" />
+                        
+                        <!-- Common Field: Full Name -->
                         <div class="space-y-1.5">
-                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="name">Full Medical Name</label>
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="name" id="name-label">Full Medical Name</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">person</span>
-                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="name" placeholder="Dr. Julian Sterling" type="text" />
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="name" required placeholder="Dr. Julian Sterling" type="text" />
                             </div>
                         </div>
 
-                        <!-- Medical License Number -->
-                        <div class="space-y-1.5">
-                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="license">Medical License Number</label>
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">badge</span>
-                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="license" placeholder="LIC-9902-XJ" type="text" />
+                        <!-- DOCTOR SPECIFIC FIELDS -->
+                        <div id="doctor-fields" class="space-y-4">
+                            <!-- Institutional Email -->
+                            <div class="space-y-1.5">
+                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="email">Institutional Email</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">mail</span>
+                                    <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="email" placeholder="j.sterling@chi.med" type="email" />
+                                </div>
+                            </div>
+
+                            <!-- Password Input -->
+                            <div class="space-y-1.5 pb-2">
+                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="password">Security Key</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">lock</span>
+                                    <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all tracking-widest form-field-shadow text-lg" id="password" placeholder="••••••••" type="password" />
+                                </div>
                             </div>
                         </div>
-                        
-                        <!-- Hospital Affiliation -->
+
+                        <!-- PATIENT SPECIFIC FIELDS -->
+                        <div id="patient-fields" class="space-y-4 hidden">
+                            <!-- DOB & Medical ID -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1.5">
+                                    <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="dob">Date of Birth</label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">calendar_month</span>
+                                        <input class="w-full h-12 pl-12 pr-3 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-xs" id="dob" type="date" />
+                                    </div>
+                                </div>
+                                <div id="medical-id-field" class="space-y-1.5">
+                                    <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="medical_id">Medical ID</label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[18px]">badge</span>
+                                        <input class="w-full h-12 pl-10 pr-3 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-xs" id="medical_id" placeholder="ID-4029" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Doctor Selection -->
+                            <div class="space-y-1.5">
+                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="assigned_doctor">Assigned Doctor</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">stethoscope</span>
+                                    <select class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-sm" id="assigned_doctor">
+                                        <option value="" disabled selected>Loading doctors...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Diagnosis Notes -->
+                            <div class="space-y-1.5">
+                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="diagnosis">Initial Diagnosis Notes</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant/50 text-[20px]">medical_information</span>
+                                    <textarea class="w-full h-20 pt-3 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-sm resize-none" id="diagnosis" placeholder="Brief patient history..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Common Field: Affiliation -->
                         <div class="space-y-1.5">
-                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="hospital">Hospital Affiliation</label>
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="affiliation" id="affiliation-label">Hospital Affiliation</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">apartment</span>
-                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="hospital" placeholder="Central Heart Institute" type="text" />
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="affiliation" placeholder="Central Heart Institute" type="text" />
                             </div>
                         </div>
 
-                        <!-- Institutional Email -->
-                        <div class="space-y-1.5">
-                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="email">Institutional Email</label>
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">mail</span>
-                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="email" placeholder="j.sterling@chi.med" type="email" />
-                            </div>
-                        </div>
+                        <!-- Status/Error Message -->
+                        <div id="reg-msg" class="hidden font-bold text-sm text-center py-2 rounded-lg"></div>
 
-                        <!-- Password Input -->
-                        <div class="space-y-1.5 pb-2">
-                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="password">Security Key</label>
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">lock</span>
-                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all tracking-widest form-field-shadow text-lg" id="password" placeholder="••••••••" type="password" />
-                            </div>
-                        </div>
                         
                         <!-- Submit Button -->
                         <button class="w-full h-14 bg-primary text-white font-headline font-bold text-[15px] rounded-xl shadow-[0_10px_20px_rgba(182,23,30,0.25)] hover:bg-primary-container hover:scale-[0.99] transition-all flex items-center justify-center gap-2" type="submit">
@@ -214,5 +260,125 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
         .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: #bdbdbd; }
     </style>
+    <script>
+        async function fetchDoctors() {
+            try {
+                const res = await fetch('http://127.0.0.1:8000/api/v1/doctors');
+                if (res.ok) {
+                    const doctors = await res.json();
+                    const docSelect = document.getElementById('assigned_doctor');
+                    docSelect.innerHTML = '<option value="" disabled selected>Select a verified physician</option>';
+                    doctors.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.id;
+                        opt.textContent = d.full_name;
+                        docSelect.appendChild(opt);
+                    });
+                }
+            } catch (e) {
+                console.error("Failed to fetch doctors", e);
+            }
+        }
+        
+        // Execute on load
+        document.addEventListener('DOMContentLoaded', fetchDoctors);
+
+        function setRole(role) {
+            document.getElementById('user-role').value = role;
+            const btnDoc = document.getElementById('role-btn-doctor');
+            const btnPat = document.getElementById('role-btn-patient');
+            const docFields = document.getElementById('doctor-fields');
+            const patFields = document.getElementById('patient-fields');
+            const nameLabel = document.getElementById('name-label');
+            const nameInput = document.getElementById('name');
+
+            if (role === 'doctor') {
+                btnDoc.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all";
+                btnPat.className = "flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all";
+                docFields.classList.remove('hidden');
+                patFields.classList.add('hidden');
+                nameLabel.innerText = "Full Medical Name";
+                nameInput.placeholder = "Dr. Julian Sterling";
+                
+                document.getElementById('email').required = true;
+                document.getElementById('password').required = true;
+                document.getElementById('dob').required = false;
+                document.getElementById('medical_id').required = true;
+                document.getElementById('medical-id-field').classList.remove('hidden');
+                document.getElementById('assigned_doctor').required = false;
+            } else {
+                btnPat.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all";
+                btnDoc.className = "flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all";
+                docFields.classList.add('hidden');
+                patFields.classList.remove('hidden');
+                nameLabel.innerText = "Patient Legal Name";
+                nameInput.placeholder = "Alexander Pierce";
+
+                document.getElementById('email').required = false;
+                document.getElementById('password').required = false;
+                document.getElementById('dob').required = true;
+                document.getElementById('medical_id').required = false;
+                document.getElementById('medical-id-field').classList.add('hidden');
+                document.getElementById('assigned_doctor').required = true;
+            }
+        }
+        
+        // Handle Submission
+        document.getElementById('registration-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const role = document.getElementById('user-role').value;
+            const msgBox = document.getElementById('reg-msg');
+            msgBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
+            msgBox.innerText = "Submitting request...";
+
+            let url = "";
+            let payload = {};
+
+            if (role === 'doctor') {
+                url = 'http://127.0.0.1:8000/api/v1/doctors';
+                payload = {
+                    full_name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value
+                };
+            } else {
+                url = 'http://127.0.0.1:8000/api/v1/patients';
+                const medicalIdRaw = document.getElementById('medical_id').value;
+                const autoMedicalId = medicalIdRaw || `KB-${Math.floor(Math.random()*9000) + 1000}`;
+                
+                payload = {
+                    doctor_id: document.getElementById('assigned_doctor').value,
+                    full_name: document.getElementById('name').value,
+                    dob: document.getElementById('dob').value,
+                    medical_id: autoMedicalId,
+                    affiliation: document.getElementById('affiliation').value,
+                    diagnosis_notes: document.getElementById('diagnosis').value || ""
+                };
+            }
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    msgBox.classList.add('bg-emerald-100', 'text-emerald-700');
+                    if (role === 'doctor') {
+                        msgBox.innerText = "Registration successful. Awaiting admin approval.";
+                    } else {
+                        msgBox.innerText = "Details submitted. Awaiting administration link.";
+                    }
+                    setTimeout(() => { window.location.href = '/login.html'; }, 3000);
+                } else {
+                    throw new Error("Failed to register");
+                }
+            } catch (err) {
+                msgBox.classList.add('bg-red-100', 'text-red-700');
+                msgBox.innerText = "Error submitting registration. Please try again.";
+            }
+        });
+    </script>
 </body>
 </html>

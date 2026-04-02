@@ -187,6 +187,7 @@
                                 // Store Doctor Info
                                 localStorage.setItem('doctor_id', doc.id);
                                 localStorage.setItem('doctor_name', doc.full_name);
+                                localStorage.setItem('doctor_role', doc.role);
                                 window.location.href = '/patients.html'; // Go directly to patients list
                             } else {
                                 errorDiv.classList.remove('hidden');
