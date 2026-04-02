@@ -1,5 +1,5 @@
-name: mobile_app
-description: TwinPacemaker Mobile Application
+name: keepbeat
+description: KeepBeat - Real-time cardiac & metabolic monitoring
 publish_to: 'none'
 
 version: 1.0.0+1

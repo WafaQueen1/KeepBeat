@@ -1,10 +1,10 @@
 {
   "roots": [
-    "mobile_app"
+    "keepbeat"
   ],
   "packages": [
     {
-      "name": "mobile_app",
+      "name": "keepbeat",
       "version": "1.0.0+1",
       "dependencies": [
         "flutter",

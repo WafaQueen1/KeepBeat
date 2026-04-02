@@ -524,7 +524,7 @@
       "languageVersion": "3.4"
     },
     {
-      "name": "mobile_app",
+      "name": "keepbeat",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.3"
