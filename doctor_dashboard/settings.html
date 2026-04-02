@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeepBeat | Settings</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD@400,0,0" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface": "#f8f9fa",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#5b403f",
+                        "primary-container": "#da3433",
+                        "surface-container": "#edeeef",
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Sidebar Navigation Drawer (WEB) -->
+<aside class="hidden md:flex h-screen w-72 border-r border-zinc-200/50 dark:border-zinc-800/50 flex-col p-4 gap-2 bg-zinc-50 dark:bg-zinc-950">
+    <div class="font-['Manrope'] font-extrabold text-2xl text-red-700 mb-8 px-4 mt-2 cursor-default">
+        KeepBeat
+    </div>
+    <nav class="flex flex-col gap-2 flex-grow">
+        <a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="/index.html">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Patient Overview</span>
+        </a>
+        <a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="/correlations.html">
+            <span class="material-symbols-outlined" data-icon="Timeline">timeline</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Correlations</span>
+        </a>
+        <a class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-3 px-4 py-3 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="/ai-diagnostics.html">
+            <span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">AI Diagnostics</span>
+        </a>
+        <!-- Navigation Drawer Rule: Active is Settings -->
+        <a class="bg-white dark:bg-zinc-900 text-red-600 dark:text-red-400 shadow-sm rounded-xl font-bold flex items-center gap-3 px-4 py-3 transition-all duration-200 translate-x-1" href="/settings.html">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-medium text-sm">Settings</span>
+        </a>
+    </nav>
+    <div class="mt-auto p-4 bg-surface-container rounded-2xl flex flex-col gap-4">
+        <div class="flex items-center gap-4">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-zinc-300">
+                <img class="h-full w-full object-cover" data-alt="professional portrait of a senior cardiologist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBizfKe_xyPrdy-5TAjyCwRALgQQcQJRmmj2VFhxrCkO5NhY7CdU4gDDVE4ULBx4fD8KZc-pbr-WzJHgtHWrmjaiAdB3DP-ki2e-DyKPHH6ueyLOZzOyLU4Mhr3k70ficKI-bBAoZjmWlvsBod_-bEL8q-JCukgp7-o0NdNZtrULmlB1Y0F08b4Wu7i9H2-Fag86z_zQFyISxn6tF1fxuFdFTXVp4Cmcj-LBXSKA_37Z5ljp-61xRhmEen__w-Sl6COyvt0miEeOYk"/>
+            </div>
+            <div>
+                <p class="font-['Plus_Jakarta_Sans'] font-bold text-sm text-on-surface">Dr. Heart Precision</p>
+                <p class="font-['Inter'] text-[10px] text-on-surface-variant uppercase tracking-wider">Cardiology</p>
+            </div>
+        </div>
+        <button onclick="window.location.href='/login.html'" class="w-full flex items-center justify-center gap-2 py-2 border border-zinc-200 dark:border-zinc-700/50 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+            <span class="material-symbols-outlined text-[16px]">logout</span>
+            <span class="font-['Plus_Jakarta_Sans'] font-bold text-xs uppercase tracking-wider">Logout</span>
+        </button>
+    </div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col h-screen overflow-y-auto relative pb-24 md:pb-8">
+    <!-- Top App Bar -->
+    <header class="fixed top-0 w-full z-50 md:relative bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl flex justify-between items-center px-6 h-16 shadow-[0_20px_40px_rgba(186,26,32,0.08)] border-b border-zinc-100">
+        <div class="flex items-center gap-4">
+            <div class="font-['Manrope'] font-bold tracking-tight text-lg text-on-surface">
+                Platform Settings <span class="text-on-surface-variant font-medium text-sm ml-2">Configuration & Preferences</span>
+            </div>
+        </div>
+    </header>
+    <div class="p-6 md:p-8 mt-16 md:mt-0 max-w-[1200px] mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-8">
+        
+        <!-- Settings Sidebar -->
+        <div class="md:col-span-3 space-y-2">
+            <button class="w-full text-left px-4 py-3 bg-red-50 text-red-700 rounded-xl font-bold flex items-center gap-3">
+                <span class="material-symbols-outlined">person</span>
+                Profile
+            </button>
+            <button class="w-full text-left px-4 py-3 text-zinc-600 hover:bg-zinc-100 rounded-xl font-medium flex items-center gap-3 transition-colors">
+                <span class="material-symbols-outlined">shield</span>
+                Security
+            </button>
+            <button class="w-full text-left px-4 py-3 text-zinc-600 hover:bg-zinc-100 rounded-xl font-medium flex items-center gap-3 transition-colors">
+                <span class="material-symbols-outlined">notifications</span>
+                Notifications
+            </button>
+            <button class="w-full text-left px-4 py-3 text-zinc-600 hover:bg-zinc-100 rounded-xl font-medium flex items-center gap-3 transition-colors">
+                <span class="material-symbols-outlined">database</span>
+                Data Sync
+            </button>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="md:col-span-9 space-y-8">
+            <!-- Profile Section -->
+            <section class="bg-white border border-zinc-200/60 rounded-2xl p-8 shadow-sm">
+                <h3 class="font-headline font-bold text-xl mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-red-600">person</span>
+                    Professional Profile
+                </h3>
+                
+                <div class="flex items-center gap-6 mb-8">
+                    <div class="h-24 w-24 rounded-full overflow-hidden border-4 border-red-50 relative group cursor-pointer">
+                        <img class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBizfKe_xyPrdy-5TAjyCwRALgQQcQJRmmj2VFhxrCkO5NhY7CdU4gDDVE4ULBx4fD8KZc-pbr-WzJHgtHWrmjaiAdB3DP-ki2e-DyKPHH6ueyLOZzOyLU4Mhr3k70ficKI-bBAoZjmWlvsBod_-bEL8q-JCukgp7-o0NdNZtrULmlB1Y0F08b4Wu7i9H2-Fag86z_zQFyISxn6tF1fxuFdFTXVp4Cmcj-LBXSKA_37Z5ljp-61xRhmEen__w-Sl6COyvt0miEeOYk" />
+                        <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center transition-all">
+                            <span class="material-symbols-outlined text-white">edit</span>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="px-4 py-2 bg-zinc-900 text-white rounded-lg font-medium text-sm hover:bg-zinc-800 transition-colors">Change Avatar</button>
+                        <button class="px-4 py-2 text-zinc-500 font-medium text-sm hover:text-zinc-700 ml-2 transition-colors">Remove</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-zinc-700 mb-2">Full Name</label>
+                        <input type="text" value="Dr. Heart Precision" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-zinc-700 mb-2">Specialty</label>
+                        <input type="text" value="Cardiology Department" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-zinc-700 mb-2">Email Address</label>
+                        <input type="email" value="h.precision@keepbeat.med" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-zinc-700 mb-2">Hospital Affiliation</label>
+                        <input type="text" value="Central Medical Diagnostics" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all" />
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-end gap-3 border-t border-zinc-100 pt-6">
+                    <button class="px-6 py-2 rounded-xl text-zinc-600 font-medium hover:bg-zinc-100 transition-colors">Cancel</button>
+                    <button class="px-6 py-2 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 shadow-sm transition-colors">Save Changes</button>
+                </div>
+            </section>
+
+            <!-- Device Connection Section -->
+            <section class="bg-white border border-zinc-200/60 rounded-2xl p-8 shadow-sm">
+                <h3 class="font-headline font-bold text-xl mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-red-600">bluetooth</span>
+                    Connected Diagnostic Tools
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 border border-zinc-200 rounded-xl bg-zinc-50">
+                        <div class="flex items-center gap-4">
+                            <span class="material-symbols-outlined text-green-500">sensors</span>
+                            <div>
+                                <p class="font-bold text-zinc-800">KeepBeat Hub v2.1</p>
+                                <p class="text-xs text-zinc-500">Connected via Secure IoT</p>
+                            </div>
+                        </div>
+                        <button class="text-sm font-semibold text-red-600 hover:text-red-800">Disconnect</button>
+                    </div>
+                    <div class="flex items-center justify-between p-4 border border-zinc-200 rounded-xl bg-zinc-50 opacity-60">
+                        <div class="flex items-center gap-4">
+                            <span class="material-symbols-outlined text-zinc-400">watch</span>
+                            <div>
+                                <p class="font-bold text-zinc-800">Patient Wearables</p>
+                                <p class="text-xs text-zinc-500">Offline</p>
+                            </div>
+                        </div>
+                        <button class="text-sm font-semibold text-zinc-500 hover:text-zinc-700">Configure</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+</main>
+</div>
+</body>
+</html>

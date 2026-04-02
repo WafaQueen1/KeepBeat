@@ -56,4 +56,16 @@ class LocalDataRepository {
     final db = await database;
     return await db.query('sensor_data', where: 'sync_status = ?', whereArgs: [0]);
   }
+
+  /// Marks a list of local sensor_data IDs as synced
+  Future<void> markDataAsSynced(List<int> ids) async {
+    if (ids.isEmpty) return;
+    final db = await database;
+    await db.update(
+      'sensor_data',
+      {'sync_status': 1},
+      where: 'id IN (${List.filled(ids.length, '?').join(',')})',
+      whereArgs: ids,
+    );
+  }
 }

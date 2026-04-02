@@ -1,23 +1,34 @@
 import './style.css';
-import mqtt from 'mqtt';
 
-// Simulation Data Handlers
+// KeepBeat API Endpoint
+const API_URL = 'http://127.0.0.1:8000/api/v1/telemetry/PT_001?limit=10';
+
 const bpmElement = document.getElementById('bpm-value');
-let simulatedBpm = 72;
+let latestBpm = 72;
 
-setInterval(() => {
-  // Simulate natural heartbeat variations
-  if(bpmElement) {
-      simulatedBpm = 70 + Math.floor(Math.random() * 8) - 4;
-      bpmElement.innerHTML = `${simulatedBpm}<span class="text-3xl ml-1 font-medium opacity-80 text-white">BPM</span>`;
+// Function to fetch telemetry from the Cloud
+async function fetchTelemetry() {
+  try {
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error('Network response was not ok');
+    
+    const data = await response.json();
+    
+    if (data && data.length > 0) {
+      // Find the most recent pacemaker reading
+      const latestPacemaker = data.find(item => item.sensor_type === 'pacemaker');
+      if (latestPacemaker) {
+        latestBpm = Math.round(latestPacemaker.value);
+        if (bpmElement) {
+          bpmElement.innerHTML = `${latestBpm}<span class="text-[0.6em] ml-1 font-medium opacity-80 text-white">BPM</span>`;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch telemetry, falling back to cached value.', error);
   }
-}, 1200);
+}
 
-// In the real system, you would connect to the WebSockets MQTT address:
-// const client = mqtt.connect('ws://localhost:9001');
-// client.on('connect', () => { client.subscribe('pacemaker/telemetry'); });
-// client.on('message', (topic, message) => {
-//    const data = JSON.parse(message.toString());
-//    // update UI...
-// });
-
+// Poll every 3 seconds for updates
+setInterval(fetchTelemetry, 3000);
+fetchTelemetry(); // Initial fetch
