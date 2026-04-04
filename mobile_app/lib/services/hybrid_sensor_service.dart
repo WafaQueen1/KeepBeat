@@ -5,8 +5,10 @@ import '../database/local_data_repository.dart';
 import 'cloud_sync_service.dart';
 
 class HybridSensorService {
-  // Use 10.0.2.2 for Android Emulator connecting to local host, or 127.0.0.1 for desktop
   final MqttServerClient client = MqttServerClient('10.0.2.2', 'fog_reactive_agent_client');
+  String currentPatientId = 'PT_001';
+  Function(String)? onAlert;
+  Function(double)? onHeartRateUpdate;
 
   Future<void> initializeMqtt() async {
     client.port = 1883;
@@ -37,7 +39,6 @@ class HybridSensorService {
         final MqttPublishMessage recMess = c[0].payload as MqttPublishMessage;
         final String payload = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
         
-        print('Received via MQTT on ${c[0].topic}: $payload');
         _evaluateSingleBrainSafetyRule(c[0].topic, payload);
       });
     }
@@ -48,7 +49,6 @@ class HybridSensorService {
   }
 
   Future<void> _evaluateSingleBrainSafetyRule(String topic, String payload) async {
-    // Single-Brain Rule: All real-time safety thresholds are evaluated ONLY on the Fog
     try {
       final data = jsonDecode(payload);
       final String sensorType = topic.contains('cgm') ? 'cgm' : 'pacemaker';
@@ -56,7 +56,7 @@ class HybridSensorService {
       final int timestamp = data['timestamp'] ?? (DateTime.now().millisecondsSinceEpoch / 1000).round();
       final String deviceId = data['device_id'] ?? 'device_unknown';
 
-      // 1. Buffer data locally
+      // 1. Buffer data locally (Fog logic)
       final repo = LocalDataRepository();
       await repo.insertLocallyBufferedData({
         'sensor_id': deviceId,
@@ -65,26 +65,35 @@ class HybridSensorService {
         'timestamp': timestamp,
       });
 
-      // 2. Local Safety Checks (Real-time reactivity on the Fog)
-      if (sensorType == 'cgm') {
-        if (value < 0.7) {
-          print('🚨 CRITICAL ALERT: Hypoglycemia detected ($value g/L)');
-        } else if (value > 2.5) {
-          print('🚨 CRITICAL ALERT: Hyperglycemia detected ($value g/L)');
-        }
-      } else if (sensorType == 'pacemaker') {
-        if (value < 40.0) {
-          print('🚨 CRITICAL ALERT: Bradycardia detected ($value bpm)');
-        } else if (value > 120.0) {
-          print('🚨 CRITICAL ALERT: Tachycardia detected ($value bpm)');
-        }
+      // 2. Real-time Heart Rate Stream Update
+      if (sensorType == 'pacemaker' && onHeartRateUpdate != null) {
+        onHeartRateUpdate!(value);
       }
 
-      // 3. Opportunistic Cloud Synchronization
-      CloudSyncService().syncData().catchError((e) => print('Background sync failed: $e'));
+      // 3. Single-Brain Safety Check (Fog-only threshold logic)
+      _checkSafetyThresholds(sensorType, value);
+
+      // 4. Cloud Synchronization (Fog-to-Cloud)
+      CloudSyncService().syncData(patientId: currentPatientId).catchError((e) => print('Sync failed: $e'));
       
     } catch (e) {
       print('Error parsing sensor data: $e');
+    }
+  }
+
+  void _checkSafetyThresholds(String type, double value) {
+    if (type == 'cgm') {
+      if (value < 0.70) {
+        onAlert?.call('CRITICAL: Hypoglycemia detected ($value g/L)');
+      } else if (value > 2.50) {
+        onAlert?.call('WARNING: Hyperglycemia detected ($value g/L)');
+      }
+    } else if (type == 'pacemaker') {
+      if (value < 50.0) {
+        onAlert?.call('CRITICAL: Bradycardia detected ($value BPM)');
+      } else if (value > 120.0) {
+        onAlert?.call('WARNING: Tachycardia detected ($value BPM)');
+      }
     }
   }
 }

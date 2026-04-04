@@ -232,7 +232,9 @@
         fetchDoctors();
         fetchPendingDoctors();
         fetchPendingPatients();
-        fetchAllPatients();
+        fetchApprovedDoctors().then(() => fetchAllPatients());
+
+        console.log("Admin Dashboard Context Loaded.");
 
         // ADD DOCTOR modal submission
         const addDocForm = document.getElementById('add-doctor-form');
@@ -278,6 +280,19 @@
     });
 
     // DOCTOR CRUD
+    let approvedDoctors = [];
+
+    async function fetchApprovedDoctors() {
+        try {
+            const res = await fetch(`${API_BASE}/doctors`);
+            if (!res.ok) throw new Error('API Error');
+            const doctors = await res.json();
+            approvedDoctors = doctors.filter(d => d.status === 'approved');
+        } catch(err) {
+            console.error('Failed to load approved doctors:', err);
+        }
+    }
+
     async function fetchDoctors() {
         const tbody = document.getElementById('doctors-table-body');
         try {
@@ -295,10 +310,14 @@
                     </td>
                     <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${d.email}</td>
                     <td class="py-4 px-6 border-t border-zinc-100">
-                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wider">${d.status}</span>
+                        <span class="px-3 py-1 ${d.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : d.status === 'rejected' ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'} rounded-full text-[10px] font-bold uppercase tracking-wider">${d.status}</span>
                     </td>
-                    <td class="py-4 px-6 border-t border-zinc-100">
-                        <button onclick="deleteDoctor('${d.id}')" class="h-8 w-8 inline-flex items-center justify-center rounded border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors" title="Delete">
+                    <td class="py-4 px-6 border-t border-zinc-100 space-x-2 text-right">
+                        ${d.status === 'pending' ? `
+                            <button onclick="approveDoctor('${d.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-emerald-200 text-emerald-700 font-bold text-xs hover:bg-emerald-50 transition-colors">APPROVE</button>
+                            <button onclick="refuseDoctor('${d.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-amber-200 text-amber-700 font-bold text-xs hover:bg-amber-50 transition-colors">REFUSE</button>
+                        ` : ''}
+                        <button onclick="deleteDoctor('${d.id}')" class="h-8 w-8 inline-flex items-center justify-center rounded border border-red-100 text-red-500 hover:bg-red-50 transition-colors" title="Remove Permanently">
                             <span class="material-symbols-outlined text-[16px]">delete</span>
                         </button>
                     </td>
@@ -332,11 +351,10 @@
                     <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${d.email}</td>
                     <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${new Date(d.created_at).toLocaleDateString()}</td>
                     <td class="py-4 px-6 border-t border-zinc-100 text-right space-x-2">
-                        <button onclick="approveDoctor('${d.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-emerald-200 text-emerald-700 font-bold text-xs hover:bg-emerald-50 hover:border-emerald-300 transition-colors" title="Approve">
-                            APPROVE
-                        </button>
-                        <button onclick="rejectDoctor('${d.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-red-200 text-red-700 font-bold text-xs hover:bg-red-50 hover:border-red-300 transition-colors" title="Decline">
-                            DECLINE
+                        <button onclick="approveDoctor('${d.id}')" class="h-8 px-4 inline-flex items-center justify-center rounded-lg bg-emerald-600 text-white font-bold text-[10px] hover:brightness-110 shadow-sm transition-all">APPROVE</button>
+                        <button onclick="refuseDoctor('${d.id}')" class="h-8 px-4 inline-flex items-center justify-center rounded-lg bg-amber-500 text-white font-bold text-[10px] hover:brightness-110 shadow-sm transition-all">REFUSE</button>
+                        <button onclick="deleteDoctor('${d.id}')" class="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-red-100 text-red-500 hover:bg-red-50 transition-all" title="Remove">
+                            <span class="material-symbols-outlined text-[14px]">close</span>
                         </button>
                     </td>
                 </tr>
@@ -366,14 +384,13 @@
                             <p class="font-headline font-bold text-on-surface">${p.full_name}</p>
                         </div>
                     </td>
-                    <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">DOC ID: ${p.doctor_id}</td>
+                    <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${p.doctor_name}</td>
                     <td class="py-4 px-6 border-t border-zinc-100 font-medium text-sm text-zinc-600">${new Date(p.created_at).toLocaleDateString()}</td>
                     <td class="py-4 px-6 border-t border-zinc-100 text-right space-x-2">
-                        <button onclick="approvePatient('${p.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-emerald-200 text-emerald-700 font-bold text-xs hover:bg-emerald-50 hover:border-emerald-300 transition-colors" title="Approve">
-                            APPROVE
-                        </button>
-                        <button onclick="rejectPatient('${p.id}')" class="h-8 px-3 inline-flex items-center justify-center rounded border border-red-200 text-red-700 font-bold text-xs hover:bg-red-50 hover:border-red-300 transition-colors" title="Decline">
-                            DECLINE
+                        <button onclick="approvePatient('${p.id}')" class="h-8 px-4 inline-flex items-center justify-center rounded-lg bg-emerald-600 text-white font-bold text-[10px] hover:brightness-110 shadow-sm transition-all">APPROVE</button>
+                        <button onclick="refusePatient('${p.id}')" class="h-8 px-4 inline-flex items-center justify-center rounded-lg bg-amber-500 text-white font-bold text-[10px] hover:brightness-110 shadow-sm transition-all">REFUSE</button>
+                        <button onclick="deletePatient('${p.id}')" class="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-red-100 text-red-500 hover:bg-red-50 transition-all">
+                            <span class="material-symbols-outlined text-[14px]">close</span>
                         </button>
                     </td>
                 </tr>
@@ -385,28 +402,39 @@
 
     async function approveDoctor(id) {
         try {
-            await fetch(`http://127.0.0.1:8000/api/v1/admin/approve_doctor/${id}`, { method: 'PUT' });
-            fetchPendingDoctors();
-            fetchDoctors();
+            console.log(`Approving doctor: ${id}`);
+            const res = await fetch(`${API_BASE}/admin/approve_doctor/${id}`, { method: 'PUT' });
+            if (res.ok) {
+                fetchPendingDoctors();
+                fetchDoctors();
+            }
         } catch (e) {
+            console.error('Approve Doctor Error:', e);
             alert('Failed to approve doctor');
         }
     }
 
-    async function rejectDoctor(id) {
-        if (!confirm("Are you sure you want to reject and remove this doctor request?")) return;
+    async function refuseDoctor(id) {
         try {
-            const res = await fetch(`${API_BASE}/admin/reject_doctor/${id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Reject failed');
-            fetchPendingDoctors();
+            console.log(`Refusing doctor: ${id}`);
+            const res = await fetch(`${API_BASE}/admin/refuse_doctor/${id}`, { method: 'PUT' });
+            if (res.ok) {
+                fetchPendingDoctors();
+                fetchDoctors();
+            }
         } catch (e) {
-            console.error('Reject Doctor Error:', e);
-            alert('Failed to reject doctor');
+            console.error('Refuse Doctor Error:', e);
+            alert('Failed to refuse doctor');
         }
     }
 
+    async function rejectDoctor(id) {
+        // Obsolete; replaced by deleteDoctor or refuseDoctor
+        deleteDoctor(id);
+    }
+
     async function deleteDoctor(id) {
-        if (!confirm("Are you sure you want to completely remove this doctor account? This will also remove all their patients and medical records.")) return;
+        if (!confirm("Are you sure you want to remove this doctor? Their patients will be moved to the pending pool for re-assignment.")) return;
         try {
             const res = await fetch(`${API_BASE}/doctors/${id}`, { method: 'DELETE' });
             if (!res.ok) {
@@ -441,7 +469,10 @@
                         <span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-bold text-zinc-600 uppercase tracking-wider">${p.medical_id}</span>
                     </td>
                     <td class="py-4 px-6 border-t border-zinc-100 text-sm font-medium text-zinc-600">
-                        ${p.doctor_name}
+                        <select onchange="reassignPatient('${p.id}', this.value)" class="h-9 w-full max-w-[200px] text-xs rounded-xl bg-zinc-50 border-zinc-200 focus:ring-tertiary focus:border-tertiary font-bold tracking-tight text-zinc-700 transition-all">
+                            <option value="" ${!p.doctor_id ? 'selected' : ''}>-- Unassigned / Pool --</option>
+                            ${approvedDoctors.map(d => `<option value="${d.id}" ${p.doctor_id === d.id ? 'selected' : ''}>${d.full_name}</option>`).join('')}
+                        </select>
                     </td>
                     <td class="py-4 px-6 border-t border-zinc-100">
                         <button onclick="deletePatient('${p.id}')" class="h-8 w-8 inline-flex items-center justify-center rounded border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-colors" title="Delete">
@@ -452,6 +483,26 @@
             `).join('');
         } catch(err) {
             tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-red-500 font-bold">Failed to load patients.</td></tr>`;
+        }
+    }
+
+    async function reassignPatient(patientId, doctorId) {
+        if (!doctorId) return;
+        try {
+            const res = await fetch(`${API_BASE}/admin/reassign_patient/${patientId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ doctor_id: doctorId })
+            });
+            if (res.ok) {
+                console.log('Reassigned successfully');
+                fetchAllPatients();
+            } else {
+                alert('Failed to reassign patient');
+            }
+        } catch (e) {
+            console.error('Reassign Error:', e);
+            alert('Error reassigning patient');
         }
     }
 
@@ -472,7 +523,7 @@
 
     async function approvePatient(id) {
         try {
-            await fetch(`http://127.0.0.1:8000/api/v1/admin/approve_patient/${id}`, { method: 'PUT' });
+            await fetch(`${API_BASE}/admin/approve_patient/${id}`, { method: 'PUT' });
             fetchPendingPatients();
             fetchAllPatients();
         } catch (e) {
@@ -480,15 +531,18 @@
         }
     }
 
-    async function rejectPatient(id) {
-        if (!confirm("Are you sure you want to reject this patient request?")) return;
+    async function refusePatient(id) {
         try {
-            await fetch(`http://127.0.0.1:8000/api/v1/admin/reject_patient/${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE}/admin/refuse_patient/${id}`, { method: 'PUT' });
             fetchPendingPatients();
             fetchAllPatients();
         } catch (e) {
-            alert('Failed to reject patient');
+            alert('Failed to refuse patient');
         }
+    }
+
+    async function rejectPatient(id) {
+        deletePatient(id);
     }
 </script>
 </body>

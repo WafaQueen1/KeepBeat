@@ -184,11 +184,16 @@
 
                             if (res.ok) {
                                 const doc = await res.json();
-                                // Store Doctor Info
+                                // Store User Info
                                 localStorage.setItem('doctor_id', doc.id);
                                 localStorage.setItem('doctor_name', doc.full_name);
                                 localStorage.setItem('doctor_role', doc.role);
-                                window.location.href = '/patients.html'; // Go directly to patients list
+                                
+                                if (doc.role === 'admin') {
+                                    window.location.href = '/admin.html';
+                                } else {
+                                    window.location.href = '/patients.html'; // Go directly to patients list
+                                }
                             } else {
                                 errorDiv.classList.remove('hidden');
                                 btn.innerHTML = '<span>Secure Login</span><span class="material-symbols-outlined text-2xl">login</span>';

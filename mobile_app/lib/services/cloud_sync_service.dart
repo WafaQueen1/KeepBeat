@@ -6,8 +6,8 @@ class CloudSyncService {
   // Use 10.0.2.2 to access the host machine's localhost from the Android emulator
   static const String _baseUrl = 'http://10.0.2.2:8000/api/v1/telemetry';
 
-  /// Periodically or manually pushes local buffered data to the cloud
-  Future<void> syncData({String patientId = 'PT_001'}) async {
+  /// Synchronizes local data logs with the cloud backend
+  Future<void> syncData({required String patientId}) async {
     final repo = LocalDataRepository();
     final unsyncedLogs = await repo.getUnsyncedDataLogs();
 

@@ -163,12 +163,15 @@
         const docId = localStorage.getItem('doctor_id');
         
         if (!docId) {
+            console.error("No active clinician context found. Redirecting to login.");
             window.location.href = '/login.html';
             return;
         }
 
+        // Show who is currently managing
         if (docName) {
-            document.getElementById('doctor-name-display').innerText = docName;
+            const displayEl = document.getElementById('doctor-name-display');
+            if (displayEl) displayEl.innerText = docName;
         }
 
         fetchPatients(docId);

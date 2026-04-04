@@ -120,16 +120,17 @@
 <div class="w-full h-48 mt-8 flex flex-col md:flex-row items-end gap-4">
     <div class="flex-grow flex items-center justify-start relative overflow-hidden bg-white/10 rounded-2xl h-full shadow-inner border border-white/20 w-full">
         <!-- SVG Container twice as wide to allow seamless scrolling -->
-        <svg class="h-full stroke-white/40 fill-none ecg-anim-group w-[2000px] flex-shrink-0" viewbox="0 0 2000 100" preserveAspectRatio="none">
-            <!-- First loop -->
-            <path d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke-width="2"></path>
-            <path class="opacity-80 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke="white" stroke-width="4"></path>
-            <!-- Second loop for seamless tiling -->
-            <g transform="translate(1000, 0)">
-                <path d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke-width="2"></path>
-                <path class="opacity-80 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" d="M0 50 L100 50 L110 30 L120 70 L130 50 L200 50 L210 10 L220 90 L230 50 L300 50 L310 35 L320 65 L330 50 L400 50 L410 20 L420 80 L430 50 L500 50 L510 40 L520 60 L530 50 L600 50 L610 10 L620 90 L630 50 L700 50 L710 30 L720 70 L730 50 L800 50 L810 0 L820 100 L830 50 L900 50 L910 25 L920 75 L930 50 L1000 50" stroke-width="4"></path>
-            </g>
+        <svg id="ecg-svg" class="h-full w-full flex-shrink-0" viewbox="0 0 1000 100" preserveAspectRatio="none">
+            <path id="ecg-path-bg" d="M0 50 L1000 50" stroke="white" stroke-opacity="0.2" stroke-width="2" fill="none"></path>
+            <path id="ecg-path-main" d="M0 50 L1000 50" stroke="white" stroke-width="3" fill="none" class="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"></path>
         </svg>
+        <!-- No Signal Warning Overlay -->
+        <div id="no-signal-warning" class="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px] hidden transition-all duration-500">
+            <div class="flex items-center gap-3 px-6 py-3 bg-red-600/90 text-white rounded-full shadow-lg animate-pulse">
+                <span class="material-symbols-outlined">sensors_off</span>
+                <span class="font-bold text-sm tracking-widest uppercase">No Patient Signal</span>
+            </div>
+        </div>
     </div>
 </div>
 
