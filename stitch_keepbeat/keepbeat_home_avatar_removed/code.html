@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KeepBeat - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#e1e3e4",
+              "tertiary": "#8a30b0",
+              "on-tertiary-container": "#fffbff",
+              "inverse-surface": "#2e3132",
+              "error": "#ba1a1a",
+              "outline-variant": "#e4bebc",
+              "on-primary": "#ffffff",
+              "on-primary-container": "#fffbff",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#e7e8e9",
+              "error-container": "#ffdad6",
+              "surface-container-highest": "#e1e3e4",
+              "secondary-fixed-dim": "#bdc2ff",
+              "on-tertiary-fixed": "#320047",
+              "on-error": "#ffffff",
+              "primary-fixed-dim": "#ffb3ac",
+              "on-secondary-fixed": "#000767",
+              "surface-tint": "#ba1a20",
+              "primary-container": "#da3433",
+              "surface-container-lowest": "#ffffff",
+              "inverse-primary": "#ffb3ac",
+              "on-secondary": "#ffffff",
+              "secondary": "#4c56af",
+              "inverse-on-surface": "#f0f1f2",
+              "secondary-container": "#959efd",
+              "surface": "#f8f9fa",
+              "on-primary-fixed": "#410003",
+              "surface-dim": "#d9dadb",
+              "on-primary-fixed-variant": "#930010",
+              "on-secondary-container": "#27308a",
+              "on-surface": "#191c1d",
+              "secondary-fixed": "#e0e0ff",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "tertiary-fixed-dim": "#ebb2ff",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#a54dcc",
+              "primary-fixed": "#ffdad6",
+              "on-tertiary-fixed-variant": "#721199",
+              "primary": "#b6171e",
+              "on-surface-variant": "#5b403f",
+              "surface-bright": "#f8f9fa",
+              "surface-container-low": "#f3f4f5",
+              "on-secondary-fixed-variant": "#343d96",
+              "surface-container": "#edeeef",
+              "outline": "#8f6f6e",
+              "tertiary-fixed": "#f8d8ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .clay-card-primary {
+            background: linear-gradient(135deg, #b6171e 0%, #da3433 100%);
+            box-shadow: 0px 20px 40px rgba(186, 26, 32, 0.12), 
+                        inset 4px 4px 8px rgba(255, 255, 255, 0.3), 
+                        inset -4px -4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .clay-card-white {
+            background: #ffffff;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.04), 
+                        inset 2px 2px 4px rgba(255, 255, 255, 1), 
+                        inset -2px -2px 4px rgba(0, 0, 0, 0.02);
+        }
+        .glass-module {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .inner-glow-purple {
+            box-shadow: inset 0 0 15px rgba(165, 77, 204, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 w-full bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(186,26,32,0.08)]">
+<div class="flex items-center"><div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high ring-2 ring-primary/20 mr-3">
+<img alt="Patient Profile Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhe0dJAkSAMIQRDbXwAXBctHayMnbAmy97rQ9TlsMo0mr78BPCzN3mVhIfqsahmu5Ttxyl5947UoLt-qxg6FoWdALsENv6na0CEnJjkTsUoNULZGxShUQEEF6brBoe48JHcZPXNBaFLsLxLrHawEPcQ3CP1GWPJxW2McMVZSYFNLK-wbCGFId5T9qAwIJ5v8RCs3uSvB1n9IuyzyFND49mPA0AhF23EzZfs9cODy9vshJN1vQH-8bpZPq6VIwn_yr2G8aRbEfqfyE"/>
+</div>
+<span class="font-['Manrope'] font-black text-red-700 dark:text-red-500 tracking-tighter text-xl" style=""><i>KeepBeat</i></span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1.5 bg-zinc-100/80 px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-sm text-zinc-500" data-icon="cloud_off" style="">cloud_off</span>
+<span class="text-[10px] font-label font-bold uppercase tracking-wider text-zinc-500" style="">Offline</span>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-md mx-auto">
+<!-- Digital Twin Heart Visualization -->
+<section class="relative h-80 flex items-center justify-center mb-8">
+<!-- Atmospheric Glow -->
+<div class="absolute w-64 h-64 bg-primary/10 rounded-full blur-[80px]"></div>
+<!-- 3D Heart Mock (Semi-transparent Frosted Glass) -->
+<div class="relative z-10 w-60 h-60 flex items-center justify-center">
+<div class="absolute inset-0 bg-white/30 backdrop-blur-3xl rounded-full shadow-[inset_0_0_40px_rgba(255,255,255,0.5)] border border-white/40 overflow-hidden">
+<img alt="3D Heart Model" class="w-full h-full object-contain opacity-80 mix-blend-multiply scale-110" data-alt="Hyper-realistic 3D anatomical heart visualization made of translucent red glass with glowing internal pulses and soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOWO4pUj0kpA_85ujSVuSUI4ZcNJVzQvLh6DBu5gqgN5JFbn6LL5hXrkhk4rKLb-U0tDXLRGS3U94BqfN32zPkJciK3zbjXHnCGcFHqNY6bzwfF6sVZ3EAFB4eBb5fOVqZXmk0Erib2LlaACTwxOKG0Gg3hFdifJ5FRHG7ABqS7urvuClq-t6FwjLR9f6XZwUKXKawLC7P0hKhZTVgjstQX0orySNYZeB7koj5dunPcS4VJrLH3TlaJoMPxCga3SArF6LQ2cBoH8I" style=""/>
+</div>
+<!-- Floating Vital Overlay -->
+<div class="absolute top-0 right-0 glass-module p-3 rounded-2xl shadow-xl border border-white/50 flex flex-col items-center">
+<span class="text-[10px] font-label font-bold text-primary uppercase tracking-tighter" style="">Status</span>
+<span class="text-sm font-headline font-extrabold text-on-surface" style="">OPTIMAL</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-2 gap-4 mb-8">
+<!-- Heart Rate Card (Claymorphism Primary) -->
+<div class="col-span-2 clay-card-primary p-6 rounded-[2rem] text-white flex flex-col justify-between aspect-video">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label text-xs font-medium opacity-80 uppercase tracking-widest" style="">Heart Rate</p>
+<h2 class="font-headline text-5xl font-extrabold tracking-tighter mt-1" style="">72</h2>
+</div>
+<div class="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
+<span class="material-symbols-outlined text-3xl" data-icon="favorite" style='font-variation-settings: "FILL" 1;'>favorite</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-4">
+<div class="h-1.5 flex-1 bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-white w-2/3"></div>
+</div>
+<span class="font-label text-[10px] font-bold" style="">BPM</span>
+</div>
+</div>
+<!-- Glucose Level Card -->
+<div class="clay-card-white p-5 rounded-[1.5rem] flex flex-col justify-between">
+<div class="flex justify-between items-center mb-4">
+<div class="w-10 h-10 bg-secondary-fixed rounded-xl flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-secondary" data-icon="water_drop" style='font-variation-settings: "FILL" 1;'>water_drop</span>
+</div>
+<span class="text-[10px] font-label font-bold text-secondary-container bg-secondary/10 px-2 py-0.5 rounded-full" style="">STABLE</span>
+</div>
+<div>
+<p class="font-label text-[10px] text-zinc-500 font-semibold uppercase" style="">Glucose</p>
+<p class="font-headline text-2xl font-bold text-on-surface" style="">5.4 <span class="text-xs font-medium text-zinc-400" style="">g/L</span></p>
+</div>
+</div>
+<!-- Battery RUL Card (AI Insight) -->
+<div class="clay-card-white p-5 rounded-[1.5rem] flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-tertiary-fixed/30 rounded-full blur-xl"></div>
+<div class="flex justify-between items-center mb-4 relative z-10">
+<div class="w-10 h-10 bg-tertiary-fixed rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="bolt" style='font-variation-settings: "FILL" 1;'>bolt</span>
+</div>
+<!-- Small Progress Ring -->
+<div class="relative w-8 h-8">
+<svg class="w-full h-full" viewbox="0 0 36 36">
+<path class="text-zinc-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="transparent" stroke="currentColor" stroke-width="4"></path>
+<path class="text-tertiary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="transparent" stroke="currentColor" stroke-dasharray="88, 100" stroke-linecap="round" stroke-width="4"></path>
+</svg>
+</div>
+</div>
+<div class="relative z-10">
+<p class="font-label text-[10px] text-tertiary font-bold uppercase tracking-wide" style="">Battery RUL</p>
+<p class="font-headline text-2xl font-bold text-on-surface" style="">8.2 <span class="text-xs font-medium text-zinc-400" style="">YRS</span></p>
+</div>
+</div>
+</div>
+<!-- AI Prediction Banner -->
+<div class="glass-module p-4 rounded-3xl border border-tertiary/10 flex items-center gap-4 inner-glow-purple">
+<div class="bg-tertiary-container/20 p-2 rounded-full">
+<span class="material-symbols-outlined text-tertiary" data-icon="psychology" style='font-variation-settings: "FILL" 1;'>psychology</span>
+</div>
+<div class="flex-1">
+<p class="text-[10px] font-label font-bold text-tertiary uppercase" style="">AI Diagnostic Insight</p>
+<p class="text-xs font-body text-on-surface-variant leading-tight" style="">Patient activity suggests optimal cardiac response for today's pattern.</p>
+</div>
+<span class="material-symbols-outlined text-zinc-300" data-icon="chevron_right" style="">chevron_right</span>
+</div>
+</main>
+<!-- NavigationDrawer (Hidden on Mobile) -->
+<aside class="hidden lg:flex fixed left-0 top-0 h-screen w-72 border-r border-zinc-200/50 dark:border-zinc-800/50 bg-zinc-50 dark:bg-zinc-950 flex-col h-full p-4 gap-2 z-40">
+<div class="font-['Manrope'] font-extrabold text-2xl text-red-700 mb-8 px-4" style="">TwinPacemaker</div>
+<div class="flex items-center gap-3 p-4 mb-4">
+<img alt="Doctor Portrait" class="w-12 h-12 rounded-full object-cover" data-alt="Professional headshot of a female cardiologist in clinical attire against a soft-lit medical background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ8VpppwiFR-ze-n-CGeZhCPuItdExUaad1ewufmrOihCC-mhCMr1f8N52OoXR3BWO1AylgXcf5dcSa2r1OVsWKUdJ0zi-dTleQ0S32g9_I6Pmy5hA8t90EX7xymKeN32U-8oSlHfkep8xbXMRkfcFwZ52Hasg8H3oFdmnAC6OaUgPy7rssF5vkJ_g0iF8HH7ix8VeKeFre1etmdzWex9DpdlHOxJIFkewqg-BJgc8cz2-rzfBwazxQpimmaEWc6uOBuPAjJojhqg" style=""/>
+<div>
+<h4 class="font-headline font-bold text-sm text-on-surface" style="">Dr. Heart Precision</h4>
+<p class="text-[10px] text-zinc-500" style="">Cardiology Dept.</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-zinc-900 text-red-600 dark:text-red-400 shadow-sm rounded-xl font-bold transition-all duration-200 translate-x-1" href="#" style="">
+<span class="material-symbols-outlined" data-icon="dashboard" style="">dashboard</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm" style="">Patient Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="#" style="">
+<span class="material-symbols-outlined" data-icon="Timeline" style="">timeline</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm" style="">Correlations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="#" style="">
+<span class="material-symbols-outlined" data-icon="psychology" style="">psychology</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm" style="">AI Diagnostics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="#" style="">
+<span class="material-symbols-outlined" data-icon="memory" style="">memory</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm" style="">Device Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 rounded-xl transition-all" href="#" style="">
+<span class="material-symbols-outlined" data-icon="settings" style="">settings</span>
+<span class="font-['Plus_Jakarta_Sans'] font-medium text-sm" style="">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-2xl rounded-t-[2rem] h-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 rounded-2xl px-5 py-2 scale-90 duration-150" href="#" style="">
+<span class="material-symbols-outlined" data-icon="favorite" style='font-variation-settings: "FILL" 1;'>favorite</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1" style="">Twin</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" data-icon="analytics" style="">analytics</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1" style="">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" data-icon="emergency" style="">emergency</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1" style="">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" data-icon="settings" style="">settings</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1" style="">Settings</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KeepBeat Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#ba1a20",
+              "primary-fixed-dim": "#ffb3ac",
+              "on-secondary": "#ffffff",
+              "tertiary": "#8a30b0",
+              "secondary-fixed-dim": "#bdc2ff",
+              "secondary-container": "#959efd",
+              "on-primary-fixed-variant": "#930010",
+              "outline": "#8f6f6e",
+              "surface-container-low": "#f3f4f5",
+              "primary-fixed": "#ffdad6",
+              "on-tertiary-fixed": "#320047",
+              "surface-dim": "#d9dadb",
+              "surface-container": "#edeeef",
+              "tertiary-fixed": "#f8d8ff",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#191c1d",
+              "inverse-primary": "#ffb3ac",
+              "on-tertiary-fixed-variant": "#721199",
+              "tertiary-fixed-dim": "#ebb2ff",
+              "on-surface-variant": "#5b403f",
+              "error": "#ba1a1a",
+              "secondary-fixed": "#e0e0ff",
+              "inverse-surface": "#2e3132",
+              "on-tertiary-container": "#fffbff",
+              "on-secondary-fixed": "#000767",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8f9fa",
+              "on-primary": "#ffffff",
+              "outline-variant": "#e4bebc",
+              "on-tertiary": "#ffffff",
+              "primary-container": "#da3433",
+              "inverse-on-surface": "#f0f1f2",
+              "on-background": "#191c1d",
+              "on-secondary-container": "#27308a",
+              "on-primary-container": "#fffbff",
+              "on-secondary-fixed-variant": "#343d96",
+              "surface": "#f8f9fa",
+              "primary": "#b6171e",
+              "on-primary-fixed": "#410003",
+              "surface-container-highest": "#e1e3e4",
+              "error-container": "#ffdad6",
+              "on-error": "#ffffff",
+              "tertiary-container": "#a54dcc",
+              "surface-variant": "#e1e3e4",
+              "surface-container-high": "#e7e8e9",
+              "background": "#f8f9fa",
+              "secondary": "#4c56af"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .clay-card {
+            box-shadow: 0px 20px 40px rgba(186, 26, 32, 0.12), 
+                        inset 4px 4px 8px rgba(255, 255, 255, 0.3), 
+                        inset -4px -4px 8px rgba(186, 26, 32, 0.1);
+        }
+        .clay-button {
+            background: linear-gradient(180deg, #da3433 0%, #b6171e 100%);
+            box-shadow: 0px 8px 16px rgba(186, 26, 32, 0.2), 
+                        inset 0px 2px 4px rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease-out;
+        }
+        .clay-button:active {
+            transform: scale(0.98);
+            box-shadow: 0px 4px 8px rgba(186, 26, 32, 0.1), 
+                        inset 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .glass-module {
+            background: rgba(243, 244, 245, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-sm dark:shadow-none flex items-center px-6 h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 transition-transform active:scale-95 duration-200">
+<span class="material-symbols-outlined text-red-700" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-manrope font-bold text-lg tracking-tight text-red-700">Settings</h1>
+</div>
+</header>
+<main class="mt-24 px-6 max-w-2xl mx-auto space-y-8">
+<!-- User Profile: Bento Hero Module -->
+<section class="clay-card rounded-[2.5rem] p-8 bg-gradient-to-br from-primary-container to-primary text-white flex items-center gap-6 overflow-hidden relative">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<div class="relative w-20 h-20 rounded-3xl overflow-hidden shadow-xl border-4 border-white/20">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="3D stylized portrait of a smiling young professional with soft studio lighting and a clean minimalist aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDonw458gO352AMm8wuttR-xgbEZPOBVu-lEYIbN3QH-4rh9PKE8lGAtQgtiYWowuy5NTMznvTsolnVmIVAQOhUZ_5hphaxRxGKqUQ48FmkonDZnO33q-rhTVEAn82QpVhw6lmsrf5qFPh3hmlYPooA5aChI4lsbh1eZN2-cVJW-FFUNYn6gVlnVLTWcvyTWQeWqzGNKCnluaUUJfkhNKqBZwC0W4zcJg2WavQjSfiUN9mqqelps05PqEBhtcTxnS-ulv4566txPmA"/>
+</div>
+<div class="flex-1">
+<h2 class="font-headline font-extrabold text-2xl tracking-tight leading-tight">Marcus Holloway</h2>
+<p class="font-label text-sm text-white/80 mt-1 uppercase tracking-widest font-semibold">Premium Health Member</p>
+</div>
+<button class="bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-2xl font-semibold text-sm hover:bg-white/30 transition-all active:scale-95">
+                View Profile
+            </button>
+</section>
+<!-- Main Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Device Management Module -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="sensor_occupied">sensor_occupied</span>
+<span class="bg-mint-sage/10 text-secondary font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-tighter bg-secondary/10">Connected</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-lg text-on-surface">KeepBeat Fog Sensor</h3>
+<p class="font-label text-xs text-on-surface-variant mt-1">S/N: KB-9920-FOG</p>
+</div>
+<div class="mt-auto pt-4 flex items-center gap-2 border-t border-surface-container-high">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="sync">sync</span>
+<span class="text-xs text-on-surface-variant">Last Sync: 2m ago</span>
+</div>
+</div>
+<!-- Health Alerts: Multi-toggle Bento -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-6 shadow-sm space-y-5">
+<h3 class="font-headline font-bold text-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="vital_signs">vital_signs</span>
+                    Health Alerts
+                </h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-on-surface-variant">Low Glucose Alerts</label>
+<button class="w-12 h-6 rounded-full bg-primary relative transition-colors duration-300">
+<span class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-on-surface-variant">High Heart Rate</label>
+<button class="w-12 h-6 rounded-full bg-primary relative transition-colors duration-300">
+<span class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold text-on-surface-variant">Battery Critical</label>
+<button class="w-12 h-6 rounded-full bg-surface-container-highest relative transition-colors duration-300">
+<span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- AI & Security: Purple Tertiary Accents -->
+<div class="md:col-span-2 bg-surface-container-lowest rounded-[2rem] p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center">
+<div class="w-20 h-20 bg-tertiary-fixed rounded-[2rem] flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-4xl" data-icon="psychology">psychology</span>
+</div>
+<div class="flex-1 text-center md:text-left">
+<h3 class="font-headline font-bold text-xl text-on-surface">AI &amp; Security Shield</h3>
+<p class="text-on-surface-variant text-sm mt-2 max-w-md">Our Fog Agent analytics ensures your data stays on-device while providing deep health predictions.</p>
+</div>
+<div class="flex flex-col gap-3 w-full md:w-auto">
+<button class="bg-tertiary-container text-on-tertiary-container px-6 py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95">
+<span class="material-symbols-outlined text-lg" data-icon="fingerprint">fingerprint</span>
+                        Biometric Lock
+                    </button>
+<button class="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-surface-variant transition-all active:scale-95">
+<span class="material-symbols-outlined text-lg" data-icon="encryption">encrypted</span>
+                        Data Settings
+                    </button>
+</div>
+</div>
+<!-- Support & Legal List -->
+<div class="md:col-span-2 bg-surface-container-lowest rounded-[2.5rem] overflow-hidden shadow-sm">
+<div class="p-6 border-b border-surface-container-high flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-primary-fixed group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help_center">help_center</span>
+</div>
+<span class="font-semibold text-on-surface">Help Center</span>
+</div>
+<span class="material-symbols-outlined text-slate-300" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="p-6 border-b border-surface-container-high flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-primary-fixed group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="policy">policy</span>
+</div>
+<span class="font-semibold text-on-surface">Privacy Policy</span>
+</div>
+<span class="material-symbols-outlined text-slate-300" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="p-6 flex items-center justify-between hover:bg-red-50/50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</div>
+<span class="font-semibold text-red-600">Log Out</span>
+</div>
+<span class="text-xs font-bold text-red-300 uppercase tracking-widest">Version 4.2.1</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-3 pb-8 bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(186,26,32,0.08)]">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-red-500 transition-all" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="favorite">favorite</span>
+<span class="font-inter font-semibold text-[10px] uppercase tracking-wider mt-1">Twin</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-red-500 transition-all" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="bar_chart">bar_chart</span>
+<span class="font-inter font-semibold text-[10px] uppercase tracking-wider mt-1">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-red-500 transition-all" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="notifications">notifications</span>
+<span class="font-inter font-semibold text-[10px] uppercase tracking-wider mt-1">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-3xl px-5 py-2 shadow-inner active:scale-95 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-inter font-semibold text-[10px] uppercase tracking-wider mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

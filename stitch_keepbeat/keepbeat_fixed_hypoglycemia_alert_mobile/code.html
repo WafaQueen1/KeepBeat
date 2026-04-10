@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KeepBeat Alert | Hypoglycemia</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;family=Inter:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#e1e3e4",
+              "tertiary": "#8a30b0",
+              "on-tertiary-container": "#fffbff",
+              "inverse-surface": "#2e3132",
+              "error": "#ba1a1a",
+              "outline-variant": "#e4bebc",
+              "on-primary": "#ffffff",
+              "on-primary-container": "#fffbff",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#e7e8e9",
+              "error-container": "#ffdad6",
+              "surface-container-highest": "#e1e3e4",
+              "secondary-fixed-dim": "#bdc2ff",
+              "on-tertiary-fixed": "#320047",
+              "on-error": "#ffffff",
+              "primary-fixed-dim": "#ffb3ac",
+              "on-secondary-fixed": "#000767",
+              "surface-tint": "#ba1a20",
+              "primary-container": "#da3433",
+              "surface-container-lowest": "#ffffff",
+              "inverse-primary": "#ffb3ac",
+              "on-secondary": "#ffffff",
+              "secondary": "#4c56af",
+              "inverse-on-surface": "#f0f1f2",
+              "secondary-container": "#959efd",
+              "surface": "#f8f9fa",
+              "on-primary-fixed": "#410003",
+              "surface-dim": "#d9dadb",
+              "on-primary-fixed-variant": "#930010",
+              "on-secondary-container": "#27308a",
+              "on-surface": "#191c1d",
+              "secondary-fixed": "#e0e0ff",
+              "background": "#f8f9fa",
+              "on-background": "#191c1d",
+              "tertiary-fixed-dim": "#ebb2ff",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#a54dcc",
+              "primary-fixed": "#ffdad6",
+              "on-tertiary-fixed-variant": "#721199",
+              "primary": "#b6171e",
+              "on-surface-variant": "#5b403f",
+              "surface-bright": "#f8f9fa",
+              "surface-container-low": "#f3f4f5",
+              "on-secondary-fixed-variant": "#343d96",
+              "surface-container": "#edeeef",
+              "outline": "#8f6f6e",
+              "tertiary-fixed": "#f8d8ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .clay-card {
+            background: linear-gradient(145deg, #da3433, #b6171e);
+            box-shadow: 
+                0px 20px 40px rgba(186, 26, 32, 0.12),
+                inset 4px 4px 8px rgba(255, 255, 255, 0.3),
+                inset -4px -4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .bg-gradient-red {
+            background: radial-gradient(circle at top, #fff5f5 0%, #fed7d7 100%);
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1.1) rotate(-3deg); }
+            14% { transform: scale(1.25) rotate(-3deg); }
+            28% { transform: scale(1.1) rotate(-3deg); }
+            42% { transform: scale(1.25) rotate(-3deg); }
+            70% { transform: scale(1.1) rotate(-3deg); }
+        }
+        .animate-heartbeat {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-red font-body text-on-surface antialiased min-h-screen flex flex-col items-center justify-center overflow-hidden">
+<!-- TopAppBar Fragment -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-white/60 backdrop-blur-xl border-b border-white/20">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high ring-2 ring-primary/20">
+<img alt="Patient Profile Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhe0dJAkSAMIQRDbXwAXBctHayMnbAmy97rQ9TlsMo0mr78BPCzN3mVhIfqsahmu5Ttxyl5947UoLt-qxg6FoWdALsENv6na0CEnJjkTsUoNULZGxShUQEEF6brBoe48JHcZPXNBaFLsLxLrHawEPcQ3CP1GWPJxW2McMVZSYFNLK-wbCGFId5T9qAwIJ5v8RCs3uSvB1n9IuyzyFND49mPA0AhF23EzZfs9cODy9vshJN1vQH-8bpZPq6VIwn_yr2G8aRbEfqfyE"/>
+</div>
+<span class="font-['Manrope'] font-black text-red-700 tracking-tighter text-lg">KeepBeat</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-red-600">cloud_off</span>
+</div>
+</header>
+<!-- Main Alert Canvas -->
+<main class="relative z-10 w-full max-w-md h-full flex-1 flex flex-col p-6 pt-24 pb-8 overflow-y-auto">
+<!-- Warning Module -->
+<div class="flex-1 flex flex-col items-center justify-center gap-10">
+<!-- 3D Warning Icon Container -->
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- Pulse Rings -->
+<div class="absolute inset-0 rounded-full bg-primary/10 animate-ping"></div>
+<div class="absolute inset-4 rounded-full bg-primary/20 animate-pulse"></div>
+<!-- The Heartbeating Clay Icon -->
+<div class="clay-card animate-heartbeat w-32 h-32 rounded-[2.5rem] flex items-center justify-center transform -rotate-3 scale-110">
+<span class="material-symbols-outlined text-white text-6xl" style="font-variation-settings: 'FILL' 1;">emergency</span>
+</div>
+</div>
+<!-- Alert Headline -->
+<div class="text-center space-y-4 px-4">
+<div class="inline-flex items-center px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold tracking-widest text-[10px] uppercase font-label border border-primary/20">
+                    Critical Alert
+                </div>
+<h1 class="font-headline font-extrabold text-4xl text-on-surface leading-tight tracking-tighter">
+                    Low Glucose <br/>
+<span class="text-primary">42 mg/dL</span>
+</h1>
+<p class="font-body text-on-surface-variant text-lg leading-relaxed max-w-[280px] mx-auto">
+                    Hypoglycemia detected. Immediate sugar intake required.
+                </p>
+</div>
+<!-- Bento Detail Cards -->
+<div class="grid grid-cols-2 gap-4 w-full px-2">
+<div class="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/60 flex flex-col gap-2">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<div>
+<div class="text-[10px] font-label font-bold text-zinc-400 uppercase tracking-tighter">AI Prediction</div>
+<div class="text-sm font-bold text-on-surface">Loss of focus</div>
+</div>
+</div>
+<div class="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/60 flex flex-col gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">timer</span>
+<div>
+<div class="text-[10px] font-label font-bold text-zinc-400 uppercase tracking-tighter">Detected</div>
+<div class="text-sm font-bold text-on-surface">2 mins ago</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Emergency Action Buttons Cluster -->
+<div class="w-full flex justify-center mb-4">
+<div class="bg-tertiary-container/90 backdrop-blur-xl p-4 rounded-2xl shadow-lg transform -rotate-1 border border-white/20 inline-block">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">memory</span>
+<div class="text-white">
+<div class="text-[9px] font-label font-bold uppercase tracking-widest opacity-80">KeepBeat Diagnosis</div>
+<div class="text-xs font-bold leading-tight">Insulin loop active</div>
+</div>
+</div>
+</div>
+</div><div class="w-full flex flex-col gap-4 mt-12 mb-4">
+<button class="clay-card w-full h-16 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-white text-2xl">call</span>
+<span class="text-white font-headline font-bold text-lg">Call Emergency</span>
+</button>
+<button class="w-full h-16 bg-white/90 backdrop-blur-md rounded-2xl border-2 border-primary/10 flex items-center justify-center gap-3 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary text-2xl">assignment_late</span>
+<span class="text-primary font-headline font-bold text-lg">View Action Plan</span>
+</button>
+<!-- Safety Swipe -->
+<div class="mt-6 pb-2 flex flex-col items-center gap-3 opacity-60">
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-primary/40 animate-pulse"></div>
+<div class="w-2 h-2 rounded-full bg-primary/30"></div>
+<div class="w-2 h-2 rounded-full bg-primary/20"></div>
+</div>
+<span class="text-[10px] font-label font-bold text-primary uppercase tracking-[0.25em]">Swipe to Dismiss</span>
+</div>
+</div>
+</main>
+<!-- Predictive AI Diagnostic Context -->
+</body></html>

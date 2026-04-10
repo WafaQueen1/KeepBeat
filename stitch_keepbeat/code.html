@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#ba1a20",
+              "surface-dim": "#d9dadb",
+              "surface-container-low": "#f3f4f5",
+              "on-surface-variant": "#5b403f",
+              "on-secondary-container": "#27308a",
+              "primary-container": "#da3433",
+              "on-tertiary-fixed-variant": "#721199",
+              "on-primary-fixed-variant": "#930010",
+              "on-primary": "#ffffff",
+              "inverse-surface": "#2e3132",
+              "on-primary-fixed": "#410003",
+              "error-container": "#ffdad6",
+              "outline": "#8f6f6e",
+              "secondary-container": "#959efd",
+              "tertiary": "#8a30b0",
+              "surface": "#f8f9fa",
+              "on-tertiary-fixed": "#320047",
+              "on-primary-container": "#fffbff",
+              "primary-fixed": "#ffdad6",
+              "on-secondary": "#ffffff",
+              "secondary-fixed-dim": "#bdc2ff",
+              "secondary-fixed": "#e0e0ff",
+              "on-error": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#191c1d",
+              "on-error-container": "#93000a",
+              "on-secondary-fixed": "#000767",
+              "inverse-primary": "#ffb3ac",
+              "surface-container-highest": "#e1e3e4",
+              "background": "#f8f9fa",
+              "secondary": "#4c56af",
+              "inverse-on-surface": "#f0f1f2",
+              "surface-container": "#edeeef",
+              "tertiary-fixed": "#f8d8ff",
+              "surface-bright": "#f8f9fa",
+              "primary": "#b6171e",
+              "outline-variant": "#e4bebc",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#a54dcc",
+              "on-tertiary-container": "#fffbff",
+              "surface-variant": "#e1e3e4",
+              "error": "#ba1a1a",
+              "surface-container-high": "#e7e8e9",
+              "on-secondary-fixed-variant": "#343d96",
+              "primary-fixed-dim": "#ffb3ac",
+              "on-background": "#191c1d",
+              "tertiary-fixed-dim": "#ebb2ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .clay-card {
+            box-shadow: 0px 20px 40px rgba(186, 26, 32, 0.08), inset 4px 4px 10px rgba(255, 255, 255, 0.3), inset -4px -4px 10px rgba(186, 26, 32, 0.05);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body antialiased min-h-screen pb-24">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(186,26,32,0.08)] flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="Close up portrait of a healthy smiling mature individual with soft natural lighting and a clean minimalist background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfFRoDgaXyRYAeWRmA-VGwWtTn4Z5UYuYwTGBBe8OXINSXSrRcm9BZNY79-Sdu4N_nrLx7c0n0BawzMquKkne1tbDSw8ilhPJ9qenmN_FLEbpuN0RqxPx8rQ_niWyPDBQBTQBUCXIBJCM44uxiJGS6z-xObzw704lgZA_0bPXBmpaISMtT4Pf5w3k9GgaQjFW9AeDfXaVkFimpjMR6LgWWUJUQgkcy6LlAKxekBOvnjWfCbNDQDr2XeEFSo-jz1sOvsWa6_IOAb7k"/>
+</div>
+<span class="font-['Manrope'] font-black text-red-700 dark:text-red-500 tracking-tighter text-lg">KeepBeat</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined text-zinc-500">notifications</span>
+</button>
+</header>
+<main class="pt-24 px-4 max-w-md mx-auto space-y-8">
+<!-- Summary Section: Vital Stats Highlights -->
+<section class="grid grid-cols-2 gap-4">
+<div class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-32 relative overflow-hidden">
+<div class="z-10">
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Avg. Heart Rate</p>
+<h2 class="font-headline text-3xl font-extrabold text-primary mt-1">74 <span class="text-sm font-bold opacity-60">BPM</span></h2>
+</div>
+<div class="z-10 flex items-center text-on-secondary-fixed-variant text-xs font-semibold bg-secondary-fixed/50 px-2 py-1 rounded-full w-fit">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_down</span>
+                    -2% week
+                </div>
+<!-- Abstract visual element -->
+<div class="absolute -right-4 -bottom-4 w-20 h-20 bg-primary/5 rounded-full blur-2xl"></div>
+</div>
+<div class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-32 relative overflow-hidden">
+<div class="z-10">
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Avg. Glucose</p>
+<h2 class="font-headline text-3xl font-extrabold text-secondary mt-1">5.6 <span class="text-sm font-bold opacity-60">g/L</span></h2>
+</div>
+<div class="z-10 flex items-center text-on-tertiary-fixed-variant text-xs font-semibold bg-tertiary-fixed/50 px-2 py-1 rounded-full w-fit">
+<span class="material-symbols-outlined text-[14px] mr-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                    Stable
+                </div>
+<!-- Abstract visual element -->
+<div class="absolute -right-4 -bottom-4 w-20 h-20 bg-secondary/5 rounded-full blur-2xl"></div>
+</div>
+</section>
+<!-- Primary Bento: Heart Rate Trends -->
+<section class="clay-card bg-surface-container-lowest p-6 rounded-2xl">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="font-headline text-xl font-bold text-on-surface tracking-tight">Heart Rate Trends</h3>
+<p class="font-label text-xs text-on-surface-variant">Last 7 days activity</p>
+</div>
+<div class="p-2 bg-primary-fixed/30 rounded-xl">
+<span class="material-symbols-outlined text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+</div>
+<!-- Heart Rate Graph Mockup -->
+<div class="h-48 w-full relative mt-4">
+<svg class="w-full h-full drop-shadow-[0_10px_15px_rgba(186,26,32,0.15)]" viewbox="0 0 400 150">
+<path d="M0,120 Q40,110 80,80 T160,90 T240,40 T320,70 T400,20" fill="none" stroke="url(#gradient-red)" stroke-linecap="round" stroke-width="4"></path>
+<defs>
+<lineargradient id="gradient-red" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" style="stop-color:#b6171e;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#da3433;stop-opacity:1"></stop>
+</lineargradient>
+</defs>
+<!-- Guideline -->
+<line stroke="#e4bebc" stroke-dasharray="4" stroke-opacity="0.5" x1="0" x2="400" y1="100" y2="100"></line>
+</svg>
+<div class="flex justify-between mt-4 font-label text-[10px] text-zinc-400 font-bold uppercase tracking-tighter">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+<div class="mt-6 flex items-center gap-4 bg-surface-container-low/50 p-4 rounded-xl">
+<div class="flex-1">
+<span class="block font-label text-[10px] text-on-surface-variant font-bold uppercase">Peak BPM</span>
+<span class="font-headline font-bold text-on-surface">142</span>
+</div>
+<div class="w-px h-8 bg-outline-variant/30"></div>
+<div class="flex-1">
+<span class="block font-label text-[10px] text-on-surface-variant font-bold uppercase">Resting</span>
+<span class="font-headline font-bold text-on-surface">62</span>
+</div>
+<div class="w-px h-8 bg-outline-variant/30"></div>
+<div class="flex-1">
+<span class="block font-label text-[10px] text-on-surface-variant font-bold uppercase">Variability</span>
+<span class="font-headline font-bold text-on-surface">45ms</span>
+</div>
+</div>
+</section>
+<!-- Secondary Bento: Glucose Stability -->
+<section class="glass-panel p-6 rounded-2xl">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="font-headline text-xl font-bold text-on-surface tracking-tight">Glucose Stability</h3>
+<p class="font-label text-xs text-on-surface-variant">Daily glycemic index</p>
+</div>
+<div class="p-2 bg-secondary-fixed/30 rounded-xl">
+<span class="material-symbols-outlined text-secondary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+</div>
+<!-- Glucose Area Chart Mockup -->
+<div class="h-40 w-full relative">
+<svg class="w-full h-full" viewbox="0 0 400 150">
+<path d="M0,150 L0,80 Q50,70 100,90 T200,60 T300,100 T400,70 L400,150 Z" fill="url(#gradient-blue)" fill-opacity="0.2"></path>
+<path d="M0,80 Q50,70 100,90 T200,60 T300,100 T400,70" fill="none" stroke="#4c56af" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<lineargradient id="gradient-blue" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#4c56af;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#4c56af;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+<!-- VitalGlass Prism Insight -->
+<div class="mt-4 bg-tertiary-container/10 p-4 rounded-xl flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary mt-0.5">auto_awesome</span>
+<div>
+<p class="font-label text-xs font-semibold text-on-tertiary-fixed-variant leading-tight">AI Insight: VitalGlass Prism predicts stable levels for the next 4 hours based on your activity data.</p>
+</div>
+</div>
+</section>
+<!-- Recent Logs Section -->
+<section class="space-y-4">
+<h3 class="font-headline text-lg font-bold px-2">Detailed Logs</h3>
+<div class="space-y-3">
+<div class="bg-surface-container-lowest p-4 rounded-2xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<p class="font-bold text-sm">Post-Lunch Peak</p>
+<p class="text-[10px] text-zinc-400">Today, 1:45 PM</p>
+</div>
+</div>
+<span class="font-headline font-bold text-secondary">6.1 g/L</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-2xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">directions_run</span>
+</div>
+<div>
+<p class="font-bold text-sm">Morning Cardio</p>
+<p class="text-[10px] text-zinc-400">Today, 8:15 AM</p>
+</div>
+</div>
+<span class="font-headline font-bold text-primary">128 BPM</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-2 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-2xl rounded-t-[2rem] h-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1">Twin</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 rounded-2xl px-5 py-2 hover:text-red-500 transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#">
+<span class="material-symbols-outlined">emergency</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-5 py-2 hover:text-red-500 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Inter'] font-semibold text-[10px] uppercase tracking-wider mt-1">Settings</span>
+</a>
+</nav>
+</body></html>
