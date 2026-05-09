@@ -1,250 +1,293 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import 'widgets/bento_widgets.dart';
 
-class EmergencyAlertUI extends StatefulWidget {
+class EmergencyAlertUI extends StatelessWidget {
   const EmergencyAlertUI({super.key});
-
-  @override
-  State<EmergencyAlertUI> createState() => _EmergencyAlertUIState();
-}
-
-class _EmergencyAlertUIState extends State<EmergencyAlertUI>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 0.92, end: 1.08)
-        .chain(CurveTween(curve: Curves.easeInOut))
-        .animate(_pulseController);
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primary,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Top bar ──
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white, size: 20),
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    'EMERGENCY PROTOCOL',
-                    style: AppTheme.textTheme.labelSmall?.copyWith(
-                      color: Colors.white60,
-                      letterSpacing: 1.6,
-                      fontSize: 10,
-                    ),
-                  ),
-                  const Spacer(),
-                  const SizedBox(width: 40),
-                ],
-              ),
-            ),
-
-            // ── Alert Hero ──
-            Expanded(
-              flex: 2,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Pulsing warning icon
-                  AnimatedBuilder(
-                    animation: _pulseAnim,
-                    builder: (_, __) => Transform.scale(
-                      scale: _pulseAnim.value,
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.warning_amber_rounded,
-                          color: Colors.white,
-                          size: 52,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'HYPOGLYCEMIA',
-                    style: AppTheme.textTheme.labelSmall?.copyWith(
-                      color: Colors.white60,
-                      fontSize: 12,
-                      letterSpacing: 2.4,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    '42 mg/dL',
-                    style: AppTheme.textTheme.displayMedium?.copyWith(
-                      color: Colors.white,
-                      fontSize: 52,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -2,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Text(
-                      'Critical — Immediate Action Required',
-                      style: AppTheme.textTheme.labelLarge?.copyWith(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Action Panel ──
-            Expanded(
-              flex: 3,
-              child: Container(
-                margin: const EdgeInsets.all(12),
-                padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(32)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFFFF5F5), Color(0xFFFFE1E1)],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(18, 14, 18, 28),
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    Text('IMMEDIATE STEPS',
-                        style: AppTheme.textTheme.labelSmall),
-                    const SizedBox(height: 20),
-
-                    _actionStep(
-                      step: '01',
-                      icon: Icons.fastfood_rounded,
-                      title: 'Glucose Intake',
-                      desc:
-                          'Consume 15g of fast-acting carbs (juice, glucose tabs).',
-                      color: AppTheme.accentOrange,
-                    ),
-                    const Divider(height: 28),
-                    _actionStep(
-                      step: '02',
-                      icon: Icons.airline_seat_recline_extra_rounded,
-                      title: 'Rest & Position',
-                      desc:
-                          'Sit or lay down immediately. Avoid any physical exertion.',
-                      color: AppTheme.accentBlue,
-                    ),
-                    const Divider(height: 28),
-                    _actionStep(
-                      step: '03',
-                      icon: Icons.timer_rounded,
-                      title: 'Wait 15 Minutes',
-                      desc:
-                          'Recheck glucose level. Contact doctor if no improvement.',
-                      color: AppTheme.accentPurple,
-                    ),
-
+                    const Icon(Icons.arrow_back, color: AppTheme.primary),
+                    const SizedBox(width: 12),
+                    Text('Emergency Action Plan', style: AppTheme.textTheme.titleMedium?.copyWith(color: AppTheme.primary)),
                     const Spacer(),
-
-                    // ── Action Buttons ──
-                    StitchButton(
-                      onTap: () {},
-                      text: 'Call Emergency Services',
-                      icon: Icons.phone_rounded,
-                    ),
-                    const SizedBox(height: 10),
-                    StitchButton(
-                      onTap: () =>
-                          Navigator.of(context).pushNamed('/reactive_plan'),
-                      text: 'View Full Action Plan',
-                      backgroundColor: AppTheme.background,
-                      textColor: AppTheme.primary,
-                      icon: Icons.list_alt_rounded,
-                    ),
+                    Text('KeepBeat', style: AppTheme.textTheme.labelLarge?.copyWith(color: AppTheme.primary)),
                   ],
                 ),
-              ),
+                const SizedBox(height: 24),
+                _alertHero(),
+                const SizedBox(height: 24),
+                _stepPanel(),
+                const SizedBox(height: 24),
+                _fogCard(),
+                const SizedBox(height: 24),
+                _itemsCard(),
+                const SizedBox(height: 24),
+                Container(
+                  width: double.infinity,
+                  height: 66,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primary.withOpacity(0.25),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      "I've Completed These\nSteps",
+                      textAlign: TextAlign.center,
+                      style: AppTheme.textTheme.titleMedium?.copyWith(color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text('◉ Next update in 13 minutes', style: AppTheme.textTheme.bodyMedium?.copyWith(color: const Color(0xFF74839A))),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _actionStep({
-    required String step,
-    required IconData icon,
-    required String title,
-    required String desc,
-    required Color color,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(14),
+  Widget _alertHero() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: AppTheme.primaryCardDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('CRITICAL ALERT', style: AppTheme.textTheme.labelSmall?.copyWith(color: Colors.white)),
+          const SizedBox(height: 8),
+          Text('Hypoglycemia:\n42 mg/dL', style: AppTheme.textTheme.displayMedium?.copyWith(color: Colors.white, fontSize: 28, height: 1.0)),
+          const SizedBox(height: 10),
+          Text('Detected 2 minutes ago via\nContinuous Glucose Monitor.', style: AppTheme.textTheme.bodyLarge?.copyWith(color: Colors.white)),
+          const SizedBox(height: 18),
+          Row(
+            children: const [
+              _ValueBox(label: 'CURRENT', value: '42'),
+              SizedBox(width: 12),
+              _ValueBox(label: 'TARGET', value: '90+'),
+            ],
           ),
-          child: Icon(icon, color: color, size: 24),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+    );
+  }
+
+  Widget _stepPanel() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: AppTheme.bentoDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          _PanelTitle(title: 'Immediate Steps'),
+          SizedBox(height: 18),
+          _ActionRow(icon: Icons.local_florist, title: 'Glucose Intake', body: 'Consume 15g of fast-acting carbs immediately.'),
+          SizedBox(height: 14),
+          _ActionRow(icon: Icons.accessible, title: 'Rest & Position', body: 'Sit down immediately. Do not attempt to walk or drive until your levels stabilize above 70 mg/dL.'),
+          SizedBox(height: 14),
+          _ActionRow(icon: Icons.air, title: 'Secondary Measure: Breathing', body: 'If high heart rate occurs: Sit down and perform the Valsalva maneuver or deep breathing.', muted: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _fogCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppTheme.lavenderSoft,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFE7D8FA)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('FOG AGENT GUIDANCE', style: AppTheme.textTheme.labelSmall?.copyWith(color: const Color(0xFF7B29BE))),
+          const SizedBox(height: 14),
+          Row(
             children: [
-              Text(
-                title,
-                style: AppTheme.textTheme.labelLarge?.copyWith(fontSize: 15),
+              Container(
+                width: 58,
+                height: 58,
+                decoration: BoxDecoration(color: AppTheme.lavender, borderRadius: BorderRadius.circular(16)),
+                child: const Icon(Icons.battery_alert, color: Colors.white),
               ),
-              const SizedBox(height: 3),
-              Text(
-                desc,
-                style: AppTheme.textTheme.bodyMedium?.copyWith(fontSize: 13),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text('Battery Critical (5%)\nSystem entering ultra-low power.', style: AppTheme.textTheme.bodyLarge?.copyWith(color: Colors.white)),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 14),
+          Text(
+            'Syncing frequency reduced to preserve vital re-support monitoring. Your local Fog Agent is prioritizing emergency telemetry only.',
+            style: AppTheme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+          ),
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(color: const Color(0xFFDEAFFF), borderRadius: BorderRadius.circular(16)),
+            child: Text('RECOVERY ACTION:\nConnect to charger within 10 minutes or use the emergency battery pack.', style: AppTheme.textTheme.bodyLarge?.copyWith(color: const Color(0xFF66219D))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _itemsCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEAE7E7),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('REQUIRED ITEMS', style: AppTheme.textTheme.labelSmall?.copyWith(color: const Color(0xFF41302D))),
+          const SizedBox(height: 16),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _ItemTile(icon: Icons.local_drink, label: 'SUGAR'),
+              _ItemTile(icon: Icons.water_drop, label: 'WATER'),
+              _ItemTile(icon: Icons.flash_on, label: 'POWER'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ValueBox extends StatelessWidget {
+  final String label;
+  final String value;
+  const _ValueBox({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.16),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: AppTheme.textTheme.labelSmall?.copyWith(color: Colors.white)),
+          const SizedBox(height: 4),
+          Text(value, style: AppTheme.textTheme.displayMedium?.copyWith(color: Colors.white, fontSize: 28)),
+        ],
+      ),
+    );
+  }
+}
+
+class _PanelTitle extends StatelessWidget {
+  final String title;
+  const _PanelTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(Icons.medical_services, color: AppTheme.primary),
+        const SizedBox(width: 10),
+        Text(title, style: AppTheme.textTheme.titleLarge),
       ],
+    );
+  }
+}
+
+class _ActionRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String body;
+  final bool muted;
+  const _ActionRow({required this.icon, required this.title, required this.body, this.muted = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = muted ? const Color(0xFFC7C9D1) : AppTheme.primary;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: muted ? const Color(0xFFF3F3F5) : const Color(0xFFF8F5F5),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+            child: Icon(icon, color: color),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTheme.textTheme.titleMedium?.copyWith(color: muted ? color : AppTheme.onSurface)),
+                const SizedBox(height: 4),
+                Text(body, style: AppTheme.textTheme.bodyLarge?.copyWith(color: muted ? color : const Color(0xFF5D4540))),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ItemTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _ItemTile({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 62,
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+      child: Column(
+        children: [
+          Icon(icon, color: AppTheme.primary),
+          const SizedBox(height: 10),
+          Text(label, style: AppTheme.textTheme.labelSmall?.copyWith(color: const Color(0xFF403332))),
+        ],
+      ),
     );
   }
 }

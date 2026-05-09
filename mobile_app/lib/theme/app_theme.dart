@@ -2,142 +2,134 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // --- Stitch 'Vital Pulse' Palette ---
-  static const Color primary = Color(0xFFB6171E); // Signature Deep Red
-  static const Color primaryContainer = Color(0xFFDA3433); // High-volume Red
-  static const Color primaryFixed = Color(0xFFFFDAD6); // Soft Glow Red
-  
-  static const Color secondary = Color(0xFF4C56AF); // Medical Indigo
-  static const Color secondaryContainer = Color(0xFF959EFD); // Active Pulse Blue
-  
-  static const Color tertiary = Color(0xFF8A30B0); // AI / Electric Purple
-  static const Color tertiaryContainer = Color(0xFFA54DCC); // AI Insight Highlight
-  
-  static const Color surface = Color(0xFFF8F9FA); // Base Canvas
-  static const Color surfaceContainerLowest = Color(0xFFFFFFFF); // High-lift Card
-  static const Color surfaceContainerLow = Color(0xFFF3F4F5); // Low-lift Segment
-  static const Color surfaceContainerHigh = Color(0xFFE7E8E9); // Inset Well
-  
-  static const Color onSurface = Color(0xFF191C1D); // Primary Text
-  static const Color onSurfaceMuted = Color(0xFF5B403F); // Secondary Text
-  static const Color outlineVariant = Color(0xFFE4BEBC); // Ghost Border Base (15% opacity)
+  static const Color primary = Color(0xFFD61F26);
+  static const Color primaryDark = Color(0xFFB91319);
+  static const Color primarySoft = Color(0xFFFFE7E7);
+  static const Color blush = Color(0xFFFFF2F3);
+  static const Color blushStrong = Color(0xFFF5E8FF);
+  static const Color surface = Color(0xFFFCFAFB);
+  static const Color card = Colors.white;
+  static const Color onSurface = Color(0xFF18171C);
+  static const Color onSurfaceMuted = Color(0xFF8F7B79);
+  static const Color line = Color(0xFFF0E3E2);
+  static const Color lavender = Color(0xFFA244D9);
+  static const Color lavenderSoft = Color(0xFFF4E9FF);
+  static const Color blue = Color(0xFF4B60C4);
+  static const Color blueSoft = Color(0xFFEAEFFF);
+  static const Color redSoft = Color(0xFFFFECEB);
+  static const Color greenSoft = Color(0xFFEAF8F1);
+  static const Color shadow = Color(0x14000000);
 
-  // --- Heritage Compatibility & Accent Mapping ---
-  static const Color accentBlue = secondaryContainer;
-  static const Color accentPurple = tertiary;
-  static const Color accentGreen = Color(0xFF34A853); // Positive / Mint Sage
-  static const Color accentOrange = Color(0xFFFF9900); // Alert / Glucose
+  static const double outerRadius = 34;
+  static const double innerRadius = 20;
 
-  static const Color background = surface;
-  
-  static Gradient get primaryGradient => const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [primary, primaryContainer],
-      );
-
-  static BoxDecoration get primaryCardDecoration => BoxDecoration(
-        gradient: primaryGradient,
-        borderRadius: BorderRadius.circular(outerRadius),
-        boxShadow: clayShadow,
-      );
-
-  static BoxDecoration get bentoBorderedDecoration => BoxDecoration(
-        border: Border.all(color: outlineVariant.withOpacity(0.15)),
-        borderRadius: BorderRadius.circular(innerRadius),
-      );
-
-  static const Color cardBorder = Color(0xFFE4BEBC); // outlineVariant base
-
-  // --- Design System Tokens ---
-  static const double outerRadius = 24.0; // xl radius
-  static const double innerRadius = 12.0; // md radius
-
-  // --- 3.5D Claymorphism Shadow Factory ---
-  static List<BoxShadow> get clayShadow => [
-        BoxShadow(
-          color: primary.withOpacity(0.12),
-          blurRadius: 40,
-          offset: const Offset(0, 20),
-        ),
-      ];
-
-  // --- Glassmorphism / Frosted Glass System ---
-  static BoxDecoration glassDecoration({double opacity = 0.6}) => BoxDecoration(
-        color: surfaceContainerLow.withOpacity(opacity),
-        borderRadius: BorderRadius.circular(outerRadius),
-      );
-
-  // --- Bento Modular Grid Decoration ---
-  static BoxDecoration get bentoDecoration => BoxDecoration(
-        color: surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(outerRadius),
-        boxShadow: [
-          BoxShadow(
-            color: onSurface.withOpacity(0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      );
-
-  // --- Typography: Medical Authority (Tri-Font System) ---
   static TextTheme get textTheme => TextTheme(
-        // High-end, geometric, and authoritative
         displayLarge: GoogleFonts.manrope(
-          fontSize: 54,
-          fontWeight: FontWeight.w900,
-          color: onSurface,
-          letterSpacing: -2.0,
-        ),
-        displayMedium: GoogleFonts.manrope(
-          fontSize: 42,
+          fontSize: 48,
           fontWeight: FontWeight.w800,
           color: onSurface,
-          letterSpacing: -1.5,
+          letterSpacing: -2.2,
+        ),
+        displayMedium: GoogleFonts.manrope(
+          fontSize: 38,
+          fontWeight: FontWeight.w800,
+          color: onSurface,
+          letterSpacing: -1.8,
         ),
         headlineMedium: GoogleFonts.manrope(
           fontSize: 24,
           fontWeight: FontWeight.w800,
           color: onSurface,
-          letterSpacing: -0.5,
+          letterSpacing: -0.8,
         ),
-        // Modern and approachable titles
-        titleLarge: GoogleFonts.plusJakartaSans(
+        titleLarge: GoogleFonts.manrope(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: onSurface,
+          letterSpacing: -0.4,
         ),
-        titleMedium: GoogleFonts.plusJakartaSans(
+        titleMedium: GoogleFonts.manrope(
           fontSize: 17,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: onSurface,
         ),
-        // Maximum legibility utility
-        bodyLarge: GoogleFonts.inter(
+        bodyLarge: GoogleFonts.poppins(
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: onSurface,
-          height: 1.5,
+          height: 1.45,
         ),
-        bodyMedium: GoogleFonts.inter(
+        bodyMedium: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: onSurfaceMuted,
-          height: 1.6,
+          height: 1.55,
         ),
-        labelLarge: GoogleFonts.inter(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
+        labelLarge: GoogleFonts.poppins(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
           color: onSurface,
-          letterSpacing: 0.5,
         ),
-        labelSmall: GoogleFonts.inter(
+        labelSmall: GoogleFonts.poppins(
           fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: tertiary, // Defaulting labels for AI insights as per spec
-          letterSpacing: 1.4,
+          fontWeight: FontWeight.w600,
+          color: onSurfaceMuted,
+          letterSpacing: 1.5,
         ),
+      );
+
+  static LinearGradient get pageGradient => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color(0xFFFFF5F5),
+          Color(0xFFFFFBFB),
+          Color(0xFFFDFBFB),
+        ],
+      );
+
+  static LinearGradient get heroGradient => const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color(0xFFFDD8D6),
+          Color(0xFFF1B7C6),
+          Color(0xFFE64D52),
+        ],
+      );
+
+  static LinearGradient get primaryGradient => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color(0xFFE13035),
+          Color(0xFFD61F26),
+        ],
+      );
+
+  static BoxDecoration get bentoDecoration => BoxDecoration(
+        color: card,
+        borderRadius: BorderRadius.circular(outerRadius),
+        border: Border.all(color: const Color(0xFFF4ECEC)),
+        boxShadow: const [
+          BoxShadow(
+            color: shadow,
+            blurRadius: 28,
+            offset: Offset(0, 12),
+          ),
+        ],
+      );
+
+  static BoxDecoration get primaryCardDecoration => BoxDecoration(
+        gradient: primaryGradient,
+        borderRadius: BorderRadius.circular(outerRadius),
+        boxShadow: [
+          BoxShadow(
+            color: primary.withOpacity(0.22),
+            blurRadius: 30,
+            offset: const Offset(0, 14),
+          ),
+        ],
       );
 
   static ThemeData get lightTheme => ThemeData(
@@ -146,12 +138,10 @@ class AppTheme {
         colorScheme: ColorScheme.fromSeed(
           seedColor: primary,
           primary: primary,
-          secondary: secondary,
-          tertiary: tertiary,
+          secondary: blue,
+          tertiary: lavender,
           surface: surface,
         ),
         textTheme: textTheme,
-        // Global focus glow for StitchInput
-        focusColor: primaryFixed.withOpacity(0.5),
       );
 }

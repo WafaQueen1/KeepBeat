@@ -7,251 +7,163 @@ class ReactivePlanUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return const EmergencyAlertUIBridge();
+  }
+}
+
+class EmergencyAlertUIBridge extends StatelessWidget {
+  const EmergencyAlertUIBridge({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.surface,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── Header ──
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Row(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(22, 10, 22, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: AppTheme.bentoDecoration,
-                      child: const Icon(Icons.arrow_back_rounded,
-                          color: AppTheme.primary, size: 20),
-                    ),
+                    child: const Icon(Icons.arrow_back, color: AppTheme.primary),
                   ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('INTERVENTION PROTOCOL',
-                          style: AppTheme.textTheme.labelSmall),
-                      Text('Reactive Action Plan',
-                          style: AppTheme.textTheme.titleLarge),
-                    ],
-                  ),
+                  const SizedBox(width: 14),
+                  Text('Emergency Action Plan', style: AppTheme.textTheme.titleMedium?.copyWith(color: AppTheme.primary)),
                 ],
               ),
-            ),
-            const SizedBox(height: 8),
-
-            // ── Content ──
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+              const SizedBox(height: 26),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: AppTheme.primaryCardDecoration,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Event summary card
+                    Text('RECOVERY PHASE:\nMONITORING STABILITY', style: AppTheme.textTheme.headlineMedium?.copyWith(color: Colors.white, fontSize: 20)),
+                    const SizedBox(height: 10),
+                    Text('Post-hypoglycemia alert dismissed. Vital signs normalization in progress.', style: AppTheme.textTheme.bodyLarge?.copyWith(color: Colors.white)),
+                    const SizedBox(height: 14),
                     Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: AppTheme.primaryCardDecoration,
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: const Icon(Icons.warning_amber_rounded,
-                                color: Colors.white, size: 24),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Hypoglycemia Event',
-                                  style:
-                                      AppTheme.textTheme.titleMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  'Glucose: 42 mg/dL  •  Detected 5 min ago',
-                                  style: AppTheme.textTheme.bodyMedium
-                                      ?.copyWith(
-                                    color: Colors.white60,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.18),
+                        borderRadius: BorderRadius.circular(999),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    Text('YOUR ACTION PLAN',
-                        style: AppTheme.textTheme.labelSmall),
-                    const SizedBox(height: 16),
-
-                    _stepCard(
-                      number: 1,
-                      icon: Icons.fastfood_rounded,
-                      color: AppTheme.accentOrange,
-                      title: 'Glucose Re-entry',
-                      desc:
-                          'Consume 15g of fast-acting glucose as instructed. Options include: 4oz fruit juice, glucose tablets, or 3-4 glucose gels.',
-                      duration: '0 – 5 min',
-                      done: true,
-                    ),
-                    const SizedBox(height: 14),
-
-                    _stepCard(
-                      number: 2,
-                      icon: Icons.airline_seat_recline_normal_rounded,
-                      color: AppTheme.accentBlue,
-                      title: 'Absolute Rest',
-                      desc:
-                          'Sit or lay down for 15 minutes. High-pulse activities are strictly restricted. Keep phone accessible.',
-                      duration: '5 – 20 min',
-                      done: false,
-                    ),
-                    const SizedBox(height: 14),
-
-                    _stepCard(
-                      number: 3,
-                      icon: Icons.monitor_heart_rounded,
-                      color: AppTheme.primary,
-                      title: 'Pulse Verification',
-                      desc:
-                          'Await the 15-minute predictive pulse update from AI-Sight. Target: heart rate below 100 BPM.',
-                      duration: '20 – 35 min',
-                      done: false,
-                    ),
-                    const SizedBox(height: 14),
-
-                    _stepCard(
-                      number: 4,
-                      icon: Icons.call_rounded,
-                      color: AppTheme.accentGreen,
-                      title: 'Clinical Check-in',
-                      desc:
-                          'If glucose does not recover above 70 mg/dL within 30 minutes, contact your assigned doctor or emergency services.',
-                      duration: 'If no improvement',
-                      done: false,
-                    ),
-                    const SizedBox(height: 32),
-
-                    StitchButton(
-                      onTap: () =>
-                          Navigator.of(context).pushReplacementNamed('/dashboard'),
-                      text: 'Steps Completed — Return to Dashboard',
-                      icon: Icons.check_circle_rounded,
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: Text(
-                        'AI-Sight will automatically monitor your recovery progress.',
-                        textAlign: TextAlign.center,
-                        style: AppTheme.textTheme.bodyMedium
-                            ?.copyWith(fontSize: 12),
-                      ),
+                      child: Text('14:52 REMAINING', style: AppTheme.textTheme.titleMedium?.copyWith(color: Colors.white)),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 22),
+              BentoTile(
+                title: 'DIGITAL TWIN STATUS',
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        StatusBadge(label: 'GLUCOSE STABILIZING', color: AppTheme.blue),
+                        const Spacer(),
+                        Text('72', style: AppTheme.textTheme.displayLarge?.copyWith(color: AppTheme.primary, fontSize: 58)),
+                      ],
+                    ),
+                    Image.asset('assets/images/heart.png', height: 220, fit: BoxFit.contain),
+                    Row(
+                      children: const [
+                        Expanded(child: _BottomMetric(title: 'HEART RATE', value: '84', unit: 'BPM')),
+                        SizedBox(width: 12),
+                        Expanded(child: _BottomMetric(title: 'VARIABILITY', value: '56', unit: 'ms')),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              AiInsightBanner(
+                title: 'AI Prediction',
+                description: 'Based on current insulin-on-board and metabolic rate, stability is expected within 12 minutes. No further action required.',
+                icon: Icons.auto_awesome,
+                onTap: () {},
+              ),
+              const SizedBox(height: 20),
+              BentoTile(
+                title: 'ACTIVE ALERTS',
+                child: Column(
+                  children: const [
+                    _AlertMini(icon: Icons.water_drop, color: AppTheme.primary, title: 'Glucose Low', subtitle: 'Dismissed 3m ago'),
+                    SizedBox(height: 18),
+                    _AlertMini(icon: Icons.bolt, color: AppTheme.blue, title: 'Metabolic Surge', subtitle: 'Normalizing'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              BentoTile(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Recovery Timeline', style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 22)),
+                    Text('LAST 60 MINUTES', style: AppTheme.textTheme.labelSmall),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        _chip('HEART RATE', false),
+                        const SizedBox(width: 10),
+                        _chip('GLUCOSE', true),
+                      ],
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(height: 170, child: CustomPaint(painter: _TimelinePainter())),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _stepCard({
-    required int number,
-    required IconData icon,
-    required Color color,
-    required String title,
-    required String desc,
-    required String duration,
-    required bool done,
-  }) {
+  Widget _chip(String text, bool active) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: AppTheme.bentoDecoration,
-      child: Row(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: active ? AppTheme.primary : const Color(0xFFF0F2F6),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        text,
+        style: AppTheme.textTheme.labelSmall?.copyWith(color: active ? Colors.white : AppTheme.onSurface),
+      ),
+    );
+  }
+}
+
+class _BottomMetric extends StatelessWidget {
+  final String title;
+  final String value;
+  final String unit;
+  const _BottomMetric({required this.title, required this.value, required this.unit});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F7FA),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Step number + icon
-          Column(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: done ? color : color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: done
-                    ? const Icon(Icons.check_rounded,
-                        color: Colors.white, size: 26)
-                    : Icon(icon, color: color, size: 26),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                '0$number',
-                style: AppTheme.textTheme.labelSmall?.copyWith(
-                  color: color,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Text(title, style: AppTheme.textTheme.labelSmall),
+          const SizedBox(height: 6),
+          RichText(
+            text: TextSpan(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: AppTheme.textTheme.labelLarge
-                            ?.copyWith(fontSize: 16),
-                      ),
-                    ),
-                    if (done)
-                      StatusBadge(label: 'Done', color: AppTheme.accentGreen),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  desc,
-                  style: AppTheme.textTheme.bodyMedium?.copyWith(
-                    fontSize: 13,
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(Icons.timer_outlined,
-                        size: 14, color: AppTheme.onSurfaceMuted),
-                    const SizedBox(width: 4),
-                    Text(
-                      duration,
-                      style: AppTheme.textTheme.labelSmall
-                          ?.copyWith(fontSize: 10),
-                    ),
-                  ],
-                ),
+                TextSpan(text: value, style: AppTheme.textTheme.headlineMedium?.copyWith(fontSize: 32)),
+                TextSpan(text: ' $unit', style: AppTheme.textTheme.bodyMedium?.copyWith(color: AppTheme.onSurfaceMuted)),
               ],
             ),
           ),
@@ -259,4 +171,57 @@ class ReactivePlanUI extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AlertMini extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  const _AlertMini({required this.icon, required this.color, required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(color: color.withOpacity(0.14), borderRadius: BorderRadius.circular(14)),
+          child: Icon(icon, color: color),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: AppTheme.textTheme.titleMedium),
+              Text(subtitle, style: AppTheme.textTheme.bodyMedium),
+            ],
+          ),
+        ),
+        const Icon(Icons.chevron_right, color: Color(0xFFC4CDD9)),
+      ],
+    );
+  }
+}
+
+class _TimelinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(0, size.height * 0.72)
+      ..cubicTo(size.width * 0.3, size.height * 0.78, size.width * 0.55, size.height * 0.92, size.width * 0.7, size.height * 0.68)
+      ..cubicTo(size.width * 0.82, size.height * 0.50, size.width * 0.92, size.height * 0.58, size.width, size.height * 0.66);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = AppTheme.primary
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

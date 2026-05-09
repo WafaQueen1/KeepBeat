@@ -3,6 +3,99 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 
 // ─────────────────────────────────────────────────────────────
+//  STITCH BACKDROP — soft medical canvas + glass hints
+// ─────────────────────────────────────────────────────────────
+class StitchBackdrop extends StatelessWidget {
+  final Widget child;
+  const StitchBackdrop({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFFFFEEF0),
+            Color(0xFFFFFAFB),
+            Color(0xFFF8F9FB),
+          ],
+          stops: [0.0, 0.55, 1.0],
+        ),
+      ),
+      child: Stack(
+        children: [
+          // subtle vignette
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: const Alignment(0.0, -0.6),
+                    radius: 1.2,
+                    colors: [
+                      Colors.white.withOpacity(0.0),
+                      Colors.black.withOpacity(0.03),
+                    ],
+                    stops: const [0.55, 1.0],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  GLASS PILL — used for status chips and micro-controls
+// ─────────────────────────────────────────────────────────────
+class GlassPill extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets padding;
+  final Color? tint;
+  const GlassPill({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+    this.tint,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(999),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color: (tint ?? Colors.white).withOpacity(0.78),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.65),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 //  BENTO TILE — Precision card wrapper (No-Line Rule)
 // ─────────────────────────────────────────────────────────────
 class BentoTile extends StatelessWidget {
@@ -26,6 +119,10 @@ class BentoTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? AppTheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(AppTheme.outerRadius),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.7),
+          width: 1,
+        ),
         boxShadow: [
           // Multi-layer soft atmospheric shadows
           BoxShadow(
@@ -54,6 +151,121 @@ class BentoTile extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           child,
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  VITAL BENTO CARD — single metric tile
+// ─────────────────────────────────────────────────────────────
+class VitalBentoCard extends StatelessWidget {
+  final String label;
+  final String value;
+  final String unit;
+  final IconData icon;
+  final Color accent;
+  final Widget? trailing;
+  final String? status;
+  const VitalBentoCard({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.unit,
+    required this.icon,
+    required this.accent,
+    this.trailing,
+    this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BentoTile(
+      title: label,
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: accent.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, color: accent, size: 22),
+              ),
+              if (trailing != null) trailing!,
+              if (trailing == null && status != null)
+                GlassPill(
+                  tint: accent.withOpacity(0.14),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Text(
+                    status!.toUpperCase(),
+                    style: AppTheme.textTheme.labelSmall?.copyWith(
+                      color: accent,
+                      fontSize: 9,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                value,
+                style: AppTheme.textTheme.displayMedium?.copyWith(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -1.2,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                unit,
+                style: AppTheme.textTheme.labelSmall?.copyWith(
+                  color: AppTheme.onSurfaceMuted.withOpacity(0.45),
+                  fontSize: 10,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 6,
+            decoration: BoxDecoration(
+              color: accent.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(99),
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: FractionallySizedBox(
+                widthFactor: 0.68,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: accent.withOpacity(0.70),
+                    borderRadius: BorderRadius.circular(99),
+                    boxShadow: [
+                      BoxShadow(
+                        color: accent.withOpacity(0.35),
+                        blurRadius: 18,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -587,4 +799,118 @@ class EcgPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant EcgPainter oldDelegate) => true;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  AI INSIGHT BANNER — Lavender Clinical Ribbon
+// ─────────────────────────────────────────────────────────────
+class AiInsightBanner extends StatelessWidget {
+  final String title;
+  final String description;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const AiInsightBanner({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F2FA), // Premium Lavender Surface
+          borderRadius: BorderRadius.circular(AppTheme.innerRadius * 2),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppTheme.tertiary.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppTheme.tertiary, size: 22),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title.toUpperCase(),
+                    style: AppTheme.textTheme.labelSmall?.copyWith(
+                      color: AppTheme.tertiary,
+                      fontSize: 10,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: AppTheme.textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.onSurface.withOpacity(0.7),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppTheme.onSurface.withOpacity(0.2),
+              size: 24,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  CIRCULAR STATUS INDICATOR — Bento-friendly progress
+// ─────────────────────────────────────────────────────────────
+class CircularStatusIndicator extends StatelessWidget {
+  final double value; // 0.0 to 1.0
+  final Color color;
+
+  const CircularStatusIndicator({
+    super.key,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 38,
+      height: 38,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CircularProgressIndicator(
+            value: 1.0,
+            strokeWidth: 4,
+            valueColor: AlwaysStoppedAnimation<Color>(color.withOpacity(0.1)),
+          ),
+          CircularProgressIndicator(
+            value: value,
+            strokeWidth: 4,
+            strokeCap: StrokeCap.round,
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -5,7 +5,7 @@ import re
 from typing import Optional, List, Any
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@127.0.0.1:5433/twinpacemaker")
-SQLITE_DB_PATH = "keepbeat_fallback.db"
+SQLITE_DB_PATH = "keepbeat_v2.db"
 
 class DBManager:
     """

@@ -12,8 +12,8 @@ class SignInUI extends ConsumerStatefulWidget {
 }
 
 class _SignInUIState extends ConsumerState<SignInUI> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'sarah.jenkins@keepbeat.com');
+  final _passwordController = TextEditingController(text: 'patient123');
 
   @override
   void dispose() {
@@ -26,202 +26,203 @@ class _SignInUIState extends ConsumerState<SignInUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFFFEEF0), // Top: Gentle warm red-pink
-              Color(0xFFFFFAFB), // Middle: Soft pale pink
-              Color(0xFFF8F9FA), // Bottom: Base Canvas grey (very subtle)
-            ],
-            stops: [0.0, 0.6, 1.0],
-          ),
-        ),
+        decoration: BoxDecoration(gradient: AppTheme.pageGradient),
         child: SafeArea(
           child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 40.0),
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 32),
-                
-                // ── Volumetric Organic Units ──
-                const Center(
-                  child: StitchHeart(
-                    bpm: 68, 
-                    size: 150, 
-                    showBpm: false, 
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(26, 18, 26, 14),
+                  child: Row(
+                    children: const [
+                      AppLogoWordmark(
+                        assetPath: 'assets/images/logoKeepBeat.png',
+                        logoSize: 38,
+                        textSize: 20,
+                        redText: true,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                Center(
-                  child: Text(
-                    'KEEPBEAT',
-                    style: AppTheme.textTheme.labelSmall?.copyWith(
-                      color: AppTheme.primary,
-                      letterSpacing: 7.0,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
-                
+                Container(height: 1, color: AppTheme.line),
                 const SizedBox(height: 60),
-
-                // ── Hero Header ──
-                Material(
-                  color: Colors.transparent,
-                  child: Text(
-                    'Welcome Back',
-                    style: AppTheme.textTheme.displayMedium?.copyWith(
-                      fontSize: 38,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -2.0,
-                      color: AppTheme.onSurface,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                Image.asset(
+                  'assets/images/logoKeepBeat.png',
+                  width: 110,
+                  height: 110,
+                ),
+                const SizedBox(height: 26),
+                Text(
+                  'Welcome Back',
+                  style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 42),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   "Your heart's journey continues here.",
                   style: AppTheme.textTheme.bodyLarge?.copyWith(
-                    color: AppTheme.onSurfaceMuted.withOpacity(0.55),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF5B3434),
+                    fontSize: 18,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-
-                const SizedBox(height: 56),
-
-                // ── Authenticated Bento Case ──
-                BentoTile(
-                  title: 'Secure Clinical Access',
-                  child: Column(
+                const SizedBox(height: 28),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22),
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: AppTheme.bentoDecoration,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _fieldLabel('EMAIL ADDRESS'),
+                        const SizedBox(height: 12),
+                        StitchInput(
+                          controller: _emailController,
+                          hintText: 'heart@keepbeat.com',
+                        ),
+                        const SizedBox(height: 26),
+                        Row(
+                          children: [
+                            _fieldLabel('PASSWORD'),
+                            const Spacer(),
+                            Text(
+                              'Forgot Password?',
+                              style: AppTheme.textTheme.labelLarge?.copyWith(
+                                color: AppTheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        StitchInput(
+                          controller: _passwordController,
+                          hintText: '••••••••',
+                          isPassword: true,
+                        ),
+                        const SizedBox(height: 28),
+                        StitchButton(
+                          onTap: () => Navigator.of(context).pushReplacementNamed('/dashboard'),
+                          text: 'Sign In',
+                          icon: Icons.arrow_forward,
+                        ),
+                        const SizedBox(height: 28),
+                        Row(
+                          children: [
+                            const Expanded(child: Divider(color: AppTheme.line)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                'OR CONTINUE WITH',
+                                style: AppTheme.textTheme.labelLarge?.copyWith(
+                                  color: const Color(0xFF8D726F),
+                                ),
+                              ),
+                            ),
+                            const Expanded(child: Divider(color: AppTheme.line)),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SocialAuthTile(
+                                icon: FontAwesomeIcons.google,
+                                label: 'Google',
+                                onTap: () {},
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: SocialAuthTile(
+                                icon: FontAwesomeIcons.apple,
+                                label: 'Apple',
+                                onTap: () {},
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                RichText(
+                  text: TextSpan(
+                    style: AppTheme.textTheme.titleLarge?.copyWith(
+                      color: const Color(0xFF5A3434),
+                    ),
                     children: [
-                      StitchInput(
-                        controller: _emailController,
-                        hintText: 'Clinical E-mail',
-                        prefixIcon: Icons.email_outlined,
-                      ),
-                      const SizedBox(height: 20),
-                      StitchInput(
-                        controller: _passwordController,
-                        hintText: 'Passcode Sequence',
-                        prefixIcon: Icons.lock_outline_rounded,
-                        isPassword: true,
+                      const TextSpan(text: 'New to KeepBeat? '),
+                      TextSpan(
+                        text: 'Create an account',
+                        style: AppTheme.textTheme.titleLarge?.copyWith(
+                          color: AppTheme.primary,
+                        ),
                       ),
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 16),
-                
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Forgot Passcode?',
-                      style: AppTheme.textTheme.labelLarge?.copyWith(
-                        color: AppTheme.primary,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 13,
-                        letterSpacing: -0.2,
-                      ),
+                const SizedBox(height: 48),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppTheme.lavenderSoft,
+                      borderRadius: BorderRadius.circular(26),
+                      border: Border.all(color: const Color(0xFFE8D6FB)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: AppTheme.lavender,
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: const Icon(Icons.auto_awesome, color: Colors.white),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'AI SECURITY TIP',
+                                style: AppTheme.textTheme.labelLarge?.copyWith(
+                                  letterSpacing: 1.3,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'KeepBeat uses biometric-grade encryption to protect your vital statistics. Always use a unique password.',
+                                style: AppTheme.textTheme.bodyLarge?.copyWith(
+                                  color: const Color(0xFF7428B7),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 48),
-
-                // ── Tactile Dashboard Access ──
-                StitchButton(
-                  onTap: () => Navigator.of(context).pushReplacementNamed('/dashboard'),
-                  text: 'DASHBOARD ACCESS',
-                  icon: Icons.shield_rounded,
-                ),
-
-                const SizedBox(height: 48),
-
-                // ── Connection Pivot ──
-                Row(
-                  children: [
-                    const Expanded(child: Divider(color: Color(0xFFEDEFF3), thickness: 2)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(
-                        'OR CONNECT WITH',
-                        style: AppTheme.textTheme.labelSmall?.copyWith(
-                          color: AppTheme.onSurfaceMuted.withOpacity(0.35),
-                          fontSize: 10,
-                          letterSpacing: 2.0,
-                        ),
-                      ),
-                    ),
-                    const Expanded(child: Divider(color: Color(0xFFEDEFF3), thickness: 2)),
-                  ],
-                ),
-
-                const SizedBox(height: 32),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: SocialAuthTile(
-                        icon: FontAwesomeIcons.google,
-                        label: 'Google',
-                        onTap: () {},
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: SocialAuthTile(
-                        icon: FontAwesomeIcons.apple,
-                        label: 'Apple',
-                        onTap: () {},
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 64),
-
-                // ── Onboarding Pivot ──
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'New to the network? ',
-                      style: AppTheme.textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.onSurfaceMuted,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pushReplacementNamed('/signup'),
-                      child: Text(
-                        'Join Vital Pulse',
-                        style: AppTheme.textTheme.labelLarge?.copyWith(
-                          color: AppTheme.primary,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 40),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _fieldLabel(String text) {
+    return Text(
+      text,
+      style: AppTheme.textTheme.labelSmall?.copyWith(
+        color: const Color(0xFF53302B),
+        fontSize: 12,
       ),
     );
   }

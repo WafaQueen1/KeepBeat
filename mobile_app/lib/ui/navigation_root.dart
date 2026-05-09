@@ -26,10 +26,10 @@ class _NavigationRootState extends State<NavigationRoot> {
     _screens = [
       PatientDashboardUI(
         sensorService: widget.sensorService,
-        onNavigateToAI: () => _navigateTo(2),
+        onNavigateToAI: () => _navigateTo(1),
       ),
-      const AlertHistoryUI(),
       const RecoveryStateUI(),
+      const AlertHistoryUI(),
       const SettingsUI(),
     ];
   }
@@ -79,25 +79,25 @@ class _NavigationRootState extends State<NavigationRoot> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _NavItem(
-                  icon: Icons.home_rounded,
-                  outlinedIcon: Icons.home_outlined,
-                  label: 'Home',
+                  icon: Icons.favorite_rounded,
+                  outlinedIcon: Icons.favorite_outline_rounded,
+                  label: 'TWIN',
                   index: 0,
                   selectedIndex: _selectedIndex,
                   onTap: _navigateTo,
                 ),
                 _NavItem(
-                  icon: Icons.notifications_rounded,
-                  outlinedIcon: Icons.notifications_none_outlined,
-                  label: 'Alerts',
+                  icon: Icons.bar_chart_rounded,
+                  outlinedIcon: Icons.bar_chart_outlined,
+                  label: 'STATS',
                   index: 1,
                   selectedIndex: _selectedIndex,
                   onTap: _navigateTo,
                 ),
                 _NavItem(
-                  icon: Icons.auto_awesome_rounded,
-                  outlinedIcon: Icons.auto_awesome_outlined,
-                  label: 'AI',
+                  icon: Icons.notifications_active_rounded,
+                  outlinedIcon: Icons.notifications_none_rounded,
+                  label: 'ALERTS',
                   index: 2,
                   selectedIndex: _selectedIndex,
                   onTap: _navigateTo,
@@ -105,7 +105,7 @@ class _NavigationRootState extends State<NavigationRoot> {
                 _NavItem(
                   icon: Icons.settings_rounded,
                   outlinedIcon: Icons.settings_outlined,
-                  label: 'Settings',
+                  label: 'SETTINGS',
                   index: 3,
                   selectedIndex: _selectedIndex,
                   onTap: _navigateTo,
@@ -170,6 +170,16 @@ class _NavItem extends StatelessWidget {
                         color: AppTheme.onSurfaceMuted,
                         size: 22,
                       ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: AppTheme.textTheme.labelSmall?.copyWith(
+                  color: isSelected ? AppTheme.primary : AppTheme.onSurfaceMuted.withOpacity(0.5),
+                  fontSize: 8,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
               ),
             ],
           ),

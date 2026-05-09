@@ -1,494 +1,287 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'widgets/bento_widgets.dart';
 
-class RecoveryStateUI extends StatefulWidget {
+class RecoveryStateUI extends StatelessWidget {
   const RecoveryStateUI({super.key});
-
-  @override
-  State<RecoveryStateUI> createState() => _RecoveryStateUIState();
-}
-
-class _RecoveryStateUIState extends State<RecoveryStateUI>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _progressController;
-
-  @override
-  void initState() {
-    super.initState();
-    _progressController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-      value: 0.72,
-    );
-    _progressController.animateTo(0.72, duration: const Duration(milliseconds: 1400), curve: Curves.easeOut);
-  }
-
-  @override
-  void dispose() {
-    _progressController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.surface,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 110),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ── Header ──
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
+      body: StitchBackdrop(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(18, 10, 18, 120),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: const [
+                    CircleAvatar(radius: 18, backgroundImage: AssetImage('assets/images/avatar.png')),
+                    SizedBox(width: 12),
+                    AppLogoWordmark(
+                      assetPath: 'assets/images/logoKeepBeat.png',
+                      logoSize: 28,
+                      textSize: 18,
+                      redText: true,
+                    ),
+                    Spacer(),
+                    Icon(Icons.notifications, color: Color(0xFF7C7A87)),
+                  ],
+                ),
+                const SizedBox(height: 22),
+                Row(
+                  children: [
+                    Expanded(child: _miniStat('AVG. HEART RATE', '74', 'BPM', '-2% week', AppTheme.primary, AppTheme.blueSoft)),
+                    const SizedBox(width: 12),
+                    Expanded(child: _miniStat('AVG. GLUCOSE', '5.6', 'g/L', 'Stable', AppTheme.blue, AppTheme.lavenderSoft)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                BentoTile(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('AI RECOVERY STATE',
-                          style: AppTheme.textTheme.labelSmall),
-                      const SizedBox(height: 4),
-                      Text('Recovery Mode',
-                          style: AppTheme.textTheme.headlineMedium),
-                    ],
-                  ),
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: AppTheme.bentoDecoration,
-                    child: const Icon(Icons.info_outline_rounded,
-                        color: AppTheme.primary, size: 20),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // ── Hero Recovery Card ──
-              Container(
-                padding: const EdgeInsets.all(28),
-                decoration: AppTheme.primaryCardDecoration,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Text(
-                            'PHASE 2 OF 3',
-                            style: AppTheme.textTheme.labelSmall?.copyWith(
-                              color: Colors.white,
-                              letterSpacing: 1.4,
-                              fontSize: 10,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Heart Rate Trends', style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 24)),
+                                Text('Last 7 days activity', style: AppTheme.textTheme.bodyLarge),
+                              ],
                             ),
                           ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '72%',
-                          style: AppTheme.textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(color: AppTheme.redSoft, borderRadius: BorderRadius.circular(16)),
+                            child: const Icon(Icons.favorite, color: AppTheme.primary),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(height: 180, child: CustomPaint(painter: _TrendPainter(color: AppTheme.primary))),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+                            .map((d) => Text(d, style: AppTheme.textTheme.labelSmall))
+                            .toList(),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF7F4F4),
+                          borderRadius: BorderRadius.circular(18),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Monitoring Stability',
-                      style: AppTheme.textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontSize: 22,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Your heart is stabilizing precisely. Stay active but monitor all fluctuations closely.',
-                      style: AppTheme.textTheme.bodyMedium?.copyWith(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Progress bar
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: AnimatedBuilder(
-                        animation: _progressController,
-                        builder: (_, __) => LinearProgressIndicator(
-                          value: _progressController.value,
-                          minHeight: 8,
-                          backgroundColor: Colors.white.withOpacity(0.2),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                              Colors.white),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _MetricText(title: 'PEAK BPM', value: '142'),
+                            _MetricText(title: 'RESTING', value: '62'),
+                            _MetricText(title: 'VARIABILITY', value: '45ms'),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Session: 14h 52m',
-                            style: AppTheme.textTheme.labelSmall
-                                ?.copyWith(color: Colors.white60, fontSize: 10)),
-                        Text('Est. complete: 4h 10m',
-                            style: AppTheme.textTheme.labelSmall
-                                ?.copyWith(color: Colors.white60, fontSize: 10)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Live Metrics Row ──
-              Row(
-                children: [
-                  Expanded(
-                    child: _metricCard(
-                      label: 'HEART RATE',
-                      value: '86',
-                      unit: 'BPM',
-                      icon: Icons.favorite_rounded,
-                      color: AppTheme.primary,
-                      trend: '+2',
-                      trendUp: true,
-                    ),
+                    ],
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: _metricCard(
-                      label: 'GLUCOSE',
-                      value: '5.6',
-                      unit: 'mmol/L',
-                      icon: Icons.opacity_rounded,
-                      color: AppTheme.accentOrange,
-                      trend: '-0.4',
-                      trendUp: false,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // ── AI Predictions ──
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: AppTheme.bentoDecoration,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text('AI PREDICTIONS',
-                        style: AppTheme.textTheme.labelSmall),
-                    const SizedBox(height: 16),
-                    _predictionItem(
-                      title: 'Metabolic Drift',
-                      desc: 'Moderate sync recovery expected in 4h.',
-                      icon: Icons.auto_awesome_rounded,
-                      color: AppTheme.accentPurple,
-                      confidence: 0.84,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      child: Divider(height: 1),
-                    ),
-                    _predictionItem(
-                      title: 'Heart Stability',
-                      desc: '98% normal heartbeat predicted for next 12h.',
-                      icon: Icons.favorite_outline_rounded,
-                      color: AppTheme.primary,
-                      confidence: 0.98,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      child: Divider(height: 1),
-                    ),
-                    _predictionItem(
-                      title: 'Glucose Regulation',
-                      desc: 'Levels projected to stabilize within 2h.',
-                      icon: Icons.show_chart_rounded,
-                      color: AppTheme.accentGreen,
-                      confidence: 0.76,
-                    ),
-                  ],
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // ── 12H Forecast Chart ──
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: AppTheme.bentoDecoration,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text('12H RECOVERY FORECAST',
-                        style: AppTheme.textTheme.labelSmall),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 120,
-                      child: CustomPaint(
-                        painter: _ForecastChartPainter(),
-                        size: const Size(double.infinity, 120),
+                const SizedBox(height: 20),
+                BentoTile(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Glucose Stability', style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 24)),
+                                Text('Daily glycemic index', style: AppTheme.textTheme.bodyLarge),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(color: AppTheme.blueSoft, borderRadius: BorderRadius.circular(16)),
+                            child: const Icon(Icons.bar_chart, color: AppTheme.blue),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: ['Now', '3h', '6h', '9h', '12h']
-                          .map((t) => Text(t,
-                              style: AppTheme.textTheme.labelSmall
-                                  ?.copyWith(fontSize: 10)))
-                          .toList(),
-                    ),
-                  ],
+                      const SizedBox(height: 22),
+                      SizedBox(height: 180, child: CustomPaint(painter: _TrendPainter(color: AppTheme.blue, fill: true))),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: AppTheme.lavenderSoft,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.auto_awesome, color: AppTheme.lavender),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'AI Insight: VitalGlass Prism predicts stable levels for the next 4 hours based on your activity data.',
+                                style: AppTheme.textTheme.labelLarge?.copyWith(color: const Color(0xFF7025B0)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Recovery Timeline ──
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: AppTheme.bentoDecoration,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text('RECOVERY TIMELINE',
-                        style: AppTheme.textTheme.labelSmall),
-                    const SizedBox(height: 16),
-                    _timelineItem('Glucose Re-entry', 'Completed 14h ago',
-                        true, AppTheme.accentGreen),
-                    _timelineItem('Stability Monitoring', 'In progress — 72%',
-                        true, AppTheme.primary),
-                    _timelineItem('Full Recovery Clearance',
-                        'Estimated in ~4h', false, AppTheme.onSurfaceMuted),
-                  ],
-                ),
-              ),
-            ],
+                const SizedBox(height: 22),
+                Text('Detailed Logs', style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 24)),
+                const SizedBox(height: 14),
+                _logItem(Icons.restaurant, 'Post-Lunch Peak', 'Today, 1:45 PM', '6.1 g/L', AppTheme.blue),
+                const SizedBox(height: 12),
+                _logItem(Icons.directions_run, 'Morning Cardio', 'Today, 8:15 AM', '128 BPM', AppTheme.primary),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _metricCard({
-    required String label,
-    required String value,
-    required String unit,
-    required IconData icon,
-    required Color color,
-    required String trend,
-    required bool trendUp,
-  }) {
+  Widget _miniStat(String label, String value, String unit, String chip, Color color, Color chipBg) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: AppTheme.bentoDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, color: color, size: 18),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: (trendUp ? AppTheme.primary : AppTheme.accentGreen)
-                      .withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Text(
-                  trend,
-                  style: AppTheme.textTheme.labelSmall?.copyWith(
-                    color: trendUp ? AppTheme.primary : AppTheme.accentGreen,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          Text(label, style: AppTheme.textTheme.labelSmall?.copyWith(color: const Color(0xFF45302D))),
           const SizedBox(height: 10),
-          Text(value,
-              style: AppTheme.textTheme.headlineMedium
-                  ?.copyWith(fontSize: 28, fontWeight: FontWeight.w900)),
-          Text(unit, style: AppTheme.textTheme.bodyMedium?.copyWith(fontSize: 12)),
-          const SizedBox(height: 4),
-          Text(label,
-              style: AppTheme.textTheme.labelSmall?.copyWith(fontSize: 10)),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(text: value, style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 30, color: color)),
+                TextSpan(text: ' $unit', style: AppTheme.textTheme.titleMedium?.copyWith(color: color.withOpacity(0.8))),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(color: chipBg, borderRadius: BorderRadius.circular(999)),
+            child: Text(chip, style: AppTheme.textTheme.labelLarge?.copyWith(color: color)),
+          ),
         ],
       ),
     );
   }
 
-  Widget _predictionItem({
-    required String title,
-    required String desc,
-    required IconData icon,
-    required Color color,
-    required double confidence,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: color, size: 20),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(title,
-                        style: AppTheme.textTheme.labelLarge
-                            ?.copyWith(fontSize: 14, color: color)),
-                  ),
-                  Text(
-                    '${(confidence * 100).toInt()}%',
-                    style: AppTheme.textTheme.labelSmall
-                        ?.copyWith(color: color, fontSize: 10),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(desc,
-                  style:
-                      AppTheme.textTheme.bodyMedium?.copyWith(fontSize: 12)),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: LinearProgressIndicator(
-                  value: confidence,
-                  minHeight: 4,
-                  backgroundColor: color.withOpacity(0.12),
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _timelineItem(
-      String title, String sub, bool done, Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+  Widget _logItem(IconData icon, String title, String time, String value, Color valueColor) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: AppTheme.bentoDecoration,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: done ? color : color.withOpacity(0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  done ? Icons.check_rounded : Icons.circle_outlined,
-                  color: done ? Colors.white : color,
-                  size: 16,
-                ),
-              ),
-            ],
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppTheme.blueSoft,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Icon(icon, color: valueColor),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: AppTheme.textTheme.labelLarge?.copyWith(
-                        fontSize: 14,
-                        color: done ? AppTheme.onSurface : AppTheme.onSurfaceMuted)),
-                const SizedBox(height: 2),
-                Text(sub,
-                    style: AppTheme.textTheme.bodyMedium?.copyWith(fontSize: 12)),
+                Text(title, style: AppTheme.textTheme.titleMedium),
+                Text(time, style: AppTheme.textTheme.bodyMedium),
               ],
             ),
           ),
+          Text(value, style: AppTheme.textTheme.titleLarge?.copyWith(color: valueColor)),
         ],
       ),
     );
   }
 }
 
-// Simple smooth forecast chart
-class _ForecastChartPainter extends CustomPainter {
-  const _ForecastChartPainter();
+class _MetricText extends StatelessWidget {
+  final String title;
+  final String value;
+  const _MetricText({required this.title, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTheme.textTheme.labelSmall?.copyWith(color: const Color(0xFF67514C))),
+        const SizedBox(height: 6),
+        Text(value, style: AppTheme.textTheme.titleLarge),
+      ],
+    );
+  }
+}
+
+class _TrendPainter extends CustomPainter {
+  final Color color;
+  final bool fill;
+  const _TrendPainter({required this.color, this.fill = false});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-
-    // Data points (normalized 0-1, representing recovery progress)
-    final points = [0.35, 0.45, 0.55, 0.62, 0.72, 0.78, 0.83, 0.87, 0.89, 0.91];
-    final coords = List.generate(points.length, (i) {
-      return Offset(w * i / (points.length - 1), h * (1 - points[i]));
-    });
-
-    // Gradient fill
-    final fillPath = Path()..moveTo(coords.first.dx, h);
-    for (int i = 0; i < coords.length - 1; i++) {
-      final cp1 = Offset((coords[i].dx + coords[i + 1].dx) / 2, coords[i].dy);
-      final cp2 = Offset((coords[i].dx + coords[i + 1].dx) / 2, coords[i + 1].dy);
-      fillPath.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, coords[i + 1].dx, coords[i + 1].dy);
-    }
-    fillPath.lineTo(w, h);
-    fillPath.close();
-
-    final fillPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [AppTheme.primary.withOpacity(0.18), AppTheme.primary.withOpacity(0.0)],
-      ).createShader(Rect.fromLTWH(0, 0, w, h));
-    canvas.drawPath(fillPath, fillPaint);
-
-    // Line
-    final linePath = Path()..moveTo(coords.first.dx, coords.first.dy);
-    for (int i = 0; i < coords.length - 1; i++) {
-      final cp1 = Offset((coords[i].dx + coords[i + 1].dx) / 2, coords[i].dy);
-      final cp2 = Offset((coords[i].dx + coords[i + 1].dx) / 2, coords[i + 1].dy);
-      linePath.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, coords[i + 1].dx, coords[i + 1].dy);
+    final path = Path();
+    final points = [
+      Offset(0, size.height * 0.72),
+      Offset(size.width * 0.16, size.height * 0.60),
+      Offset(size.width * 0.32, size.height * 0.45),
+      Offset(size.width * 0.46, size.height * 0.62),
+      Offset(size.width * 0.68, size.height * 0.26),
+      Offset(size.width * 0.86, size.height * 0.72),
+      Offset(size.width, size.height * 0.18),
+    ];
+    path.moveTo(points.first.dx, points.first.dy);
+    for (var i = 0; i < points.length - 1; i++) {
+      final a = points[i];
+      final b = points[i + 1];
+      final cp1 = Offset((a.dx + b.dx) / 2, a.dy);
+      final cp2 = Offset((a.dx + b.dx) / 2, b.dy);
+      path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, b.dx, b.dy);
     }
 
-    final linePaint = Paint()
-      ..color = AppTheme.primary
-      ..strokeWidth = 2.5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    canvas.drawPath(linePath, linePaint);
+    if (fill) {
+      final fillPath = Path.from(path)
+        ..lineTo(size.width, size.height)
+        ..lineTo(0, size.height)
+        ..close();
+      canvas.drawPath(
+        fillPath,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [color.withOpacity(0.18), Colors.transparent],
+          ).createShader(Rect.fromLTWH(0, 0, size.width, size.height)),
+      );
+    }
 
-    // End dot
-    final dotPaint = Paint()..color = AppTheme.primary;
-    canvas.drawCircle(coords.last, 5, dotPaint);
-    canvas.drawCircle(
-        coords.last, 5, Paint()..color = Colors.white..style = PaintingStyle.stroke..strokeWidth = 2);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..strokeWidth = 3
+        ..style = PaintingStyle.stroke,
+    );
   }
 
   @override
-  bool shouldRepaint(_ForecastChartPainter old) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

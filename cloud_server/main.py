@@ -112,6 +112,16 @@ async def delete_patient(id: str):
     await db.execute("DELETE FROM patients WHERE id = $1", id)
     return {"status": "deleted"}
 
+# --- Telemetry ---
+@app.get("/api/v1/telemetry/{patient_id}")
+async def get_telemetry(patient_id: str, limit: int = 10):
+    """Retrieve recent telemetry data for a specific patient."""
+    rows = await db.fetch_all(
+        "SELECT * FROM telemetry WHERE patient_id = $1 ORDER BY time DESC LIMIT $2", 
+        patient_id, limit
+    )
+    return [dict(r) for r in rows]
+
 # --- Doctor Management ---
 @app.get("/api/v1/doctors")
 async def get_doctors():
