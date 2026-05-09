@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 import 'widgets/bento_widgets.dart';
 
@@ -8,70 +9,81 @@ class AlertHistoryUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.surface,
-      body: StitchBackdrop(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.pageGradient),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 120),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: const [
-                    CircleAvatar(radius: 18, backgroundImage: AssetImage('assets/images/avatar.png')),
-                    SizedBox(width: 12),
-                    AppLogoWordmark(assetPath: 'assets/images/logoKeepBeat.png', logoSize: 28, textSize: 18, redText: true),
-                    Spacer(),
-                    Icon(Icons.notifications, color: Color(0xFF7B7A86)),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'ALERTS HISTORY',
+                      style: AppTheme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const CircleAvatar(
+                      radius: 18,
+                      backgroundImage: AssetImage('assets/images/avatar.png'),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 26),
-                Text('Alerts History', style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 26)),
-                const SizedBox(height: 6),
-                Text('Real-time health monitoring logs', style: AppTheme.textTheme.bodyLarge),
-                const SizedBox(height: 20),
-                _alertCard(
-                  icon: Icons.ac_unit,
-                  iconBg: AppTheme.redSoft,
+                const SizedBox(height: 28),
+                Text(
+                  'Past Alerts',
+                  style: AppTheme.textTheme.displaySmall?.copyWith(fontSize: 32),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Historical log of your heart & glucose alerts.',
+                  style: AppTheme.textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                _AlertCard(
+                  icon: Icons.emergency_rounded,
+                  iconBackground: AppTheme.primary.withOpacity(0.1),
+                  iconColor: AppTheme.primary,
+                  chipLabel: 'CRITICAL',
+                  chipColor: AppTheme.primary,
                   title: 'Hypoglycemia Alert',
-                  body: 'Blood glucose dropped below 70 mg/dL. Immediate sugar intake recommended.',
+                  body: 'Blood glucose dropped below 70 mg/dL. Immediate sugar intake was recommended.',
                   time: '2 hours ago',
-                  action: 'View Details',
-                  chip: 'CRITICAL',
-                  accent: AppTheme.primary,
+                  actionLabel: 'View Details',
                   tinted: true,
                 ),
-                const SizedBox(height: 18),
-                _alertCard(
-                  icon: Icons.sync,
-                  iconBg: AppTheme.blueSoft,
+                const SizedBox(height: 20),
+                _AlertCard(
+                  icon: Icons.sync_rounded,
+                  iconBackground: AppTheme.blue.withOpacity(0.1),
+                  iconColor: AppTheme.blue,
+                  chipLabel: 'SYSTEM',
+                  chipColor: AppTheme.blue,
                   title: 'Daily Sync Complete',
-                  body: 'All health data from your wearable devices has been successfully updated to the cloud twin.',
+                  body: 'All health data from your wearable devices has been successfully updated.',
                   time: 'Today, 8:45 AM',
-                  chip: 'SYSTEM',
-                  accent: AppTheme.blue,
                 ),
-                const SizedBox(height: 18),
-                _alertCard(
-                  icon: Icons.psychology,
-                  iconBg: AppTheme.lavenderSoft,
+                const SizedBox(height: 20),
+                _AlertCard(
+                  icon: Icons.psychology_rounded,
+                  iconBackground: AppTheme.lavender.withOpacity(0.1),
+                  iconColor: AppTheme.lavender,
+                  chipLabel: 'AI INSIGHT',
+                  chipColor: AppTheme.lavender,
                   title: 'Pattern Detected',
-                  body: 'Low activity levels detected in the last 48 hours. Consider a light 15-minute walk to maintain rhythm.',
+                  body: 'Low activity levels detected in the last 48 hours. AI recommends a light walk.',
                   time: 'Yesterday',
-                  chip: 'AI INSIGHT',
-                  accent: AppTheme.lavender,
+                  actionLabel: 'OPTIMIZE',
                   purple: true,
-                  action: 'OPTIMIZE',
-                ),
-                const SizedBox(height: 18),
-                _alertCard(
-                  icon: Icons.insert_chart,
-                  iconBg: const Color(0xFFEAF2FF),
-                  title: 'Monthly Summary Ready',
-                  body: 'Your comprehensive heart health report for November is now available for review.',
-                  time: 'Nov 1, 10:00 AM',
-                  chip: 'ACTIVITY',
-                  accent: const Color(0xFF3877F2),
+                  buttonAction: true,
                 ),
               ],
             ),
@@ -80,27 +92,55 @@ class AlertHistoryUI extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _alertCard({
-    required IconData icon,
-    required Color iconBg,
-    required String title,
-    required String body,
-    required String time,
-    required String chip,
-    required Color accent,
-    String? action,
-    bool tinted = false,
-    bool purple = false,
-  }) {
+class _AlertCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconBackground;
+  final Color iconColor;
+  final String chipLabel;
+  final Color chipColor;
+  final String title;
+  final String body;
+  final String time;
+  final String? actionLabel;
+  final bool tinted;
+  final bool purple;
+  final bool buttonAction;
+
+  const _AlertCard({
+    required this.icon,
+    required this.iconBackground,
+    required this.iconColor,
+    required this.chipLabel,
+    required this.chipColor,
+    required this.title,
+    required this.body,
+    required this.time,
+    this.actionLabel,
+    this.tinted = false,
+    this.purple = false,
+    this.buttonAction = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final backgroundColor = purple
+        ? AppTheme.lavenderSoft.withOpacity(0.72)
+        : tinted
+            ? const Color(0xFFFFF5F5)
+            : Colors.white;
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
-        color: purple ? AppTheme.lavenderSoft : (tinted ? const Color(0xFFFFF6F6) : Colors.white),
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(34),
-        border: Border.all(color: tinted ? const Color(0xFFF2D4D4) : AppTheme.line),
         boxShadow: const [
-          BoxShadow(color: AppTheme.shadow, blurRadius: 24, offset: Offset(0, 10)),
+          BoxShadow(
+            color: AppTheme.shadow,
+            blurRadius: 28,
+            offset: Offset(0, 12),
+          ),
         ],
       ),
       child: Column(
@@ -109,28 +149,80 @@ class AlertHistoryUI extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(18)),
-                child: Icon(icon, color: accent),
+                width: 58,
+                height: 58,
+                decoration: BoxDecoration(
+                  color: iconBackground,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Icon(icon, color: iconColor, size: 30),
               ),
               const Spacer(),
-              StatusBadge(label: chip, color: accent),
+              StatusBadge(
+                label: chipLabel,
+                color: chipColor,
+                inverted: tinted,
+              ),
             ],
           ),
+          const SizedBox(height: 24),
+          Text(
+            title,
+            style: AppTheme.textTheme.headlineMedium?.copyWith(fontSize: 22),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            body,
+            style: AppTheme.textTheme.bodyLarge?.copyWith(
+              color: AppTheme.onSurface.withOpacity(0.70),
+            ),
+          ),
           const SizedBox(height: 20),
-          Text(title, style: AppTheme.textTheme.headlineMedium?.copyWith(fontSize: 20)),
-          const SizedBox(height: 8),
-          Text(body, style: AppTheme.textTheme.bodyLarge?.copyWith(color: const Color(0xFF654946))),
-          const SizedBox(height: 18),
-          const Divider(color: AppTheme.line),
-          const SizedBox(height: 12),
+          Container(height: 1, color: AppTheme.lineSoft),
+          const SizedBox(height: 16),
           Row(
             children: [
-              Text(time, style: AppTheme.textTheme.bodyMedium?.copyWith(color: tinted ? AppTheme.primary : AppTheme.onSurfaceMuted)),
+              Text(
+                time,
+                style: AppTheme.textTheme.bodyMedium?.copyWith(
+                  color: tinted ? AppTheme.primary : AppTheme.onSurfaceMuted,
+                ),
+              ),
               const Spacer(),
-              if (action != null)
-                Text(action, style: AppTheme.textTheme.labelLarge?.copyWith(color: accent)),
+              if (actionLabel != null && !buttonAction)
+                Row(
+                  children: [
+                    Text(
+                      actionLabel!,
+                      style: AppTheme.textTheme.labelLarge?.copyWith(
+                        color: chipColor,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: chipColor,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              if (actionLabel != null && buttonAction)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.lavender,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    actionLabel!,
+                    style: AppTheme.textTheme.labelLarge?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
             ],
           ),
         ],

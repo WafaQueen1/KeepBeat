@@ -1,47 +1,42 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
+
 import '../../theme/app_theme.dart';
 
-// ─────────────────────────────────────────────────────────────
-//  STITCH BACKDROP — soft medical canvas + glass hints
-// ─────────────────────────────────────────────────────────────
 class StitchBackdrop extends StatelessWidget {
   final Widget child;
+
   const StitchBackdrop({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFFFEEF0),
-            Color(0xFFFFFAFB),
-            Color(0xFFF8F9FB),
-          ],
-          stops: [0.0, 0.55, 1.0],
-        ),
-      ),
+      decoration: const BoxDecoration(gradient: AppTheme.pageGradient),
       child: Stack(
         children: [
-          // subtle vignette
-          Positioned.fill(
-            child: IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0.0, -0.6),
-                    radius: 1.2,
-                    colors: [
-                      Colors.white.withOpacity(0.0),
-                      Colors.black.withOpacity(0.03),
-                    ],
-                    stops: const [0.55, 1.0],
-                  ),
-                ),
-              ),
+          Positioned(
+            top: -90,
+            left: -40,
+            child: _GlowBlob(
+              size: 240,
+              color: AppTheme.primary.withOpacity(0.08),
+            ),
+          ),
+          Positioned(
+            right: -60,
+            top: 180,
+            child: _GlowBlob(
+              size: 220,
+              color: AppTheme.lavender.withOpacity(0.06),
+            ),
+          ),
+          Positioned(
+            left: -70,
+            bottom: -40,
+            child: _GlowBlob(
+              size: 260,
+              color: AppTheme.primaryFixed.withOpacity(0.40),
             ),
           ),
           child,
@@ -51,13 +46,39 @@ class StitchBackdrop extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  GLASS PILL — used for status chips and micro-controls
-// ─────────────────────────────────────────────────────────────
+class _GlowBlob extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _GlowBlob({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color,
+          boxShadow: [
+            BoxShadow(
+              color: color,
+              blurRadius: size * 0.45,
+              spreadRadius: size * 0.05,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class GlassPill extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
   final Color? tint;
+
   const GlassPill({
     super.key,
     required this.child,
@@ -70,7 +91,7 @@ class GlassPill extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(999),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
@@ -78,12 +99,11 @@ class GlassPill extends StatelessWidget {
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
               color: Colors.white.withOpacity(0.65),
-              width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 18,
+                color: AppTheme.onSurface.withOpacity(0.06),
+                blurRadius: 22,
                 offset: const Offset(0, 10),
               ),
             ],
@@ -95,20 +115,17 @@ class GlassPill extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  BENTO TILE — Precision card wrapper (No-Line Rule)
-// ─────────────────────────────────────────────────────────────
 class BentoTile extends StatelessWidget {
-  final String title;
+  final String? title;
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Color? backgroundColor;
 
   const BentoTile({
     super.key,
-    required this.title,
+    this.title,
     required this.child,
-    this.padding = const EdgeInsets.all(32.0), // Generous medical spacing
+    this.padding = const EdgeInsets.all(26),
     this.backgroundColor,
   });
 
@@ -117,39 +134,35 @@ class BentoTile extends StatelessWidget {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppTheme.surfaceContainerLowest,
+        color: backgroundColor ?? Colors.white,
         borderRadius: BorderRadius.circular(AppTheme.outerRadius),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.7),
-          width: 1,
-        ),
-        boxShadow: [
-          // Multi-layer soft atmospheric shadows
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
+            color: AppTheme.shadow,
+            blurRadius: 28,
+            offset: Offset(0, 12),
           ),
           BoxShadow(
-            color: AppTheme.primary.withOpacity(0.015),
-            blurRadius: 60,
-            offset: const Offset(0, 25),
+            color: AppTheme.shadowTint,
+            blurRadius: 42,
+            offset: Offset(0, 22),
+            spreadRadius: -20,
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title.toUpperCase(),
-            style: AppTheme.textTheme.labelSmall?.copyWith(
-              letterSpacing: 2.5,
-              fontSize: 10,
-              fontWeight: FontWeight.w900,
-              color: AppTheme.onSurfaceMuted.withOpacity(0.3),
+          if (title != null && title!.isNotEmpty) ...[
+            Text(
+              title!.toUpperCase(),
+              style: AppTheme.textTheme.labelSmall?.copyWith(
+                color: AppTheme.onSurfaceMuted.withOpacity(0.72),
+                letterSpacing: 2.2,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 18),
+          ],
           child,
         ],
       ),
@@ -157,9 +170,6 @@ class BentoTile extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  VITAL BENTO CARD — single metric tile
-// ─────────────────────────────────────────────────────────────
 class VitalBentoCard extends StatelessWidget {
   final String label;
   final String value;
@@ -168,6 +178,8 @@ class VitalBentoCard extends StatelessWidget {
   final Color accent;
   final Widget? trailing;
   final String? status;
+  final bool showBar;
+
   const VitalBentoCard({
     super.key,
     required this.label,
@@ -177,110 +189,104 @@ class VitalBentoCard extends StatelessWidget {
     required this.accent,
     this.trailing,
     this.status,
+    this.showBar = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return BentoTile(
-      title: label,
       padding: const EdgeInsets.all(22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.12),
+                  color: accent.withOpacity(0.14),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(icon, color: accent, size: 22),
               ),
-              if (trailing != null) trailing!,
-              if (trailing == null && status != null)
+              const Spacer(),
+              if (trailing != null)
+                trailing!
+              else if (status != null)
                 GlassPill(
-                  tint: accent.withOpacity(0.14),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  tint: accent.withOpacity(0.12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 7,
+                  ),
                   child: Text(
-                    status!.toUpperCase(),
+                    status!,
                     style: AppTheme.textTheme.labelSmall?.copyWith(
                       color: accent,
-                      fontSize: 9,
-                      letterSpacing: 1.4,
+                      fontSize: 10,
                     ),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                value,
-                style: AppTheme.textTheme.displayMedium?.copyWith(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -1.2,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                unit,
-                style: AppTheme.textTheme.labelSmall?.copyWith(
-                  color: AppTheme.onSurfaceMuted.withOpacity(0.45),
-                  fontSize: 10,
-                  letterSpacing: 1.0,
-                ),
-              ),
-            ],
+          const SizedBox(height: 20),
+          Text(
+            label.toUpperCase(),
+            style: AppTheme.textTheme.labelSmall?.copyWith(
+              color: accent == AppTheme.lavender
+                  ? AppTheme.lavender
+                  : AppTheme.onSurfaceMuted.withOpacity(0.86),
+            ),
           ),
           const SizedBox(height: 10),
-          Container(
-            height: 6,
-            decoration: BoxDecoration(
-              color: accent.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(99),
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: FractionallySizedBox(
-                widthFactor: 0.68,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: accent.withOpacity(0.70),
-                    borderRadius: BorderRadius.circular(99),
-                    boxShadow: [
-                      BoxShadow(
-                        color: accent.withOpacity(0.35),
-                        blurRadius: 18,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: value,
+                  style: AppTheme.textTheme.displayMedium?.copyWith(
+                    fontSize: 42,
+                    letterSpacing: -2,
                   ),
+                ),
+                TextSpan(
+                  text: ' $unit',
+                  style: AppTheme.textTheme.titleMedium?.copyWith(
+                    color: AppTheme.onSurfaceMuted.withOpacity(0.75),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (showBar) ...[
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                minHeight: 6,
+                value: 0.68,
+                backgroundColor: accent.withOpacity(0.12),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  accent.withOpacity(0.75),
                 ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  STITCH BUTTON — 3.5D Hyper-Tactile Unit
-// ─────────────────────────────────────────────────────────────
 class StitchButton extends StatefulWidget {
   final VoidCallback onTap;
   final String text;
   final Color? backgroundColor;
   final Color textColor;
   final IconData? icon;
+  final bool iconTrailing;
+  final double height;
 
   const StitchButton({
     super.key,
@@ -289,7 +295,12 @@ class StitchButton extends StatefulWidget {
     this.backgroundColor,
     this.textColor = Colors.white,
     this.icon,
+    this.iconTrailing = true,
+    this.height = 64,
+    this.border,
   });
+
+  final BoxBorder? border;
 
   @override
   State<StitchButton> createState() => _StitchButtonState();
@@ -297,18 +308,18 @@ class StitchButton extends StatefulWidget {
 
 class _StitchButtonState extends State<StitchButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scale;
+  late final AnimationController _controller;
+  late final Animation<double> _scale;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 80), // Shorter, crisper feedback
+      duration: const Duration(milliseconds: 90),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.935).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCirc),
+    _scale = Tween<double>(begin: 1, end: 0.97).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
   }
 
@@ -323,56 +334,70 @@ class _StitchButtonState extends State<StitchButton>
     final baseColor = widget.backgroundColor ?? AppTheme.primary;
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
+      onTapCancel: _controller.reverse,
       onTapUp: (_) => _controller.reverse(),
-      onTapCancel: () => _controller.reverse(),
       onTap: widget.onTap,
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          height: 64,
+          height: widget.height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
+                Color.lerp(baseColor, Colors.white, 0.15)!,
                 baseColor,
-                baseColor.withAlpha(210), 
+                Color.lerp(baseColor, Colors.black, 0.05)!,
               ],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(22),
             boxShadow: [
-              // Living drop shadow
               BoxShadow(
                 color: baseColor.withOpacity(0.32),
                 blurRadius: 28,
-                offset: const Offset(0, 14),
+                offset: const Offset(0, 16),
+                spreadRadius: -4,
               ),
-              // Prominent top-left specular highlight
               BoxShadow(
-                color: Colors.white.withOpacity(0.35),
-                blurRadius: 8,
-                offset: const Offset(-4, -4),
-                spreadRadius: -2,
+                color: Colors.white.withOpacity(0.12),
+                blurRadius: 0,
+                offset: const Offset(0, 2),
+                spreadRadius: 0,
               ),
             ],
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (widget.icon != null) ...[
-                Icon(widget.icon, color: widget.textColor, size: 20),
-                const SizedBox(width: 12),
-              ],
-              Text(
-                widget.text.toUpperCase(),
-                style: AppTheme.textTheme.labelLarge?.copyWith(
-                  color: widget.textColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2.2,
-                ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              border: widget.border ?? Border.all(
+                color: Colors.white.withOpacity(0.18),
+                width: 1.5,
               ),
-            ],
+            ),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.icon != null && !widget.iconTrailing) ...[
+                    Icon(widget.icon, size: 20, color: widget.textColor),
+                    const SizedBox(width: 10),
+                  ],
+                  Text(
+                    widget.text,
+                    style: AppTheme.textTheme.titleLarge?.copyWith(
+                      color: widget.textColor,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.4,
+                    ),
+                  ),
+                  if (widget.icon != null && widget.iconTrailing) ...[
+                    const SizedBox(width: 10),
+                    Icon(widget.icon, size: 20, color: widget.textColor),
+                  ],
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -380,57 +405,12 @@ class _StitchButtonState extends State<StitchButton>
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  INSET WELL PAINTER — For recursive depth look
-// ─────────────────────────────────────────────────────────────
-class _InsetWellPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
-    final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(12));
-
-    // 1. Base Fill
-    canvas.drawRRect(rrect, Paint()..color = const Color(0xFFF1F2F4));
-
-    // 2. Inner Dark Shadow (Top Left)
-    final darkShadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.08)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
-    
-    canvas.save();
-    canvas.clipRRect(rrect);
-    canvas.translate(2, 2);
-    canvas.drawRRect(rrect, darkShadowPaint);
-    canvas.restore();
-
-    // 3. Inner White Highlight (Bottom Right)
-    final lightShadowPaint = Paint()
-      ..color = Colors.white.withOpacity(0.9)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-    
-    canvas.save();
-    canvas.clipRRect(rrect);
-    canvas.translate(-2, -2);
-    canvas.drawRRect(rrect, lightShadowPaint);
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-// ─────────────────────────────────────────────────────────────
-//  STITCH INPUT — Hyper-Refined Inset Well
-// ─────────────────────────────────────────────────────────────
-class StitchInput extends StatelessWidget {
+class StitchInput extends StatefulWidget {
   final String hintText;
   final IconData? prefixIcon;
   final bool isPassword;
   final TextEditingController? controller;
+  final TextInputType? keyboardType;
 
   const StitchInput({
     super.key,
@@ -438,37 +418,82 @@ class StitchInput extends StatelessWidget {
     this.prefixIcon,
     this.isPassword = false,
     this.controller,
+    this.keyboardType,
   });
 
   @override
+  State<StitchInput> createState() => _StitchInputState();
+}
+
+class _StitchInputState extends State<StitchInput> {
+  late bool _obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.isPassword;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _InsetWellPainter(),
-      child: Container(
-        height: 64,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Center(
-          child: TextField(
-            controller: controller,
-            obscureText: isPassword,
-            cursorColor: AppTheme.primary,
-            style: AppTheme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppTheme.onSurface,
-              fontSize: 16,
-            ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: AppTheme.textTheme.bodyMedium?.copyWith(
-                color: AppTheme.onSurfaceMuted.withOpacity(0.3),
-                fontWeight: FontWeight.w600,
-              ),
-              prefixIcon: prefixIcon != null
-                  ? Icon(prefixIcon, color: AppTheme.onSurfaceMuted.withOpacity(0.5), size: 20)
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-            ),
+    return Container(
+      height: 64,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F3F5),
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withOpacity(0.95),
+            blurRadius: 0,
+            spreadRadius: 1,
+            offset: const Offset(-1, -1),
+          ),
+          BoxShadow(
+            color: AppTheme.primary.withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(6, 8),
+            spreadRadius: -10,
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: widget.controller,
+        obscureText: _obscureText,
+        keyboardType: widget.keyboardType,
+        style: AppTheme.textTheme.bodyLarge?.copyWith(
+          color: AppTheme.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+        decoration: InputDecoration(
+          hintText: widget.hintText,
+          hintStyle: AppTheme.textTheme.bodyLarge?.copyWith(
+            color: AppTheme.onSurfaceMuted.withOpacity(0.45),
+            fontWeight: FontWeight.w500,
+          ),
+          prefixIcon: widget.prefixIcon != null
+              ? Icon(
+                  widget.prefixIcon,
+                  color: AppTheme.onSurfaceMuted.withOpacity(0.72),
+                  size: 20,
+                )
+              : null,
+          suffixIcon: widget.isPassword
+              ? IconButton(
+                  onPressed: () {
+                    setState(() => _obscureText = !_obscureText);
+                  },
+                  icon: Icon(
+                    _obscureText
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
+                    color: AppTheme.onSurfaceMuted.withOpacity(0.64),
+                  ),
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 22,
+            vertical: 20,
           ),
         ),
       ),
@@ -476,185 +501,6 @@ class StitchInput extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  VOLUMETRIC HEART PAINTER (Advanced Claymorphism)
-// ─────────────────────────────────────────────────────────────
-class _VolumetricHeartPainter extends CustomPainter {
-  final double pulse; // 0.0 -> 1.0 animation progress
-
-  _VolumetricHeartPainter({required this.pulse});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final path = _heartPath(w, h);
-
-    // 1. Atmosphere Glow (Softer, broader outer glow)
-    final glowPaint = Paint()
-      ..color = AppTheme.primary.withOpacity(0.12 + (pulse * 0.05))
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 32 + (pulse * 10));
-    canvas.drawPath(path, glowPaint);
-
-    // 2. Primary 3D Body (Sophisticated Multi-Gradient)
-    final bodyPaint = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(-0.25, -0.35),
-        radius: 1.1,
-        colors: [
-          Color.lerp(const Color(0xFFFF5E7E), const Color(0xFFFF7E9E), pulse)!, // Interactive light source
-          const Color(0xFFB6171E), // Signature Red
-          const Color(0xFF4A0003), // Deep shadow base
-        ],
-        stops: const [0.0, 0.65, 1.0],
-      ).createShader(Rect.fromLTWH(0, 0, w, h));
-    canvas.drawPath(path, bodyPaint);
-
-    // 3. Specular Highlight (The 'Wet' Gloss link)
-    final specularPaint = Paint()
-      ..color = Colors.white.withOpacity(0.38 + (pulse * 0.12))
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(w * 0.32, h * 0.28),
-        width: w * 0.28,
-        height: h * 0.16,
-      ),
-      specularPaint,
-    );
-
-    // 4. Inner Depth Rim (Bottom Shadow)
-    final rimPaint = Paint()
-      ..color = Colors.black.withOpacity(0.18)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(w * 0.65, h * 0.72),
-        width: w * 0.32,
-        height: h * 0.20,
-      ),
-      rimPaint,
-    );
-  }
-
-  Path _heartPath(double w, double h) {
-    final p = Path();
-    p.moveTo(w * 0.5, h * 0.90);
-    p.cubicTo(w * 0.12, h * 0.68, w * -0.18, h * 0.35, w * 0.2, h * 0.14);
-    p.cubicTo(w * 0.4, h * -0.02, w * 0.5, h * 0.2, w * 0.5, h * 0.2);
-    p.cubicTo(w * 0.5, h * 0.2, w * 0.6, h * -0.02, w * 0.8, h * 0.14);
-    p.cubicTo(w * 1.18, h * 0.35, w * 0.88, h * 0.68, w * 0.5, h * 0.90);
-    p.close();
-    return p;
-  }
-
-  @override
-  bool shouldRepaint(_VolumetricHeartPainter old) => old.pulse != pulse;
-}
-
-// ─────────────────────────────────────────────────────────────
-//  STITCH HEART — Hyper-Realistic Organic Unit
-// ─────────────────────────────────────────────────────────────
-class StitchHeart extends StatefulWidget {
-  final int bpm;
-  final double size;
-  final bool showBpm;
-
-  const StitchHeart({
-    super.key, 
-    required this.bpm, 
-    this.size = 140,
-    this.showBpm = true,
-  });
-
-  @override
-  State<StitchHeart> createState() => _StitchHeartState();
-}
-
-class _StitchHeartState extends State<StitchHeart>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _pulseAnim;
-  late Animation<double> _scaleAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2), // Slower, more natural base
-    )..repeat();
-
-    _pulseAnim = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-
-    // Subtle natural scale animation (Lub-Dub feel)
-    _scaleAnim = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.08).chain(CurveTween(curve: Curves.easeOutCubic)), weight: 20),
-      TweenSequenceItem(tween: Tween(begin: 1.08, end: 1.02).chain(CurveTween(curve: Curves.easeInCubic)), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: 1.02, end: 1.05).chain(CurveTween(curve: Curves.easeOutCubic)), weight: 15),
-      TweenSequenceItem(tween: Tween(begin: 1.05, end: 1.0).chain(CurveTween(curve: Curves.easeInOutCubic)), weight: 50),
-    ]).animate(_controller);
-  }
-
-  @override
-  void didUpdateWidget(StitchHeart old) {
-    if (old.bpm != widget.bpm) {
-      _controller.duration = Duration(milliseconds: (60000 / widget.bpm.clamp(40, 180)).round() * 2); 
-    }
-    super.didUpdateWidget(old);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Transform.scale(
-              scale: _scaleAnim.value,
-              child: CustomPaint(
-                size: Size(widget.size, widget.size * 0.9),
-                painter: _VolumetricHeartPainter(pulse: _pulseAnim.value),
-              ),
-            ),
-            if (widget.showBpm) ...[
-              const SizedBox(height: 20),
-              Text(
-                widget.bpm.toString(),
-                style: AppTheme.textTheme.displayLarge?.copyWith(
-                  fontSize: 58,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -3.0,
-                ),
-              ),
-              Text(
-                'VITAL BPM',
-                style: AppTheme.textTheme.labelSmall?.copyWith(
-                  color: AppTheme.onSurfaceMuted.withOpacity(0.35),
-                  letterSpacing: 4.0,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ],
-          ],
-        );
-      },
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-//  SOCIAL AUTH TILE — Stitch Medical Style
-// ─────────────────────────────────────────────────────────────
 class SocialAuthTile extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -672,30 +518,35 @@ class SocialAuthTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 64,
+        height: 78,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
+          color: Colors.white.withOpacity(0.96),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: const [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: AppTheme.shadow,
               blurRadius: 20,
-              offset: const Offset(0, 10),
+              offset: Offset(0, 10),
             ),
           ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20, color: AppTheme.onSurface),
-            const SizedBox(width: 14),
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F5F7),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, size: 16, color: AppTheme.onSurface),
+            ),
+            const SizedBox(width: 12),
             Text(
-              label.toUpperCase(),
-              style: AppTheme.textTheme.labelSmall?.copyWith(
-                color: AppTheme.onSurface,
-                fontSize: 12,
-                letterSpacing: 1.5,
-                fontWeight: FontWeight.w900,
+              label,
+              style: AppTheme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -705,105 +556,81 @@ class SocialAuthTile extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  STATUS BADGE — High-contrast clinical indicator
-// ─────────────────────────────────────────────────────────────
 class StatusBadge extends StatelessWidget {
   final String label;
   final Color color;
   final bool inverted;
+  final EdgeInsetsGeometry? padding;
 
   const StatusBadge({
     super.key,
     required this.label,
     required this.color,
     this.inverted = false,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: padding ??
+          const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 7,
+          ),
       decoration: BoxDecoration(
-        color: inverted ? Colors.white : color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: inverted ? Colors.white24 : color.withOpacity(0.2),
-          width: 1,
-        ),
+        color: inverted ? Colors.white : color.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label.toUpperCase(),
         style: AppTheme.textTheme.labelSmall?.copyWith(
-          color: inverted ? color : color,
+          color: color,
           fontSize: 10,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.2,
+          letterSpacing: 1.5,
         ),
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  ECG PAINTER — Real-time cardiac rhythm strip
-// ─────────────────────────────────────────────────────────────
-class EcgPainter extends CustomPainter {
-  final double progress;
+class CircularStatusIndicator extends StatelessWidget {
+  final double value;
   final Color color;
+  final double size;
 
-  EcgPainter({required this.progress, required this.color});
+  const CircularStatusIndicator({
+    super.key,
+    required this.value,
+    required this.color,
+    this.size = 40,
+  });
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color.withOpacity(0.6)
-      ..strokeWidth = 2.0
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final path = Path();
-    final step = size.width / 100;
-    
-    path.moveTo(0, size.height / 2);
-
-    for (var i = 0; i < 100; i++) {
-      final x = i * step;
-      // Synthetic ECG logic with peaks
-      double y = size.height / 2;
-      
-      final normX = (i / 100 + progress) % 1.0;
-      
-      if (normX > 0.4 && normX < 0.45) {
-        // P-Wave
-        y -= 4;
-      } else if (normX >= 0.45 && normX < 0.47) {
-        // Q-Dip
-        y += 4;
-      } else if (normX >= 0.47 && normX < 0.50) {
-        // R-Peak
-        y -= 18;
-      } else if (normX >= 0.50 && normX < 0.53) {
-        // S-Dip
-        y += 8;
-      } else if (normX > 0.6 && normX < 0.7) {
-        // T-Wave
-        y -= 6;
-      }
-
-      path.lineTo(x, y);
-    }
-
-    canvas.drawPath(path, paint);
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CircularProgressIndicator(
+            value: 1,
+            strokeWidth: 4,
+            valueColor: AlwaysStoppedAnimation<Color>(color.withOpacity(0.12)),
+          ),
+          CircularProgressIndicator(
+            value: value,
+            strokeCap: StrokeCap.round,
+            strokeWidth: 4,
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+          ),
+        ],
+      ),
+    );
   }
-
-  @override
-  bool shouldRepaint(covariant EcgPainter oldDelegate) => true;
 }
 
-// ─────────────────────────────────────────────────────────────
-//  AI INSIGHT BANNER — Lavender Clinical Ribbon
-// ─────────────────────────────────────────────────────────────
 class AiInsightBanner extends StatelessWidget {
   final String title;
   final String description;
@@ -823,23 +650,30 @@ class AiInsightBanner extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
         decoration: BoxDecoration(
-          color: const Color(0xFFF7F2FA), // Premium Lavender Surface
-          borderRadius: BorderRadius.circular(AppTheme.innerRadius * 2),
+          color: AppTheme.lavenderSoft.withOpacity(0.72),
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: const [
+            BoxShadow(
+              color: AppTheme.shadow,
+              blurRadius: 20,
+              offset: Offset(0, 10),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
-              width: 44,
-              height: 44,
+              width: 46,
+              height: 46,
               decoration: BoxDecoration(
-                color: AppTheme.tertiary.withOpacity(0.12),
-                shape: BoxShape.circle,
+                color: AppTheme.lavender.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: AppTheme.tertiary, size: 22),
+              child: Icon(icon, color: AppTheme.lavender, size: 22),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -847,19 +681,15 @@ class AiInsightBanner extends StatelessWidget {
                   Text(
                     title.toUpperCase(),
                     style: AppTheme.textTheme.labelSmall?.copyWith(
-                      color: AppTheme.tertiary,
-                      fontSize: 10,
-                      letterSpacing: 1.2,
+                      color: AppTheme.lavender,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     description,
-                    style: AppTheme.textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.onSurface.withOpacity(0.7),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      height: 1.3,
+                    style: AppTheme.textTheme.bodyLarge?.copyWith(
+                      fontSize: 13.5,
+                      color: AppTheme.onSurface.withOpacity(0.82),
                     ),
                   ),
                 ],
@@ -867,7 +697,7 @@ class AiInsightBanner extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: AppTheme.onSurface.withOpacity(0.2),
+              color: AppTheme.onSurfaceMuted.withOpacity(0.50),
               size: 24,
             ),
           ],
@@ -877,39 +707,90 @@ class AiInsightBanner extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  CIRCULAR STATUS INDICATOR — Bento-friendly progress
-// ─────────────────────────────────────────────────────────────
-class CircularStatusIndicator extends StatelessWidget {
-  final double value; // 0.0 to 1.0
-  final Color color;
+class AppLogoWordmark extends StatelessWidget {
+  final String assetPath;
+  final double logoSize;
+  final double textSize;
+  final bool redText;
+  final FontStyle? fontStyle;
 
-  const CircularStatusIndicator({
+  const AppLogoWordmark({
     super.key,
-    required this.value,
-    required this.color,
+    required this.assetPath,
+    this.logoSize = 32,
+    this.textSize = 20,
+    this.redText = false,
+    this.fontStyle,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 38,
-      height: 38,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          CircularProgressIndicator(
-            value: 1.0,
-            strokeWidth: 4,
-            valueColor: AlwaysStoppedAnimation<Color>(color.withOpacity(0.1)),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          assetPath,
+          width: logoSize,
+          height: logoSize,
+          fit: BoxFit.contain,
+        ),
+        const SizedBox(width: 10),
+        Text(
+          'KeepBeat',
+          style: AppTheme.textTheme.headlineMedium?.copyWith(
+            fontSize: textSize,
+            color: redText ? AppTheme.primary : AppTheme.onSurface,
+            fontWeight: FontWeight.w800,
+            fontStyle: fontStyle,
           ),
-          CircularProgressIndicator(
-            value: value,
-            strokeWidth: 4,
-            strokeCap: StrokeCap.round,
-            valueColor: AlwaysStoppedAnimation<Color>(color),
+        ),
+      ],
+    );
+  }
+}
+
+class GlassCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final double? minHeight;
+
+  const GlassCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(24),
+    this.minHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Container(
+          width: double.infinity,
+          constraints: BoxConstraints(minHeight: minHeight ?? 0),
+          padding: padding,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.88),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: Colors.white.withOpacity(0.70)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 26,
+                offset: const Offset(0, 14),
+              ),
+              BoxShadow(
+                color: AppTheme.primary.withOpacity(0.08),
+                blurRadius: 48,
+                offset: const Offset(0, 28),
+                spreadRadius: -18,
+              ),
+            ],
           ),
-        ],
+          child: child,
+        ),
       ),
     );
   }

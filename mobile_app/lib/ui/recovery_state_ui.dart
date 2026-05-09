@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 import 'widgets/bento_widgets.dart';
 
@@ -8,143 +9,176 @@ class RecoveryStateUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.surface,
-      body: StitchBackdrop(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.pageGradient),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(18, 10, 18, 120),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 120),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  children: const [
-                    CircleAvatar(radius: 18, backgroundImage: AssetImage('assets/images/avatar.png')),
-                    SizedBox(width: 12),
-                    AppLogoWordmark(
-                      assetPath: 'assets/images/logoKeepBeat.png',
-                      logoSize: 28,
-                      textSize: 18,
-                      redText: true,
-                    ),
-                    Spacer(),
-                    Icon(Icons.notifications, color: Color(0xFF7C7A87)),
-                  ],
-                ),
-                const SizedBox(height: 22),
-                Row(
                   children: [
-                    Expanded(child: _miniStat('AVG. HEART RATE', '74', 'BPM', '-2% week', AppTheme.primary, AppTheme.blueSoft)),
-                    const SizedBox(width: 12),
-                    Expanded(child: _miniStat('AVG. GLUCOSE', '5.6', 'g/L', 'Stable', AppTheme.blue, AppTheme.lavenderSoft)),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    Text(
+                      'RECOVERY PLAN',
+                      style: AppTheme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const Spacer(),
+                    const CircleAvatar(
+                      radius: 18,
+                      backgroundImage: AssetImage('assets/images/avatar.png'),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                BentoTile(
+                const SizedBox(height: 24),
+                // Phase Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF6E56CF), Color(0xFF533F9F)],
+                    ),
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF6E56CF).withOpacity(0.3),
+                        blurRadius: 30,
+                        offset: const Offset(0, 15),
+                      ),
+                    ],
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Heart Rate Trends', style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 24)),
-                                Text('Last 7 days activity', style: AppTheme.textTheme.bodyLarge),
-                              ],
+                          const Icon(Icons.history_toggle_off_rounded, color: Colors.white),
+                          const SizedBox(width: 12),
+                          Text(
+                            'RECOVERY PHASE 1',
+                            style: AppTheme.textTheme.labelSmall?.copyWith(
+                              color: Colors.white.withOpacity(0.8),
+                              letterSpacing: 2,
                             ),
                           ),
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(color: AppTheme.redSoft, borderRadius: BorderRadius.circular(16)),
-                            child: const Icon(Icons.favorite, color: AppTheme.primary),
-                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'GLUCOSE STABILIZATION',
+                        style: AppTheme.textTheme.headlineMedium?.copyWith(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Vital signs normalization in progress. AI is monitoring stability patterns.',
+                        style: AppTheme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Digital Twin Section
+                BentoTile(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('DIGITAL TWIN STATUS', style: AppTheme.textTheme.labelSmall),
+                          const StatusBadge(label: 'SYNCED', color: AppTheme.blue),
                         ],
                       ),
                       const SizedBox(height: 24),
-                      SizedBox(height: 180, child: CustomPaint(painter: _TrendPainter(color: AppTheme.primary))),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
-                            .map((d) => Text(d, style: AppTheme.textTheme.labelSmall))
-                            .toList(),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF7F4F4),
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _MetricText(title: 'PEAK BPM', value: '142'),
-                            _MetricText(title: 'RESTING', value: '62'),
-                            _MetricText(title: 'VARIABILITY', value: '45ms'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                BentoTile(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Glucose Stability', style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 24)),
-                                Text('Daily glycemic index', style: AppTheme.textTheme.bodyLarge),
+                      Center(
+                        child: Container(
+                          width: 200,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.white.withOpacity(0.05),
+                                Colors.black.withOpacity(0.05),
                               ],
                             ),
                           ),
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(color: AppTheme.blueSoft, borderRadius: BorderRadius.circular(16)),
-                            child: const Icon(Icons.bar_chart, color: AppTheme.blue),
+                          child: Image.asset(
+                            'assets/images/heart.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _RecoveryMetric(
+                              label: 'HEART RATE',
+                              value: '82',
+                              unit: 'BPM',
+                              color: AppTheme.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _RecoveryMetric(
+                              label: 'GLUCOSE',
+                              value: '78',
+                              unit: 'MG/DL',
+                              color: AppTheme.blue,
+                            ),
                           ),
                         ],
-                      ),
-                      const SizedBox(height: 22),
-                      SizedBox(height: 180, child: CustomPaint(painter: _TrendPainter(color: AppTheme.blue, fill: true))),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: AppTheme.lavenderSoft,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.auto_awesome, color: AppTheme.lavender),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'AI Insight: VitalGlass Prism predicts stable levels for the next 4 hours based on your activity data.',
-                                style: AppTheme.textTheme.labelLarge?.copyWith(color: const Color(0xFF7025B0)),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 22),
-                Text('Detailed Logs', style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 24)),
-                const SizedBox(height: 14),
-                _logItem(Icons.restaurant, 'Post-Lunch Peak', 'Today, 1:45 PM', '6.1 g/L', AppTheme.blue),
+                const SizedBox(height: 24),
+                // Instruction List
+                Text(
+                  'IMMEDIATE STEPS',
+                  style: AppTheme.textTheme.labelSmall?.copyWith(letterSpacing: 2),
+                ),
+                const SizedBox(height: 16),
+                _InstructionItem(
+                  icon: Icons.check_circle_outline_rounded,
+                  title: 'Check Glucose Level',
+                  description: 'Verify current sugar levels before consuming any fast-acting carbs.',
+                  color: AppTheme.blue,
+                ),
                 const SizedBox(height: 12),
-                _logItem(Icons.directions_run, 'Morning Cardio', 'Today, 8:15 AM', '128 BPM', AppTheme.primary),
+                _InstructionItem(
+                  icon: Icons.medical_services_outlined,
+                  title: 'Sit & Rest',
+                  description: 'Avoid physical activity for at least 15 minutes until HR stabilizes.',
+                  color: AppTheme.primary,
+                ),
+                const SizedBox(height: 12),
+                _InstructionItem(
+                  icon: Icons.contact_support_outlined,
+                  title: 'Notify Doctor',
+                  description: 'If disconnect occurs, check if pacemaker is correctly positioned.',
+                  color: AppTheme.lavender,
+                ),
               ],
             ),
           ),
@@ -153,135 +187,103 @@ class RecoveryStateUI extends StatelessWidget {
     );
   }
 
-  Widget _miniStat(String label, String value, String unit, String chip, Color color, Color chipBg) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: AppTheme.bentoDecoration,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: AppTheme.textTheme.labelSmall?.copyWith(color: const Color(0xFF45302D))),
-          const SizedBox(height: 10),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(text: value, style: AppTheme.textTheme.displayMedium?.copyWith(fontSize: 30, color: color)),
-                TextSpan(text: ' $unit', style: AppTheme.textTheme.titleMedium?.copyWith(color: color.withOpacity(0.8))),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(color: chipBg, borderRadius: BorderRadius.circular(999)),
-            child: Text(chip, style: AppTheme.textTheme.labelLarge?.copyWith(color: color)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _logItem(IconData icon, String title, String time, String value, Color valueColor) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: AppTheme.bentoDecoration,
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppTheme.blueSoft,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Icon(icon, color: valueColor),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: AppTheme.textTheme.titleMedium),
-                Text(time, style: AppTheme.textTheme.bodyMedium),
-              ],
-            ),
-          ),
-          Text(value, style: AppTheme.textTheme.titleLarge?.copyWith(color: valueColor)),
-        ],
-      ),
-    );
-  }
-}
-
-class _MetricText extends StatelessWidget {
-  final String title;
+class _RecoveryMetric extends StatelessWidget {
+  final String label;
   final String value;
-  const _MetricText({required this.title, required this.value});
+  final String unit;
+  final Color color;
+
+  const _RecoveryMetric({
+    required this.label,
+    required this.value,
+    required this.unit,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppTheme.textTheme.labelSmall?.copyWith(color: const Color(0xFF67514C))),
-        const SizedBox(height: 6),
-        Text(value, style: AppTheme.textTheme.titleLarge),
+        Text(label, style: AppTheme.textTheme.labelSmall?.copyWith(fontSize: 9)),
+        const SizedBox(height: 8),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: value,
+                style: AppTheme.textTheme.displaySmall?.copyWith(color: color, fontSize: 32),
+              ),
+              TextSpan(
+                text: ' $unit',
+                style: AppTheme.textTheme.labelLarge?.copyWith(color: AppTheme.onSurfaceMuted),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 }
 
-class _TrendPainter extends CustomPainter {
+class _InstructionItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String description;
   final Color color;
-  final bool fill;
-  const _TrendPainter({required this.color, this.fill = false});
+
+  const _InstructionItem({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.color,
+  });
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path();
-    final points = [
-      Offset(0, size.height * 0.72),
-      Offset(size.width * 0.16, size.height * 0.60),
-      Offset(size.width * 0.32, size.height * 0.45),
-      Offset(size.width * 0.46, size.height * 0.62),
-      Offset(size.width * 0.68, size.height * 0.26),
-      Offset(size.width * 0.86, size.height * 0.72),
-      Offset(size.width, size.height * 0.18),
-    ];
-    path.moveTo(points.first.dx, points.first.dy);
-    for (var i = 0; i < points.length - 1; i++) {
-      final a = points[i];
-      final b = points[i + 1];
-      final cp1 = Offset((a.dx + b.dx) / 2, a.dy);
-      final cp2 = Offset((a.dx + b.dx) / 2, b.dy);
-      path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, b.dx, b.dy);
-    }
-
-    if (fill) {
-      final fillPath = Path.from(path)
-        ..lineTo(size.width, size.height)
-        ..lineTo(0, size.height)
-        ..close();
-      canvas.drawPath(
-        fillPath,
-        Paint()
-          ..shader = LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [color.withOpacity(0.18), Colors.transparent],
-          ).createShader(Rect.fromLTWH(0, 0, size.width, size.height)),
-      );
-    }
-
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = color
-        ..strokeWidth = 3
-        ..style = PaintingStyle.stroke,
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTheme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: AppTheme.textTheme.bodyMedium?.copyWith(color: AppTheme.onSurfaceMuted),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers/vitals_provider.dart';
+import '../services/hybrid_sensor_service.dart';
 import '../theme/app_theme.dart';
 import 'widgets/bento_widgets.dart';
-import '../services/hybrid_sensor_service.dart';
-import '../providers/vitals_provider.dart';
 
 class PatientDashboardUI extends ConsumerStatefulWidget {
   final HybridSensorService sensorService;
@@ -20,21 +21,21 @@ class PatientDashboardUI extends ConsumerStatefulWidget {
 }
 
 class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
-    with TickerProviderStateMixin {
-  late AnimationController _pulseController;
-  
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _orbController;
+
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
+    _orbController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 2400),
     )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
+    _orbController.dispose();
     super.dispose();
   }
 
@@ -47,93 +48,104 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: StitchBackdrop(
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppTheme.pageGradient),
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(24, 14, 24, 120),
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 120),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildHeader(context),
-                const SizedBox(height: 22),
-
-                _buildHeartHero(heartRate),
+                Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 22,
+                      backgroundImage: AssetImage('assets/images/avatar.png'),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'WELCOME BACK,',
+                          style: AppTheme.textTheme.labelSmall?.copyWith(
+                            fontSize: 9,
+                            letterSpacing: 2,
+                            color: AppTheme.onSurface.withOpacity(0.5),
+                          ),
+                        ),
+                        Text(
+                          'Wafa Queen',
+                          style: AppTheme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(Icons.notifications_none_rounded, color: AppTheme.onSurface),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                _HeroOrb(animation: _orbController),
+                const SizedBox(height: 32),
+                _HeartRateCard(heartRate: heartRate),
                 const SizedBox(height: 18),
-
-                _buildHeartRateCard(heartRate),
-                const SizedBox(height: 16),
-
                 Row(
                   children: [
                     Expanded(
                       child: VitalBentoCard(
                         label: 'Glucose',
                         value: glucose.toStringAsFixed(1),
-                        unit: 'g/L',
+                        unit: 'mg/dL',
                         icon: Icons.water_drop_rounded,
-                        accent: AppTheme.accentBlue,
-                        status: (glucose < 0.70 || glucose > 2.50) ? 'CRITICAL' : 'STABLE',
+                        accent: AppTheme.blue,
+                        status: (glucose < 70 || glucose > 180)
+                            ? 'ALERT'
+                            : 'OPTIMAL',
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: VitalBentoCard(
                         label: 'Battery',
-                        value: batteryPct.toStringAsFixed(0),
+                        value: batteryPct.toInt().toString(),
                         unit: '%',
                         icon: Icons.bolt_rounded,
-                        accent: AppTheme.accentPurple,
+                        accent: AppTheme.lavender,
                         trailing: CircularStatusIndicator(
-                          value: (batteryPct.clamp(0, 100)) / 100.0,
-                          color: AppTheme.accentPurple,
+                          value: (batteryPct.clamp(0, 100)) / 100,
+                          color: AppTheme.lavender,
+                          size: 38,
                         ),
                       ),
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 16),
-
+                const SizedBox(height: 18),
                 AiInsightBanner(
-                  title: 'Digital Twin',
+                  title: 'AI INSIGHT',
                   description:
-                      'Synchronized — forecast + reactive plan ready. Tap to view twin prediction.',
+                      "Your cardiac rhythm is perfectly synchronized. Recovery rate is 94%.",
                   icon: Icons.auto_awesome_rounded,
                   onTap: widget.onNavigateToAI,
                 ),
-
-                if (latestAlert != null) ...[
-                  const SizedBox(height: 14),
-                  BentoTile(
-                    title: 'Clinical Alert',
-                    padding: const EdgeInsets.all(18),
-                    backgroundColor: const Color(0xFFFFF5F6),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppTheme.primary.withOpacity(0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.warning_rounded, color: AppTheme.primary),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Text(
-                            latestAlert,
-                            style: AppTheme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
@@ -141,159 +153,96 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
       ),
     );
   }
+}
 
-  // --- Header Implementation ---
-  Widget _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            // Premium SJ Avatar
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.primary.withOpacity(0.05), width: 1),
-              ),
-              child: Center(
-                child: Text(
-                  _getInitials('Sarah Jenkins'),
-                  style: AppTheme.textTheme.labelLarge?.copyWith(
-                    color: AppTheme.primary,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Keep',
-                    style: AppTheme.textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.primary,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'Beat',
-                    style: AppTheme.textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.primary,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.of(context).pushNamed('/emergency'),
-              child: GlassPill(
-                tint: AppTheme.primaryFixed,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Row(
-                  children: [
-                    const Icon(Icons.sos_rounded, size: 18, color: AppTheme.primary),
-                    const SizedBox(width: 8),
-                    Text(
-                      'SOS',
-                      style: AppTheme.textTheme.labelLarge?.copyWith(
-                        color: AppTheme.primary,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 12,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+class _HeroOrb extends StatelessWidget {
+  final AnimationController animation;
 
-  // --- Antigravity Heart Hero ---
-  Widget _buildHeartHero(int bpm) {
+  const _HeroOrb({required this.animation});
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: Stack(
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          // Static Base Circle
+          // Background Glow
+          Container(
+            width: 280,
+            height: 280,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFF1A1D21),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primary.withOpacity(0.15),
+                  blurRadius: 80,
+                  offset: const Offset(0, 40),
+                ),
+              ],
+            ),
+          ),
+          // Inner Glass Gradient
           Container(
             width: 240,
             height: 240,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Color(0xFF3E464D), // Dark slate void
-            ),
-          ),
-
-          // 🪐 Floating & Beating Heart
-          AntiGravityWrapper(
-            offset: 12,
-            duration: const Duration(milliseconds: 3000),
-            child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.05).animate(
-                CurvedAnimation(parent: _pulseController, curve: Curves.elasticOut),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF32383E),
+                  Color(0xFF17191C),
+                ],
               ),
-              child: StitchHeart(bpm: bpm, size: 170, showBpm: false),
+              border: Border.all(color: Colors.white.withOpacity(0.05), width: 1.5),
             ),
           ),
-
-          // 🌠 Parallax Status Badge
+          // Heart Image
+          AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) {
+              final scale = 1.0 + (0.05 * animation.value);
+              return Transform.scale(
+                scale: scale,
+                child: child,
+              );
+            },
+            child: Image.asset(
+              'assets/images/heart.png',
+              width: 160,
+              height: 160,
+              fit: BoxFit.contain,
+            ),
+          ),
+          // Status Badge
           Positioned(
-            top: 20,
-            right: -10,
-            child: AntiGravityWrapper(
-              offset: 6,
-              duration: const Duration(milliseconds: 2400),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
+            bottom: -10,
+            child: GlassCard(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF00C853),
+                      shape: BoxShape.circle,
                     ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'STATUS',
-                      style: AppTheme.textTheme.labelSmall?.copyWith(
-                        color: AppTheme.primary.withOpacity(0.6),
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.0,
-                      ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'OPTIMAL STATUS',
+                    style: AppTheme.textTheme.labelSmall?.copyWith(
+                      color: AppTheme.onSurface,
+                      letterSpacing: 1.5,
+                      fontSize: 10,
                     ),
-                    Text(
-                      'OPTIMAL',
-                      style: AppTheme.textTheme.labelSmall?.copyWith(
-                        color: const Color(0xFF1A1D20),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -301,12 +250,36 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
       ),
     );
   }
+}
 
-  // --- Heart Rate Card (Stitch Deep Red) ---
-  Widget _buildHeartRateCard(int bpm) {
+class _HeartRateCard extends StatelessWidget {
+  final int heartRate;
+
+  const _HeartRateCard({required this.heartRate});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: AppTheme.primaryCardDecoration,
+      width: double.infinity,
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFDA3433),
+            Color(0xFFB6171E),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primary.withOpacity(0.24),
+            blurRadius: 36,
+            offset: const Offset(0, 18),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -318,144 +291,79 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
                 children: [
                   Text(
                     'HEART RATE',
-                    style: TextStyle(
+                    style: AppTheme.textTheme.labelSmall?.copyWith(
                       color: Colors.white.withOpacity(0.8),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
+                      letterSpacing: 1.5,
                     ),
                   ),
-                  Text(
-                    '$bpm',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 80,
-                      fontWeight: FontWeight.bold,
-                      height: 1,
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '$heartRate',
+                        style: AppTheme.textTheme.displayLarge?.copyWith(
+                          color: Colors.white,
+                          fontSize: 64,
+                          height: 1,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          'BPM',
+                          style: AppTheme.textTheme.labelLarge?.copyWith(
+                            color: Colors.white.withOpacity(0.6),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.all(16),
+                width: 64,
+                height: 64,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(24),
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 30),
-              )
+                child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 32),
+              ),
             ],
           ),
           const SizedBox(height: 24),
-          // Animated Progress Bar
-          Stack(
-            children: [
-              Container(
-                height: 6,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              FractionallySizedBox(
-                widthFactor: 0.7,
-                child: Container(
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(color: Colors.white.withOpacity(0.4), blurRadius: 10),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: Text(
-                'BPM',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-              ),
+          // Mini Waveform Placeholder
+          SizedBox(
+            height: 40,
+            width: double.infinity,
+            child: CustomPaint(
+              painter: WaveformPainter(),
             ),
-          )
+          ),
         ],
       ),
     );
   }
-
-  String _getInitials(String name) {
-    if (name.isEmpty) return '??';
-    List<String> parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.length == 1) return parts[0].substring(0, parts[0].length >= 2 ? 2 : 1).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
 }
 
-// 🪐 Antigravity Bobbing Animation
-class AntiGravityWrapper extends StatefulWidget {
-  final Widget child;
-  final double offset;
-  final Duration duration;
-
-  const AntiGravityWrapper({
-    super.key,
-    required this.child,
-    this.offset = 10.0,
-    this.duration = const Duration(seconds: 2),
-  });
-
+class WaveformPainter extends CustomPainter {
   @override
-  State<AntiGravityWrapper> createState() => _AntiGravityWrapperState();
-}
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
 
-class _AntiGravityWrapperState extends State<AntiGravityWrapper>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat(reverse: true);
-    
-    _animation = Tween<double>(begin: 0, end: widget.offset).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
-    );
+    final path = Path();
+    path.moveTo(0, size.height / 2);
+    for (double i = 0; i < size.width; i += 10) {
+      path.lineTo(i, size.height / 2 + (i % 20 == 0 ? -15 : 15));
+    }
+    canvas.drawPath(path, paint);
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(0, -_animation.value),
-          child: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04 + (_animation.value * 0.001)),
-                  blurRadius: 40 + _animation.value,
-                  spreadRadius: -15,
-                  offset: Offset(0, 30 + _animation.value),
-                ),
-              ],
-            ),
-            child: widget.child,
-          ),
-        );
-      },
-    );
-  }
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
