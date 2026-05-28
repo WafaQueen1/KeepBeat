@@ -1,0 +1,90 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: twinpac_timescaledb
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-twinpac_db}
+      POSTGRES_USER: ${POSTGRES_USER:-twinpac}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    networks:
+      - twinpac_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-twinpac} -d ${POSTGRES_DB:-twinpac_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: twinpac_mqtt
+    ports:
+      - "${MQTT_PORT:-1883}:1883"
+      - "${MQTT_WS_PORT:-9001}:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - twinpac_network
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_sub -h localhost -t '$$SYS/#' -C 1 -W 3 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: smart-twinpac-backend:dev
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: twinpac_backend
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-twinpac}@timescaledb:5432/${POSTGRES_DB:-twinpac_db}
+      MQTT_BROKER: mosquitto
+      MQTT_PORT: 1883
+      MQTT_USERNAME: ${MQTT_USERNAME:-}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-}
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+    networks:
+      - twinpac_network
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+
+  mqtt_subscriber:
+    image: smart-twinpac-backend:dev
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: twinpac_mqtt_subscriber
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-twinpac}@timescaledb:5432/${POSTGRES_DB:-twinpac_db}
+      MQTT_BROKER: mosquitto
+      MQTT_PORT: 1883
+      MQTT_USERNAME: ${MQTT_USERNAME:-}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-}
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+    networks:
+      - twinpac_network
+    command: python -m backend.mqtt_subscriber
+
+volumes:
+  timescale_data:
+
+networks:
+  twinpac_network:
+    driver: bridge

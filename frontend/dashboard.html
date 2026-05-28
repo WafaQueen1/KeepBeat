@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart TwinPac — Digital Twin Dashboard</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6ff;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(90deg, #0d1b3e, #1a2f6e);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #2a4080;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #4fc3f7;
+            letter-spacing: 2px;
+        }
+
+        .logo span { color: #81c784; }
+
+        .patient-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .patient-selector select {
+            background: #1a2f6e;
+            color: #e0e6ff;
+            border: 1px solid #2a4080;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline { background: #f44336; animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ===== MAIN GRID ===== */
+        .main {
+            padding: 24px 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: #111827;
+            border-radius: 12px;
+            border: 1px solid #1e3a5f;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .card.ecg::before { background: #4fc3f7; }
+        .card.glucose::before { background: #81c784; }
+        .card.battery::before { background: #ffb74d; }
+        .card.cardiac::before { background: #f48fb1; }
+        .card.metabolic::before { background: #a5d6a7; }
+        .card.alerts::before { background: #ef5350; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #90a4ae;
+        }
+
+        .card-icon { font-size: 1.4rem; }
+
+        /* ===== METRIC DISPLAY ===== */
+        .metric-big {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .metric-unit {
+            font-size: 0.9rem;
+            color: #90a4ae;
+            margin-left: 4px;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #90a4ae;
+            margin-top: 4px;
+        }
+
+        .metric-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .status-normal { background: #1b5e20; color: #81c784; }
+        .status-warning { background: #e65100; color: #ffb74d; }
+        .status-critical { background: #b71c1c; color: #ef9a9a; }
+        .status-unknown { background: #263238; color: #90a4ae; }
+
+        /* ===== ECG CHART ===== */
+        .ecg-chart {
+            height: 80px;
+            position: relative;
+            margin-top: 12px;
+        }
+
+        canvas.ecg-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-container {
+            margin-top: 12px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #90a4ae;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #1e3a5f;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .progress-fill.battery-high { background: #4caf50; }
+        .progress-fill.battery-med { background: #ff9800; }
+        .progress-fill.battery-low { background: #f44336; }
+
+        /* ===== AI PREDICTIONS ===== */
+        .prediction-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #1e3a5f;
+        }
+
+        .prediction-row:last-child { border-bottom: none; }
+
+        .prediction-label {
+            font-size: 0.8rem;
+            color: #90a4ae;
+        }
+
+        .prediction-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        /* ===== ALERTS PANEL ===== */
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .alert-item.critical { background: #1a0a0a; border-left: 3px solid #f44336; }
+        .alert-item.warning { background: #1a1000; border-left: 3px solid #ff9800; }
+        .alert-item.info { background: #0a1a2a; border-left: 3px solid #2196f3; }
+
+        .alert-icon { font-size: 1.2rem; flex-shrink: 0; }
+        .alert-message { font-size: 0.82rem; line-height: 1.5; }
+        .alert-time { font-size: 0.72rem; color: #546e7a; margin-top: 2px; }
+
+        .no-alerts {
+            text-align: center;
+            color: #4caf50;
+            font-size: 0.85rem;
+            padding: 20px 0;
+        }
+
+        /* ===== SPANS ===== */
+        .span-2 { grid-column: span 2; }
+        .span-3 { grid-column: span 3; }
+
+        /* ===== LOADING ===== */
+        .loading {
+            opacity: 0.4;
+            transition: opacity 0.3s;
+        }
+
+        /* ===== LAST UPDATE ===== */
+        .last-update {
+            font-size: 0.72rem;
+            color: #546e7a;
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        /* ===== RISK GAUGE ===== */
+        .risk-gauge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .risk-score {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .risk-bar-container {
+            flex: 1;
+        }
+
+        .risk-bar-track {
+            height: 12px;
+            background: linear-gradient(90deg, #4caf50, #ff9800, #f44336);
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .risk-bar-needle {
+            position: absolute;
+            top: -4px;
+            width: 4px;
+            height: 20px;
+            background: white;
+            border-radius: 2px;
+            transform: translateX(-50%);
+            transition: left 1s ease;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 12px;
+            color: #37474f;
+            font-size: 0.75rem;
+            border-top: 1px solid #1e3a5f;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+    <div class="header-left">
+        <div class="logo">SMART <span>TWINPAC</span></div>
+        <div class="patient-selector">
+            <span style="color:#90a4ae; font-size:0.85rem;">Patient:</span>
+            <select id="patientSelect" onchange="changePatient(this.value)">
+                <option value="PAT001">PAT001 — Ahmed B.</option>
+                <option value="PAT002">PAT002 — Karim M.</option>
+                <option value="PAT003">PAT003 — Fatima Z.</option>
+            </select>
+        </div>
+    </div>
+    <div class="status-bar">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Connecting...</span>
+        <span style="color:#37474f">|</span>
+        <span id="clockDisplay" style="color:#90a4ae; font-family:monospace"></span>
+    </div>
+</div>
+
+<!-- ===== MAIN DASHBOARD ===== -->
+<div class="main">
+
+    <!-- ROW 1: ECG + Glucose + Battery (live telemetry) -->
+
+    <!-- ECG / Heart Rate Card -->
+    <div class="card ecg" id="cardECG">
+        <div class="card-header">
+            <span class="card-title">💓 ECG / Heart Rate</span>
+            <span class="card-icon">📡</span>
+        </div>
+        <div class="metric-big" id="hrValue">
+            <span id="hrNum">--</span>
+            <span class="metric-unit">bpm</span>
+        </div>
+        <div class="metric-label">Instantaneous Heart Rate</div>
+        <span class="metric-status status-unknown" id="hrStatus">Loading...</span>
+        <div class="ecg-chart">
+            <canvas id="ecgCanvas" class="ecg-canvas"></canvas>
+        </div>
+        <div class="last-update" id="ecgLastUpdate">Never updated</div>
+    </div>
+
+    <!-- Glucose Card -->
+    <div class="card glucose" id="cardGlucose">
+        <div class="card-header">
+            <span class="card-title">🍬 Blood Glucose</span>
+            <span class="card-icon">💉</span>
+        </div>
+        <div class="metric-big" id="glucoseValue">
+            <span id="glucoseNum">--</span>
+            <span class="metric-unit">g/L</span>
+        </div>
+        <div class="metric-label">Current Reading</div>
+        <span class="metric-status status-unknown" id="glucoseStatus">Loading...</span>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>0.4 g/L</span>
+                <span>Normal: 0.7–1.8 g/L</span>
+                <span>2.5 g/L</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill battery-high" id="glucoseBar" style="width:50%"></div>
+            </div>
+        </div>
+        <div class="last-update" id="glucoseLastUpdate">Never updated</div>
+    </div>
+
+    <!-- Battery Card -->
+    <div class="card battery" id="cardBattery">
+        <div class="card-header">
+            <span class="card-title">🔋 Battery</span>
+            <span class="card-icon">⚡</span>
+        </div>
+        <div class="metric-big" id="batteryValue">
+            <span id="batteryNum">--</span>
+            <span class="metric-unit">%</span>
+        </div>
+        <div class="metric-label" id="batteryVoltage">Voltage: -- V</div>
+        <span class="metric-status status-unknown" id="batteryStatus">Loading...</span>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>0%</span>
+                <span>State of Charge</span>
+                <span>100%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill battery-high" id="batteryBar" style="width:0%"></div>
+            </div>
+        </div>
+        <div class="last-update" id="batteryLastUpdate">Never updated</div>
+    </div>
+
+    <!-- ROW 2: AI Predictions -->
+
+    <!-- Battery RUL Prediction Card -->
+    <div class="card battery" id="cardBatteryAI">
+        <div class="card-header">
+            <span class="card-title">🤖 Battery RUL — PINN-LSTM</span>
+            <span class="card-icon">🔬</span>
+        </div>
+        <div class="metric-big" id="rulValue">
+            <span id="rulNum">--</span>
+            <span class="metric-unit">days</span>
+        </div>
+        <div class="metric-label">AI-Predicted Remaining Useful Life</div>
+        <div class="prediction-row">
+            <span class="prediction-label">Months remaining</span>
+            <span class="prediction-value" id="rulMonths">--</span>
+        </div>
+        <div class="prediction-row">
+            <span class="prediction-label">Physics voltage</span>
+            <span class="prediction-value" id="physicsVoltage">-- V</span>
+        </div>
+        <div class="prediction-row">
+            <span class="prediction-label">Model confidence</span>
+            <span class="prediction-value" id="batteryConfidence">--%</span>
+        </div>
+        <div class="last-update" id="batteryAILastUpdate">Waiting for model...</div>
+    </div>
+
+    <!-- Cardiac Risk Prediction Card -->
+    <div class="card cardiac" id="cardCardiacAI">
+        <div class="card-header">
+            <span class="card-title">🫀 Cardiac Risk — BiLSTM</span>
+            <span class="card-icon">🧠</span>
+        </div>
+        <div class="risk-gauge">
+            <div class="risk-score" id="cardiacRiskScore">--%</div>
+            <div class="risk-bar-container">
+                <div class="risk-bar-track">
+                    <div class="risk-bar-needle" id="cardiacNeedle" style="left:0%"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;
+                            font-size:0.72rem;color:#546e7a;margin-top:4px">
+                    <span>Low</span>
+                    <span>Moderate</span>
+                    <span>High</span>
+                </div>
+            </div>
+        </div>
+        <span class="metric-status status-unknown" id="cardiacStatus">Loading...</span>
+        <div class="prediction-row" style="margin-top:12px">
+            <span class="prediction-label">24h arrhythmia risk</span>
+            <span class="prediction-value" id="cardiacClass">--</span>
+        </div>
+        <div class="prediction-row">
+            <span class="prediction-label">Confidence</span>
+            <span class="prediction-value" id="cardiacConfidence">--%</span>
+        </div>
+        <div class="last-update" id="cardiacAILastUpdate">Waiting for model...</div>
+    </div>
+
+    <!-- Metabolic Prediction Card -->
+    <div class="card metabolic" id="cardMetabolicAI">
+        <div class="card-header">
+            <span class="card-title">🍬 Glucose +1h — LSTM</span>
+            <span class="card-icon">📈</span>
+        </div>
+        <div class="metric-big" id="glucoseAIValue">
+            <span id="glucoseAINum">--</span>
+            <span class="metric-unit">mg/dL</span>
+        </div>
+        <div class="metric-label">Predicted 1 Hour Ahead</div>
+        <span class="metric-status status-unknown" id="glucoseAIStatus">Loading...</span>
+        <div class="prediction-row" style="margin-top:12px">
+            <span class="prediction-label">Trend</span>
+            <span class="prediction-value" id="glucoseTrend">--</span>
+        </div>
+        <div class="prediction-row">
+            <span class="prediction-label">Risk level</span>
+            <span class="prediction-value" id="glucoseRisk">--</span>
+        </div>
+        <div class="prediction-row">
+            <span class="prediction-label">Model accuracy</span>
+            <span class="prediction-value" id="metabolicMAE">-- mg/dL MAE</span>
+        </div>
+        <div class="last-update" id="metabolicAILastUpdate">Waiting for model...</div>
+    </div>
+
+    <!-- ROW 3: Alerts Panel (full width) -->
+    <div class="card alerts span-3" id="cardAlerts">
+        <div class="card-header">
+            <span class="card-title">🚨 Active Alerts</span>
+            <span id="alertCount" style="
+                background:#b71c1c; color:#ef9a9a;
+                padding:2px 10px; border-radius:20px;
+                font-size:0.75rem; font-weight:600
+            ">0</span>
+        </div>
+        <div id="alertsContainer">
+            <div class="no-alerts">✅ No active alerts — patient stable</div>
+        </div>
+        <div class="last-update" id="alertsLastUpdate">Waiting for data...</div>
+    </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+    Smart TwinPac Digital Twin — Prototype v1.0 | 
+    Polling every 5s | 
+    Data refreshed: <span id="footerRefresh">--</span>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ===== CONFIG =====
+const API_BASE = 'http://localhost:8000/api/v1';
+let currentPatient = 'PAT001';
+let pollInterval = null;
+let ecgWaveformData = [];
+let lastTelemetry = {};
+
+// ===== CLOCK =====
+function updateClock() {
+    const now = new Date();
+    document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('en-GB');
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ===== PATIENT CHANGE =====
+function changePatient(patientId) {
+    currentPatient = patientId;
+    console.log(`Switching to patient: ${patientId}`);
+    
+    // Clear current data
+    resetDisplay();
+    
+    // Immediately poll new patient
+    pollAll();
+}
+
+function resetDisplay() {
+    document.getElementById('hrNum').textContent = '--';
+    document.getElementById('glucoseNum').textContent = '--';
+    document.getElementById('batteryNum').textContent = '--';
+    document.getElementById('rulNum').textContent = '--';
+    document.getElementById('cardiacRiskScore').textContent = '--%';
+    document.getElementById('glucoseAINum').textContent = '--';
+    document.getElementById('alertsContainer').innerHTML = '<div class="no-alerts">Loading patient data...</div>';
+}
+
+// ===== ECG WAVEFORM ANIMATION =====
+function drawECGWaveform(hr) {
+    const canvas = document.getElementById('ecgCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const W = canvas.width;
+    const H = canvas.height;
+    
+    ctx.clearRect(0, 0, W, H);
+    
+    // Background grid
+    ctx.strokeStyle = '#1e3a5f';
+    ctx.lineWidth = 0.5;
+    for (let x = 0; x < W; x += 20) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
+    }
+    
+    // ECG waveform
+    const beatPeriod = Math.round(60000 / (hr || 72) / 50); // period in samples
+    const totalSamples = W;
+    
+    // Generate synthetic ECG waveform
+    const waveform = [];
+    for (let i = 0; i < totalSamples; i++) {
+        const phase = (i % beatPeriod) / beatPeriod;
+        let val = 0.1; // baseline
+        
+        // P wave
+        if (phase > 0.05 && phase < 0.20)
+            val += 0.15 * Math.sin(Math.PI * (phase - 0.05) / 0.15);
+        
+        // QRS complex
+        if (phase > 0.25 && phase < 0.28)
+            val -= 0.25 * ((phase - 0.25) / 0.03); // Q
+        if (phase > 0.28 && phase < 0.32)
+            val += 1.0 * Math.sin(Math.PI * (phase - 0.28) / 0.04); // R
+        if (phase > 0.32 && phase < 0.36)
+            val -= 0.2 * ((0.36 - phase) / 0.04); // S
+        
+        // T wave
+        if (phase > 0.42 && phase < 0.60)
+            val += 0.3 * Math.sin(Math.PI * (phase - 0.42) / 0.18);
+        
+        waveform.push(val);
+    }
+    
+    // Draw waveform
+    ctx.beginPath();
+    ctx.strokeStyle = '#4fc3f7';
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = '#4fc3f7';
+    ctx.shadowBlur = 6;
+    
+    for (let i = 0; i < waveform.length; i++) {
+        const x = i;
+        const y = H / 2 - waveform[i] * (H / 2.5);
+        
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+}
+
+// ===== STATUS HELPERS =====
+function setStatus(elementId, status, text) {
+    const el = document.getElementById(elementId);
+    el.className = 'metric-status';
+    
+    const statusMap = {
+        'normal': 'status-normal',
+        'warning': 'status-warning',
+        'critical': 'status-critical'
+    };
+    
+    el.classList.add(statusMap[status] || 'status-unknown');
+    el.textContent = text;
+}
+
+function formatTime(isoString) {
+    if (!isoString) return 'Never';
+    try {
+        return new Date(isoString).toLocaleTimeString('en-GB');
+    } catch {
+        return 'Invalid';
+    }
+}
+
+// ===== UPDATE TELEMETRY DISPLAY =====
+function updateTelemetry(data) {
+    if (!data) return;
+    
+    const ts = data.timestamp || new Date().toISOString();
+    
+    // ECG
+    if (data.ecg) {
+        const hr = data.ecg.heart_rate;
+        
+        if (hr !== null) {
+            document.getElementById('hrNum').textContent = Math.round(hr);
+            drawECGWaveform(hr);
+            
+            const arrhythmia = data.ecg.arrhythmia || 'normal';
+            const hrStatus = hr > 100 ? ['warning', `Tachycardia: ${Math.round(hr)} bpm`]
+                           : hr < 50 ? ['critical', `Bradycardia: ${Math.round(hr)} bpm`]
+                           : ['normal', `Normal: ${Math.round(hr)} bpm`];
+            
+            setStatus('hrStatus', hrStatus[0], hrStatus[1]);
+            document.getElementById('ecgLastUpdate').textContent = `Updated: ${formatTime(data.ecg.last_update)}`;
+        }
+    }
+    
+    // Glucose
+    if (data.glucose) {
+        const gl = data.glucose.level;
+        
+        if (gl !== null) {
+            document.getElementById('glucoseNum').textContent = gl.toFixed(2);
+            
+            // Update progress bar (0.4-2.5 g/L range)
+            const pct = Math.min(100, Math.max(0, ((gl - 0.4) / (2.5 - 0.4)) * 100));
+            document.getElementById('glucoseBar').style.width = `${pct}%`;
+            document.getElementById('glucoseBar').className =
+                `progress-fill ${gl < 0.7 || gl > 1.8 ? 'battery-low' : 'battery-high'}`;
+            
+            const alertState = data.glucose.alert_state || 'normal';
+            const glucoseStatus = alertState === 'hypoglycemia'
+                ? ['critical', `Hypoglycemia: ${gl.toFixed(2)} g/L`]
+                : alertState === 'hyperglycemia'
+                ? ['warning', `Hyperglycemia: ${gl.toFixed(2)} g/L`]
+                : ['normal', `Normal: ${gl.toFixed(2)} g/L`];
+            
+            setStatus('glucoseStatus', glucoseStatus[0], glucoseStatus[1]);
+            document.getElementById('glucoseLastUpdate').textContent = `Updated: ${formatTime(data.glucose.last_update)}`;
+        }
+    }
+    
+    // Battery
+    if (data.battery) {
+        const soc = data.battery.soc_percent;
+        const voltage = data.battery.voltage;
+        
+        if (soc !== null) {
+            document.getElementById('batteryNum').textContent = Math.round(soc);
+            document.getElementById('batteryBar').style.width = `${soc}%`;
+            document.getElementById('batteryBar').className =
+                `progress-fill ${soc > 50 ? 'battery-high' : soc > 20 ? 'battery-med' : 'battery-low'}`;
+        }
+        
+        if (voltage !== null) {
+            document.getElementById('batteryVoltage').textContent = `Voltage: ${voltage.toFixed(2)} V`;
+        }
+        
+        const batteryStatus = data.battery.status || 'unknown';
+        const batteryLabel = soc > 50 ? ['normal', `Healthy: ${Math.round(soc)}% SoC`]
+                           : soc > 20 ? ['warning', `Low: ${Math.round(soc)}% SoC`]
+                           : ['critical', `Critical: ${Math.round(soc)}% SoC`];
+        
+        setStatus('batteryStatus', batteryLabel[0], batteryLabel[1]);
+        document.getElementById('batteryLastUpdate').textContent = `Updated: ${formatTime(data.battery.last_update)}`;
+    }
+}
+
+// ===== UPDATE AI PREDICTIONS DISPLAY =====
+function updatePredictions(data) {
+    if (!data) return;
+    
+    const ts = data.timestamp;
+    
+    // Battery RUL
+    if (data.battery && data.battery.rul_days) {
+        const rul = data.battery.rul_days;
+        const months = data.battery.rul_months;
+        
+        document.getElementById('rulNum').textContent = Math.round(rul);
+        document.getElementById('rulMonths').textContent = `${months.toFixed(1)} months`;
+        document.getElementById('physicsVoltage').textContent =
+            `${(data.battery.physics_voltage || 0).toFixed(3)} V`;
+        document.getElementById('batteryConfidence').textContent =
+            `${(data.battery.confidence_percent || 0).toFixed(0)}%`;
+        document.getElementById('batteryAILastUpdate').textContent = `AI updated: ${formatTime(ts)}`;
+    }
+    
+    // Cardiac Risk
+    if (data.cardiac && data.cardiac.risk_probability !== undefined) {
+        const prob = data.cardiac.risk_probability;
+        const pct = Math.round(prob * 100);
+        
+        document.getElementById('cardiacRiskScore').textContent = `${pct}%`;
+        document.getElementById('cardiacNeedle').style.left = `${pct}%`;
+        
+        const riskClass = prob > 0.7 ? 'High Risk'
+                        : prob > 0.5 ? 'Moderate'
+                        : 'Low Risk';
+        const riskStatus = prob > 0.7 ? 'critical'
+                         : prob > 0.5 ? 'warning'
+                         : 'normal';
+        
+        document.getElementById('cardiacClass').textContent = riskClass;
+        document.getElementById('cardiacConfidence').textContent =
+            `${((data.cardiac.confidence || 0) * 100).toFixed(0)}%`;
+        setStatus('cardiacStatus', riskStatus, riskClass);
+        document.getElementById('cardiacAILastUpdate').textContent = `AI updated: ${formatTime(ts)}`;
+    }
+    
+    // Metabolic Glucose Prediction
+    if (data.metabolic && data.metabolic.glucose_1h_ahead_mgdl) {
+        const glucose1h = data.metabolic.glucose_1h_ahead_mgdl;
+        const current = data.metabolic.glucose_current_mgdl;
+        const change = data.metabolic.glucose_change_mgdl;
+        const risk = data.metabolic.risk_level;
+        
+        document.getElementById('glucoseAINum').textContent = Math.round(glucose1h);
+        
+        const trendText = change > 5 ? `↑ +${change.toFixed(1)} mg/dL`
+                        : change < -5 ? `↓ ${change.toFixed(1)} mg/dL`
+                        : `→ Stable (${change.toFixed(1)} mg/dL)`;
+        document.getElementById('glucoseTrend').textContent = trendText;
+        
+        const riskLabel = {
+            'normal': ['normal', '✅ Normal'],
+            'hypoglycemia_risk': ['critical', '🔴 Hypo Risk'],
+            'hyperglycemia_risk': ['warning', '🟠 Hyper Risk']
+        }[risk] || ['unknown', 'Unknown'];
+        
+        document.getElementById('glucoseRisk').textContent = riskLabel[1];
+        document.getElementById('metabolicMAE').textContent =
+            `${(data.metabolic.model_mae_mgdl || 0).toFixed(1)} mg/dL MAE`;
+        
+        setStatus('glucoseAIStatus', riskLabel[0], riskLabel[1]);
+        document.getElementById('metabolicAILastUpdate').textContent = `AI updated: ${formatTime(ts)}`;
+    }
+    
+    // Alerts
+    updateAlerts(data.alerts || []);
+}
+
+// ===== UPDATE ALERTS =====
+function updateAlerts(alerts) {
+    const container = document.getElementById('alertsContainer');
+    const countBadge = document.getElementById('alertCount');
+    
+    countBadge.textContent = alerts.length;
+    countBadge.style.background = alerts.length > 0 ? '#b71c1c' : '#1b5e20';
+    countBadge.style.color = alerts.length > 0 ? '#ef9a9a' : '#81c784';
+    
+    if (alerts.length === 0) {
+        container.innerHTML = '<div class="no-alerts">✅ No active alerts — patient stable</div>';
+        return;
+    }
+    
+    container.innerHTML = alerts.map(alert => {
+        const icons = {
+            'battery_critical': '🔋',
+            'battery_low': '⚡',
+            'cardiac_high_risk': '🫀',
+            'cardiac_moderate_risk': '💓',
+            'glucose_hypo': '🍬',
+            'glucose_hyper': '⚠️'
+        };
+        
+        const icon = icons[alert.type] || '⚠️';
+        
+        return `
+            <div class="alert-item ${alert.severity}">
+                <span class="alert-icon">${icon}</span>
+                <div>
+                    <div class="alert-message">${alert.message}</div>
+                    <div class="alert-time">${new Date().toLocaleTimeString('en-GB')}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('alertsLastUpdate').textContent =
+        `Updated: ${new Date().toLocaleTimeString('en-GB')}`;
+}
+
+// ===== CONNECTION STATUS =====
+function setConnected(connected) {
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    
+    if (connected) {
+        dot.className = 'status-dot';
+        text.textContent = 'Live — Polling every 5s';
+        text.style.color = '#81c784';
+    } else {
+        dot.className = 'status-dot offline';
+        text.textContent = 'Offline — Retrying...';
+        text.style.color = '#ef9a9a';
+    }
+}
+
+// ===== MAIN POLLING FUNCTION =====
+async function pollAll() {
+    try {
+        // Fetch dashboard summary (telemetry)
+        const dashRes = await fetch(`${API_BASE}/dashboard/${currentPatient}`);
+        if (!dashRes.ok) throw new Error(`HTTP ${dashRes.status}`);
+        const dashData = await dashRes.json();
+        updateTelemetry(dashData);
+        
+        // Fetch AI predictions (all 3 models)
+        const predRes = await fetch(`${API_BASE}/predictions/all/${currentPatient}`);
+        if (!predRes.ok) throw new Error(`HTTP ${predRes.status}`);
+        const predData = await predRes.json();
+        updatePredictions(predData);
+        
+        setConnected(true);
+        
+        // Update footer
+        document.getElementById('footerRefresh').textContent = new Date().toLocaleTimeString('en-GB');
+    
+    } catch (error) {
+        console.error('Poll error:', error);
+        setConnected(false);
+    }
+}
+
+// ===== START POLLING =====
+function startPolling(intervalMs = 5000) {
+    // Immediate first poll
+    pollAll();
+    
+    // Clear existing interval
+    if (pollInterval) clearInterval(pollInterval);
+    
+    // Start polling every 5s
+    pollInterval = setInterval(pollAll, intervalMs);
+    console.log(`✅ Polling started (every ${intervalMs}ms)`);
+}
+
+// ===== INIT =====
+startPolling(5000);
+</script>
+
+</body>
+</html>

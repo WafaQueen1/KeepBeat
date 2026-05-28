@@ -180,6 +180,8 @@ class VitalBentoCard extends StatelessWidget {
   final String? status;
   final bool showBar;
 
+  final VoidCallback? onTap;
+
   const VitalBentoCard({
     super.key,
     required this.label,
@@ -190,90 +192,94 @@ class VitalBentoCard extends StatelessWidget {
     this.trailing,
     this.status,
     this.showBar = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return BentoTile(
-      padding: const EdgeInsets.all(22),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: accent.withOpacity(0.14),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon, color: accent, size: 22),
-              ),
-              const Spacer(),
-              if (trailing != null)
-                trailing!
-              else if (status != null)
-                GlassPill(
-                  tint: accent.withOpacity(0.12),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 7,
+    return GestureDetector(
+      onTap: onTap,
+      child: BentoTile(
+        padding: const EdgeInsets.all(22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: accent.withOpacity(0.14),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Text(
-                    status!,
-                    style: AppTheme.textTheme.labelSmall?.copyWith(
-                      color: accent,
-                      fontSize: 10,
+                  child: Icon(icon, color: accent, size: 22),
+                ),
+                const Spacer(),
+                if (trailing != null)
+                  trailing!
+                else if (status != null)
+                  GlassPill(
+                    tint: accent.withOpacity(0.12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 7,
+                    ),
+                    child: Text(
+                      status!,
+                      style: AppTheme.textTheme.labelSmall?.copyWith(
+                        color: accent,
+                        fontSize: 10,
+                      ),
                     ),
                   ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            label.toUpperCase(),
-            style: AppTheme.textTheme.labelSmall?.copyWith(
-              color: accent == AppTheme.lavender
-                  ? AppTheme.lavender
-                  : AppTheme.onSurfaceMuted.withOpacity(0.86),
-            ),
-          ),
-          const SizedBox(height: 10),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: value,
-                  style: AppTheme.textTheme.displayMedium?.copyWith(
-                    fontSize: 42,
-                    letterSpacing: -2,
-                  ),
-                ),
-                TextSpan(
-                  text: ' $unit',
-                  style: AppTheme.textTheme.titleMedium?.copyWith(
-                    color: AppTheme.onSurfaceMuted.withOpacity(0.75),
-                  ),
-                ),
               ],
             ),
-          ),
-          if (showBar) ...[
-            const SizedBox(height: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(999),
-              child: LinearProgressIndicator(
-                minHeight: 6,
-                value: 0.68,
-                backgroundColor: accent.withOpacity(0.12),
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  accent.withOpacity(0.75),
-                ),
+            const SizedBox(height: 20),
+            Text(
+              label.toUpperCase(),
+              style: AppTheme.textTheme.labelSmall?.copyWith(
+                color: accent == AppTheme.lavender
+                    ? AppTheme.lavender
+                    : AppTheme.onSurfaceMuted.withOpacity(0.86),
               ),
             ),
+            const SizedBox(height: 10),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: value,
+                    style: AppTheme.textTheme.displayMedium?.copyWith(
+                      fontSize: 42,
+                      letterSpacing: -2,
+                    ),
+                  ),
+                  TextSpan(
+                    text: ' $unit',
+                    style: AppTheme.textTheme.titleMedium?.copyWith(
+                      color: AppTheme.onSurfaceMuted.withOpacity(0.75),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (showBar) ...[
+              const SizedBox(height: 16),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(999),
+                child: LinearProgressIndicator(
+                  minHeight: 6,
+                  value: 0.68,
+                  backgroundColor: accent.withOpacity(0.12),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    accent.withOpacity(0.75),
+                  ),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -768,7 +774,6 @@ class GlassCard extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
-          width: double.infinity,
           constraints: BoxConstraints(minHeight: minHeight ?? 0),
           padding: padding,
           decoration: BoxDecoration(

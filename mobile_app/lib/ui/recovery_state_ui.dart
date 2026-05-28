@@ -186,6 +186,7 @@ class RecoveryStateUI extends StatelessWidget {
       ),
     );
   }
+}
 
 class _RecoveryMetric extends StatelessWidget {
   final String label;

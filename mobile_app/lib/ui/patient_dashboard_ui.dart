@@ -5,6 +5,9 @@ import '../providers/vitals_provider.dart';
 import '../services/hybrid_sensor_service.dart';
 import '../theme/app_theme.dart';
 import 'widgets/bento_widgets.dart';
+import 'ai_twin_sidebar.dart';
+import 'emergency_alert_ui.dart';
+import 'reactive_plan_ui.dart';
 
 class PatientDashboardUI extends ConsumerStatefulWidget {
   final HybridSensorService sensorService;
@@ -102,6 +105,30 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
                     ),
                   ],
                 ),
+                if (latestAlert != null) ...[
+                  _EmergencyBanner(
+                    message: latestAlert,
+                    onTap: () {
+                      AlertType type = AlertType.normal;
+                      if (latestAlert.toLowerCase().contains('hypoglycemia')) {
+                        type = AlertType.hypoglycemia;
+                      } else if (latestAlert.toLowerCase().contains('bradycardia')) {
+                        type = AlertType.bradycardia;
+                      } else if (latestAlert.toLowerCase().contains('battery')) {
+                        type = AlertType.lowBattery;
+                      }
+                      
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => EmergencyAlertUI(
+                            alertType: type,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                ],
                 const SizedBox(height: 32),
                 _HeroOrb(animation: _orbController),
                 const SizedBox(height: 32),
@@ -116,9 +143,18 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
                         unit: 'mg/dL',
                         icon: Icons.water_drop_rounded,
                         accent: AppTheme.blue,
-                        status: (glucose < 70 || glucose > 180)
-                            ? 'ALERT'
-                            : 'OPTIMAL',
+                        status: (glucose < 70 || glucose > 180) ? 'ALERT' : 'OPTIMAL',
+                        onTap: () {
+                          if (glucose < 70) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const EmergencyAlertUI(
+                                  alertType: AlertType.hypoglycemia,
+                                ),
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -134,6 +170,17 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
                           color: AppTheme.lavender,
                           size: 38,
                         ),
+                        onTap: () {
+                          if (batteryPct < 15) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const EmergencyAlertUI(
+                                  alertType: AlertType.lowBattery,
+                                ),
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ),
                   ],
@@ -144,7 +191,14 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
                   description:
                       "Your cardiac rhythm is perfectly synchronized. Recovery rate is 94%.",
                   icon: Icons.auto_awesome_rounded,
-                  onTap: widget.onNavigateToAI,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const AiTwinSidebar(),
+                        fullscreenDialog: true,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -366,4 +420,74 @@ class WaveformPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+class _EmergencyBanner extends StatelessWidget {
+  final String message;
+  final VoidCallback onTap;
+
+  const _EmergencyBanner({required this.message, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    // Extract a cleaner title if possible
+    String title = 'CRITICAL ALERT';
+    if (message.contains(':')) {
+      title = message.split(':')[1].trim().split('(')[0].trim().toUpperCase();
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: AppTheme.primary,
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primary.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTheme.textTheme.labelSmall?.copyWith(
+                      color: Colors.white.withOpacity(0.9),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Immediate Action Required',
+                    style: AppTheme.textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
 }

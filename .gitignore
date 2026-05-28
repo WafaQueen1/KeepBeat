@@ -6,6 +6,16 @@ venv/
 .venv/
 .env
 
+# Generated datasets/models
+data/raw/
+data/processed/
+data/smoke/
+data/*.csv
+data/*.json
+data/*.pkl
+data/*.npz
+models/
+
 # Node
 node_modules/
 dist/

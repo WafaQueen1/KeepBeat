@@ -2,8 +2,22 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'widgets/bento_widgets.dart';
 
+enum AlertType {
+  hypoglycemia,
+  bradycardia,
+  highHeartRate,
+  lowBattery,
+  disconnected,
+  normal
+}
+
 class ReactivePlanUI extends StatelessWidget {
-  const ReactivePlanUI({super.key});
+  final AlertType alertType;
+
+  const ReactivePlanUI({
+    super.key,
+    this.alertType = AlertType.hypoglycemia,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +34,11 @@ class ReactivePlanUI extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const _RecoveryHero(),
+                      _RecoveryHero(alertType: alertType),
                       const SizedBox(height: 24),
-                      const _ActionPlanSection(),
+                      _ActionPlanSection(alertType: alertType),
                       const SizedBox(height: 120), // Bottom padding
                     ],
                   ),
@@ -63,10 +78,43 @@ class ReactivePlanUI extends StatelessWidget {
 }
 
 class _RecoveryHero extends StatelessWidget {
-  const _RecoveryHero();
+  final AlertType alertType;
+
+  const _RecoveryHero({required this.alertType});
 
   @override
   Widget build(BuildContext context) {
+    String title;
+    String subtitle;
+    Color accentColor;
+
+    switch (alertType) {
+      case AlertType.hypoglycemia:
+        title = 'Glucose Recovery';
+        subtitle = 'Vitals are stabilizing. Focus on glycemic balance.';
+        accentColor = AppTheme.blue;
+        break;
+      case AlertType.bradycardia:
+        title = 'Rhythm Stabilization';
+        subtitle = 'Heart rate is recovering. Maintain calm breathing.';
+        accentColor = AppTheme.primary;
+        break;
+      case AlertType.highHeartRate:
+        title = 'Cardiac Cooling';
+        subtitle = 'Heart rate is lowering. Keep activity minimal.';
+        accentColor = AppTheme.primary;
+        break;
+      case AlertType.lowBattery:
+        title = 'System Maintenance';
+        subtitle = 'Device battery is low. Follow replacement protocol.';
+        accentColor = AppTheme.lavender;
+        break;
+      default:
+        title = 'Monitoring Stability';
+        subtitle = 'Vital signs are returning to baseline.';
+        accentColor = AppTheme.blue;
+    }
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(28),
@@ -83,7 +131,7 @@ class _RecoveryHero extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const StatusBadge(label: 'RECOVERY PHASE', color: AppTheme.blue),
+          StatusBadge(label: 'RECOVERY PHASE', color: accentColor),
           const SizedBox(height: 28),
           Stack(
             alignment: Alignment.center,
@@ -95,7 +143,7 @@ class _RecoveryHero extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppTheme.blue.withOpacity(0.12),
+                      accentColor.withOpacity(0.12),
                       Colors.transparent,
                     ],
                   ),
@@ -111,12 +159,12 @@ class _RecoveryHero extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Monitoring Stability',
+            title,
             style: AppTheme.textTheme.displaySmall?.copyWith(fontSize: 26),
           ),
           const SizedBox(height: 8),
           Text(
-            'Vital signs are returning to baseline.\nFollow the recovery plan below.',
+            subtitle,
             textAlign: TextAlign.center,
             style: AppTheme.textTheme.bodyMedium?.copyWith(
               color: AppTheme.onSurface.withOpacity(0.5),
@@ -130,10 +178,148 @@ class _RecoveryHero extends StatelessWidget {
 }
 
 class _ActionPlanSection extends StatelessWidget {
-  const _ActionPlanSection();
+  final AlertType alertType;
+
+  const _ActionPlanSection({required this.alertType});
 
   @override
   Widget build(BuildContext context) {
+    List<_InstructionItem> instructions = [];
+
+    switch (alertType) {
+      case AlertType.hypoglycemia:
+        instructions = [
+          const _InstructionItem(
+            icon: Icons.water_drop_rounded,
+            color: AppTheme.blue,
+            title: 'Verify Glucose Level',
+            subtitle: 'Confirm level is below 70 mg/dL before action.',
+            isDone: true,
+          ),
+          const _InstructionItem(
+            icon: Icons.fastfood_rounded,
+            color: AppTheme.primary,
+            title: '15g Glucose Intake',
+            subtitle: 'Consume fast-acting carbs (juice/honey).',
+          ),
+          const _InstructionItem(
+            icon: Icons.timer_rounded,
+            color: AppTheme.lavender,
+            title: 'Wait 15 Minutes',
+            subtitle: 'Sit still and allow glucose to absorb.',
+          ),
+          const _InstructionItem(
+            icon: Icons.water_drop_rounded,
+            color: AppTheme.blue,
+            title: 'Re-check Glucose',
+            subtitle: 'Verify if levels are above 90 mg/dL.',
+          ),
+        ];
+        break;
+      case AlertType.disconnected:
+        instructions = [
+          const _InstructionItem(
+            icon: Icons.bluetooth_disabled_rounded,
+            color: AppTheme.primary,
+            title: 'Check Device Position',
+            subtitle: 'Ensure sensor is properly attached to skin.',
+            isDone: true,
+          ),
+          const _InstructionItem(
+            icon: Icons.refresh_rounded,
+            color: AppTheme.blue,
+            title: 'Restart Bluetooth',
+            subtitle: 'Toggle Bluetooth on your phone settings.',
+          ),
+          const _InstructionItem(
+            icon: Icons.medical_services_rounded,
+            color: AppTheme.lavender,
+            title: 'Contact Support',
+            subtitle: 'If data persists, device may be displaced.',
+          ),
+        ];
+        break;
+      case AlertType.bradycardia:
+        instructions = [
+          const _InstructionItem(
+            icon: Icons.air_rounded,
+            color: AppTheme.blue,
+            title: 'Deep Breathing',
+            subtitle: 'Slow, controlled breaths to stabilize rhythm.',
+            isDone: true,
+          ),
+          const _InstructionItem(
+            icon: Icons.chair_rounded,
+            color: AppTheme.primary,
+            title: 'Stay Seated',
+            subtitle: 'Avoid standing until heart rate is >60 BPM.',
+          ),
+          const _InstructionItem(
+            icon: Icons.medical_services_rounded,
+            color: AppTheme.lavender,
+            title: 'Notify Physician',
+            subtitle: 'Alert doctor of the low heart rate event.',
+          ),
+        ];
+        break;
+      case AlertType.highHeartRate:
+        instructions = [
+          const _InstructionItem(
+            icon: Icons.pan_tool_rounded,
+            color: AppTheme.primary,
+            title: 'Stop Activity',
+            subtitle: 'Immediately cease any physical exertion.',
+            isDone: true,
+          ),
+          const _InstructionItem(
+            icon: Icons.local_drink_rounded,
+            color: AppTheme.blue,
+            title: 'Cool Hydration',
+            subtitle: 'Drink cool water and rest in a cool area.',
+          ),
+          const _InstructionItem(
+            icon: Icons.favorite_rounded,
+            color: AppTheme.lavender,
+            title: 'Monitor Rhythm',
+            subtitle: 'Check for stability in the next 10 mins.',
+          ),
+        ];
+        break;
+      case AlertType.lowBattery:
+        instructions = [
+          const _InstructionItem(
+            icon: Icons.phone_in_talk_rounded,
+            color: AppTheme.lavender,
+            title: 'Contact Clinic',
+            subtitle: 'Call your cardiologist for ERI verification.',
+            isDone: true,
+          ),
+          const _InstructionItem(
+            icon: Icons.calendar_month_rounded,
+            color: AppTheme.primary,
+            title: 'Schedule Within 48h',
+            subtitle: 'Replacement must be planned immediately.',
+          ),
+          const _InstructionItem(
+            icon: Icons.info_outline_rounded,
+            color: AppTheme.blue,
+            title: 'Limit Stress',
+            subtitle: 'Keep physical activity low until replaced.',
+          ),
+        ];
+        break;
+      default:
+        instructions = [
+          const _InstructionItem(
+            icon: Icons.check_circle_rounded,
+            color: Colors.green,
+            title: 'System Normal',
+            subtitle: 'No immediate actions required.',
+            isDone: true,
+          ),
+        ];
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -148,29 +334,17 @@ class _ActionPlanSection extends StatelessWidget {
             ),
           ),
         ),
-        _InstructionItem(
-          icon: Icons.water_drop_rounded,
-          color: AppTheme.blue,
-          title: 'Check Glucose Level',
-          subtitle: 'Verify if blood sugar is above 90 mg/dL.',
-          isDone: true,
+        ...instructions.map((item) => Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: item,
+            )),
+        const SizedBox(height: 32),
+        StitchButton(
+          onTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
+          text: 'I AM STABLE',
+          backgroundColor: Colors.green.shade600,
         ),
-        const SizedBox(height: 14),
-        _InstructionItem(
-          icon: Icons.chair_rounded,
-          color: AppTheme.lavender,
-          title: 'Sit and Rest',
-          subtitle: 'Keep activity minimal for the next 15 mins.',
-          isDone: false,
-        ),
-        const SizedBox(height: 14),
-        _InstructionItem(
-          icon: Icons.medication_rounded,
-          color: AppTheme.primary,
-          title: 'Glucose Supplement',
-          subtitle: 'Intake 15g of fast-acting carbohydrates.',
-          isDone: false,
-        ),
+        const SizedBox(height: 40),
       ],
     );
   }
