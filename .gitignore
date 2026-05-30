@@ -42,3 +42,22 @@ android/**/generated
 # OS
 .DS_Store
 Thumbs.db
+
+# Ignore all CSV, Excel, and text data files
+*.csv
+*.xlsx
+*.txt
+
+# Ignore serialized Python data objects / weights
+*.pkl
+*.json
+*.npz
+*.npy
+*.h5
+
+# Ignore the entire data directory explicitly
+
+data/
+backend/data/
+*.csv
+*.zip

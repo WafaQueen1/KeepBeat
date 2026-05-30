@@ -5,9 +5,9 @@ Use these notebooks in Google Colab free tier. Keep datasets and exported `.h5` 
 ## Order
 
 1. `01_battery_dataset_cleaning.ipynb` - NASA discharge-only battery preparation for pacemaker RUL.
-2. `02_train_battery_rul.ipynb` - PINN-LSTM battery RUL training.
-3. `03_train_cardiac_risk.ipynb` - Bidirectional LSTM cardiac risk training.
-4. `04_train_metabolic.ipynb` - Stacked LSTM metabolic simulation training.
+2. `01_battery_training.ipynb` / `02_train_battery_rul.ipynb` - PINN-LSTM battery RUL training.
+3. `02_cardiac_training.ipynb` - Bidirectional LSTM cardiac risk training.
+4. `03_metabolic_training.ipynb` / `04_train_metabolic.ipynb` - Stacked LSTM metabolic simulation training.
 
 ## Battery CSV Output
 

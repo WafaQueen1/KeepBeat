@@ -86,6 +86,7 @@ print("TEST 3: MQTT → Backend → DB Pipeline")
 print("="*60)
 
 try:
+    # pyrefly: ignore [missing-import]
     import paho.mqtt.client as mqtt
     import json
     
