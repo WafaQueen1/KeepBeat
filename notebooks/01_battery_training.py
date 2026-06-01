@@ -94,14 +94,14 @@ Upload to Colab: drag and drop the CSV into the file panel
 """
 
 # ===== LOAD DATA =====
-# Canonical TwinPac export first, then common Kaggle filename patterns
+# Try common filename patterns from this Kaggle dataset
 CANDIDATE_FILES = [
-    DATA_DIR / 'NASA Battery Dataset' / 'battery_cycle_level_dataset_CLEAN_FINAL.csv',
-    DATA_DIR / 'battery_cycles.csv',
-    DATA_DIR / 'nasa_battery_cycles.csv',
-    DATA_DIR / 'cleaned_battery_data.csv',
-    Path('battery_cycles.csv'),  # Colab upload at repo root
-    Path('nasa_battery_cycles.csv'),
+    'data/NASA Battery Dataset/battery_cycle_level_dataset_CLEAN_FINAL.csv',
+    'data/battery_cycles.csv',
+    'data/nasa_battery_cycles.csv', 
+    'data/cleaned_battery_data.csv',
+    'battery_cycles.csv',  # if running directly in Colab
+    'nasa_battery_cycles.csv',
 ]
 
 df_raw = None

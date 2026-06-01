@@ -102,12 +102,14 @@ print("\nMIT-BIH Arrhythmia Database:")
 mit_train = load_csv_with_fallback([
     'data/ECG Dataset/mitbih_train.csv',
     'data/mitbih_train.csv',
-    'mitbih_train.csv'
+    'mitbih_train.csv',
+    r'D:\Vibe Coding\TwinPacemaker\data\ECG Dataset\mitbih_train.csv'
 ])
 mit_test = load_csv_with_fallback([
     'data/ECG Dataset/mitbih_test.csv',
     'data/mitbih_test.csv',
-    'mitbih_test.csv'
+    'mitbih_test.csv',
+    r'D:\Vibe Coding\TwinPacemaker\data\ECG Dataset\mitbih_test.csv'
 ])
 
 assert mit_train.shape[1] == 188, f"Expected 188 cols, got {mit_train.shape[1]}"
@@ -119,12 +121,14 @@ print("\nPTB Diagnostic ECG Database:")
 ptb_normal = load_csv_with_fallback([
     'data/ECG Dataset/ptbdb_normal.csv',
     'data/ptbdb_normal.csv',
-    'ptbdb_normal.csv'
+    'ptbdb_normal.csv',
+    r'D:\Vibe Coding\TwinPacemaker\data\ECG Dataset\ptbdb_normal.csv'
 ])
 ptb_abnormal = load_csv_with_fallback([
     'data/ECG Dataset/ptbdb_abnormal.csv',
     'data/ptbdb_abnormal.csv',
-    'ptbdb_abnormal.csv'
+    'ptbdb_abnormal.csv',
+    r'D:\Vibe Coding\TwinPacemaker\data\ECG Dataset\ptbdb_abnormal.csv'
 ])
 print(f"  Normal: {ptb_normal.shape} | Abnormal (MI): {ptb_abnormal.shape}")
 
@@ -529,7 +533,7 @@ axes[1,2].legend(); axes[1,2].grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig(MODELS_DIR / 'cardiac_training_results.png', dpi=150, bbox_inches='tight')
-plt.close()
+plt.show()
 print("✅ Saved: models/cardiac_training_results.png")
 
 # ===========================

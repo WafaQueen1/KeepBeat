@@ -33,10 +33,18 @@ print("\n" + "="*60)
 print("STEP 1: Loading Dataset")
 print("="*60)
 
-train_df = pd.read_csv('data/battery_train.csv')
-test_df = pd.read_csv('data/battery_test.csv')
+# Load full dataset from absolute path
+full_csv_path = r'D:/Vibe Coding/TwinPacemaker/data/NASA Battery Dataset/battery_cycle_level_dataset_CLEAN_FINAL.csv'
 
-with open('data/battery_stats.json', 'r') as f:
+df_all = pd.read_csv(full_csv_path)
+
+# Split into training and testing sets (80/20)
+from sklearn.model_selection import train_test_split
+train_df, test_df = train_test_split(df_all, test_size=0.2, random_state=42)
+
+# Load normalization statistics (absolute path)
+stats_path = r'D:/Vibe Coding/TwinPacemaker/data/battery_stats.json'
+with open(stats_path, 'r') as f:
     stats = json.load(f)
 
 print(f"Training sequences: {len(train_df)}")
@@ -321,7 +329,7 @@ callbacks = [
         verbose=1
     ),
     ModelCheckpoint(
-        'models/battery_rul_pinn_lstm_best.keras',
+        os.path.join(MODELS_DIR, 'battery_rul_pinn_lstm_best.keras'),
         monitor='val_rul_output_mae',
         save_best_only=True,
         mode='min',
@@ -394,9 +402,12 @@ print("\n" + "="*60)
 print("STEP 7: Generating Visualizations")
 print("="*60)
 
-# Create output directory
-import os
-os.makedirs('models', exist_ok=True)
+CSV_PATH = r'D:/Vibe Coding/TwinPacemaker/NASA Battery Dataset/battery_cycle_level_dataset_CLEAN_FINAL.csv'
+MODELS_DIR = r'D:/Vibe Coding/TwinPacemaker/models'
+import shutil, os
+if os.path.isdir(MODELS_DIR):
+    shutil.rmtree(MODELS_DIR)
+os.makedirs(MODELS_DIR, exist_ok=True)
 
 # 1. Training History
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -439,8 +450,8 @@ axes[1, 1].legend()
 axes[1, 1].grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('models/battery_training_history.png', dpi=150, bbox_inches='tight')
-print("✅ Saved: models/battery_training_history.png")
+plt.savefig(os.path.join(MODELS_DIR, 'battery_training_history.png'), dpi=150, bbox_inches='tight')
+print(f"✅ Saved: {os.path.join(MODELS_DIR, 'battery_training_history.png')}")
 
 # 2. Prediction vs Actual
 fig, axes = plt.subplots(1, 2, figsize=(14, 6))
@@ -472,8 +483,8 @@ axes[1].legend()
 axes[1].grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('models/battery_predictions.png', dpi=150, bbox_inches='tight')
-print("✅ Saved: models/battery_predictions.png")
+plt.savefig(os.path.join(MODELS_DIR, 'battery_predictions.png'), dpi=150, bbox_inches='tight')
+print(f"✅ Saved: {os.path.join(MODELS_DIR, 'battery_predictions.png')}")
 
 # 3. Error Distribution
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -487,8 +498,8 @@ ax.legend()
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('models/battery_error_distribution.png', dpi=150, bbox_inches='tight')
-print("✅ Saved: models/battery_error_distribution.png")
+plt.savefig(os.path.join(MODELS_DIR, 'battery_error_distribution.png'), dpi=150, bbox_inches='tight')
+print(f"✅ Saved: {os.path.join(MODELS_DIR, 'battery_error_distribution.png')}")
 
 # ===== SAVE MODEL & METADATA =====
 
@@ -497,8 +508,8 @@ print("STEP 8: Saving Model & Metadata")
 print("="*60)
 
 # Save full model (using .keras extension as .h5 is legacy in newer TF)
-model.save('models/battery_rul_pinn_lstm.keras')
-print("✅ Saved: models/battery_rul_pinn_lstm.keras")
+model.save(os.path.join(MODELS_DIR, 'battery_rul_pinn_lstm.keras'))
+print(f"✅ Saved: {os.path.join(MODELS_DIR, 'battery_rul_pinn_lstm.keras')}")
 
 # Save model info
 model_info = {
@@ -531,10 +542,10 @@ model_info = {
     }
 }
 
-with open('models/battery_rul_model_info.json', 'w') as f:
+with open(os.path.join(MODELS_DIR, 'battery_rul_model_info.json'), 'w') as f:
     json.dump(model_info, f, indent=2)
 
-print("✅ Saved: models/battery_rul_model_info.json")
+print(f"✅ Saved: {os.path.join(MODELS_DIR, 'battery_rul_model_info.json')}")
 
 # Print learned physics parameters
 print("\n📊 Learned Physics Parameters (Shepherd Model):")
