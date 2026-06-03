@@ -8,7 +8,7 @@ from tensorflow import keras
 from typing import Dict, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from models.telemetry import BatteryTelemetry
+from backend.models.telemetry import BatteryTelemetry
 
 class BatteryPredictionService:
     def __init__(self, 

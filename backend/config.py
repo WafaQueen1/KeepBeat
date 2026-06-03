@@ -7,7 +7,7 @@ import os
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql+psycopg2://postgres@localhost:5432/twinpacemaker",
+    "sqlite:///./twinpacemaker.db",
 )
 
 MQTT_BROKER = os.getenv("MQTT_BROKER", "localhost")

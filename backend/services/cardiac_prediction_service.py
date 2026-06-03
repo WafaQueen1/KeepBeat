@@ -13,8 +13,8 @@ from backend.models.telemetry import ECGTelemetry
 
 class CardiacPredictionService:
     def __init__(self, 
-                 model_paths=['backend/models/cardiac_risk_lstm.keras', 'models/cardiac_bilstm.keras', 'backend/models/cardiac_bilstm.keras'],
-                 info_paths=['backend/models/cardiac_model_info.json', 'models/cardiac_model_info.json', 'backend/models/cardiac_model_info.json']):
+                 model_paths=['models/cardiac/cardiac_bilstm.keras', 'backend/models/cardiac_risk_lstm.keras', 'models/cardiac_bilstm.keras', 'backend/models/cardiac_bilstm.keras'],
+                 info_paths=['models/cardiac/cardiac_model_info.json', 'backend/models/cardiac_model_info.json', 'models/cardiac_model_info.json', 'backend/models/cardiac_model_info.json']):
         """
         Initialize cardiac risk prediction service
         """
@@ -143,6 +143,37 @@ class CardiacPredictionService:
             'confidence_percent': float(self.model_info.get('metrics', {}).get('f1_score', 0.89) * 100),
             'model_version': 'BiLSTM v1.0',
             'timestamp': datetime.now(timezone.utc).isoformat()
+        }
+
+    def predict_from_sequence(self, sequence_array: np.ndarray) -> Dict:
+        """
+        Predict cardiac risk directly from a raw ECG sequence.
+        sequence_array should have shape (1, 187, 1)
+        """
+        risk_probability = 0.1
+        if self.model is not None:
+            try:
+                pred = self.model.predict(sequence_array, verbose=0)
+                risk_probability = float(pred[0][0])
+            except Exception as e:
+                print(f"⚠️ Inference error on sequence: {e}")
+                return {'error': str(e), 'success': False}
+                
+        # Classify risk level
+        if risk_probability > 0.7:
+            risk_level = 'high'
+        elif risk_probability > 0.4:
+            risk_level = 'moderate'
+        else:
+            risk_level = 'low'
+            
+        return {
+            'risk_probability': risk_probability,
+            'risk_level': risk_level,
+            'confidence_percent': float(self.model_info.get('metrics', {}).get('f1_score', 0.89) * 100),
+            'model_version': 'BiLSTM v1.0 (Prototype)',
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'success': True
         }
 
 # Global singleton

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart TwinPac — AI Prototyping Mode</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6ff;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(90deg, #3e0d29, #6e1a3a);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #802a4a;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #f74f88;
+            letter-spacing: 2px;
+        }
+        .logo span { color: #d7ccc8; font-size: 1.2rem; }
+
+        .nav-links a {
+            color: #ffb4c8;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 20px;
+            border-bottom: 1px solid transparent;
+        }
+        .nav-links a:hover {
+            border-bottom: 1px solid #ffb4c8;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .main {
+            padding: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: #111827;
+            border-radius: 12px;
+            border: 1px solid #3f1e2f;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: #f48fb1;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            color: #ffccbc;
+            border-bottom: 1px solid #3f1e2f;
+            padding-bottom: 8px;
+        }
+
+        /* ===== FORM ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #bcaaa4;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: #1e1115;
+            border: 1px solid #4a2835;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            background: #d81b60;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover { background: #ad1457; }
+
+        /* ===== RESULTS DISPLAY ===== */
+        .metric-big {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .metric-unit { font-size: 1.2rem; color: #bcaaa4; }
+        
+        .result-label {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .result-high { background: #b71c1c; color: #ffcdd2; }
+        .result-moderate { background: #e65100; color: #ffe0b2; }
+        .result-low { background: #1b5e20; color: #c8e6c9; }
+
+        /* ===== CHART ===== */
+        .chart-container {
+            margin-top: 20px;
+            height: 150px;
+            width: 100%;
+            border: 1px solid #3f1e2f;
+            border-radius: 6px;
+            background: #0a0508;
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .full-width { grid-column: span 2; }
+        
+        /* Loading overlay */
+        .loading { opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <div class="logo">SMART <span>TWINPAC AI PROTOTYPING</span></div>
+        <div class="nav-links">
+            <a href="/">← Back to Live Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    <!-- INPUT PARAMS -->
+    <div class="card" id="inputCard">
+        <h2>Model Inputs</h2>
+        <div class="form-group">
+            <label>Heart Rate (bpm)</label>
+            <input type="number" id="hrInput" value="70" min="30" max="250">
+        </div>
+        <div class="form-group">
+            <label>Arrhythmia Type</label>
+            <select id="arrhythmiaInput">
+                <option value="normal">Normal Sinus Rhythm</option>
+                <option value="tachycardia">Tachycardia</option>
+                <option value="bradycardia">Bradycardia</option>
+                <option value="arrhythmia">Arrhythmia (Unknown/General)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Or Paste Raw Sequence (187 values, comma separated) - Overrides above parameters</label>
+            <textarea id="rawSequence" rows="4" placeholder="Optional..."></textarea>
+        </div>
+        <button onclick="runPrediction()" id="predictBtn">Run Prediction (Label Demande)</button>
+    </div>
+
+    <!-- PREDICTION OUTPUT -->
+    <div class="card" id="outputCard">
+        <h2>Cardiac Risk Prediction (BiLSTM)</h2>
+        
+        <div id="resultArea" style="display:none; margin-top:20px;">
+            <div class="result-label" id="riskLabel">--</div>
+            <div class="metric-big">
+                <span id="riskScore">--</span><span class="metric-unit">%</span>
+            </div>
+            <div style="text-align: center; color: #bcaaa4; margin-top: 10px;">
+                Confidence: <span id="confidenceScore">--</span>% <br/>
+                Model: <span id="modelVersion">--</span>
+            </div>
+        </div>
+        <div id="waitingArea" style="text-align:center; padding:40px; color:#bcaaa4;">
+            Submit parameters to run model inference...
+        </div>
+    </div>
+
+    <!-- SEQUENCE CHART -->
+    <div class="card full-width">
+        <h2>Input Sequence (187 samples)</h2>
+        <div class="chart-container">
+            <canvas id="sequenceCanvas"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:8000/api/v1/predictions/cardiac/prototype';
+
+    function drawSequence(sequence) {
+        const canvas = document.getElementById('sequenceCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Setup resolution
+        canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+        canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        
+        const W = canvas.offsetWidth;
+        const H = canvas.offsetHeight;
+        
+        ctx.clearRect(0, 0, W, H);
+        
+        // Draw grid
+        ctx.strokeStyle = '#3f1e2f';
+        ctx.lineWidth = 1;
+        for(let x=0; x<W; x+=40) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for(let y=0; y<H; y+=20) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+
+        if(!sequence || sequence.length === 0) return;
+
+        // Find min/max for scaling
+        let min = Math.min(...sequence);
+        let max = Math.max(...sequence);
+        if(min === max) { min -= 1; max += 1; }
+        const range = max - min;
+        
+        ctx.beginPath();
+        ctx.strokeStyle = '#f48fb1';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#f48fb1';
+        ctx.shadowBlur = 8;
+        
+        for(let i=0; i<sequence.length; i++) {
+            const x = (i / (sequence.length - 1)) * W;
+            const normalized = (sequence[i] - min) / range;
+            const y = H - (normalized * H * 0.8 + H * 0.1); // pad 10%
+            
+            if(i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+    }
+
+    async function runPrediction() {
+        const btn = document.getElementById('predictBtn');
+        const hr = parseFloat(document.getElementById('hrInput').value);
+        const arrhythmia = document.getElementById('arrhythmiaInput').value;
+        const rawSeqStr = document.getElementById('rawSequence').value.trim();
+        
+        let payload = {};
+        if (rawSeqStr) {
+            try {
+                const seq = rawSeqStr.split(',').map(s => parseFloat(s.trim()));
+                if (seq.length !== 187) throw new Error("Sequence must be exactly 187 values.");
+                payload.sequence = seq;
+            } catch(e) {
+                alert("Invalid sequence format. Ensure it is exactly 187 comma-separated numbers.");
+                return;
+            }
+        } else {
+            payload.hr = hr;
+            payload.arrhythmia = arrhythmia;
+        }
+
+        btn.textContent = "Running Inference...";
+        btn.disabled = true;
+        document.getElementById('inputCard').classList.add('loading');
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            
+            if(data.error) {
+                alert("Error from backend: " + data.error);
+                throw new Error(data.error);
+            }
+
+            // Update UI
+            document.getElementById('waitingArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'block';
+            
+            document.getElementById('riskScore').textContent = Math.round(data.risk_probability * 100);
+            document.getElementById('confidenceScore').textContent = Math.round(data.confidence_percent || 89);
+            document.getElementById('modelVersion').textContent = data.model_version;
+            
+            const labelEl = document.getElementById('riskLabel');
+            labelEl.textContent = `RISK LEVEL: ${data.risk_level.toUpperCase()}`;
+            labelEl.className = `result-label result-${data.risk_level}`;
+
+            if(data.sequence) {
+                drawSequence(data.sequence);
+            }
+            
+        } catch(err) {
+            console.error(err);
+        } finally {
+            btn.textContent = "Run Prediction (Label Demande)";
+            btn.disabled = false;
+            document.getElementById('inputCard').classList.remove('loading');
+        }
+    }
+
+    // Draw empty grid on load
+    drawSequence([]);
+</script>
+
+</body>
+</html>

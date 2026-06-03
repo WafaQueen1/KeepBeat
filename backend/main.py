@@ -1,6 +1,8 @@
 """FastAPI main application for Smart TwinPac telemetry."""
 
 from __future__ import annotations
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -47,7 +49,7 @@ if os.path.exists("frontend"):
     def serve_dashboard():
         return FileResponse("frontend/dashboard.html")
     
-    print("✅ Dashboard mounted at /")
+    print("[OK] Dashboard mounted at /")
 else:
     @app.get("/")
     def root():
@@ -68,6 +70,11 @@ class TelemetryQuery(BaseModel):
     patient_id: str
     hours_ago: Optional[int] = 24
 
+class PrototypeRequest(BaseModel):
+    hr: Optional[float] = None
+    arrhythmia: Optional[str] = None
+    sequence: Optional[list] = None
+
 
 @app.on_event("startup")
 async def load_models() -> None:
@@ -75,37 +82,37 @@ async def load_models() -> None:
     init_db()
     print("Backend ready")
     
-    print("\n🧠 Loading AI Models...")
+    print("\n[INFO] Loading AI Models...")
     try:
         import os
         
         # Only load if model files exist
         battery_path = 'backend/models/battery_rul_pinn_lstm.keras'
-        cardiac_path = 'backend/models/cardiac_risk_lstm.keras'
+        cardiac_path = 'models/cardiac/cardiac_bilstm.keras'
         metabolic_path = 'backend/models/metabolic_lstm.keras'
         
         if os.path.exists(battery_path):
             get_battery_service()
-            print("   ✅ Battery PINN-LSTM loaded")
+            print("   [OK] Battery PINN-LSTM loaded")
         else:
-            print(f"   ⚠️  Battery model not found: {battery_path}")
+            print(f"   [WARN] Battery model not found: {battery_path}")
         
         if os.path.exists(cardiac_path):
             get_cardiac_service()
-            print("   ✅ Cardiac BiLSTM loaded")
+            print("   [OK] Cardiac BiLSTM loaded")
         else:
-            print(f"   ⚠️  Cardiac model not found: {cardiac_path}")
+            print(f"   [WARN] Cardiac model not found: {cardiac_path}")
         
         if os.path.exists(metabolic_path):
             get_metabolic_service()
-            print("   ✅ Metabolic LSTM loaded")
+            print("   [OK] Metabolic LSTM loaded")
         else:
-            print(f"   ⚠️  Metabolic model not found: {metabolic_path}")
+            print(f"   [WARN] Metabolic model not found: {metabolic_path}")
         
-        print("🧠 Model loading complete\n")
+        print("[INFO] Model loading complete\n")
     
     except Exception as e:
-        print(f"   ⚠️  Model loading error: {e}")
+        print(f"   [ERROR] Model loading error: {e}")
         print("   Backend will run without AI predictions until models are added")
 
 
@@ -285,6 +292,27 @@ def predict_battery_rul(patient_id: str, db: Session = Depends(get_db)):
             "prediction": prediction
         }
     
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/predictions/cardiac/prototype")
+def prototype_cardiac_prediction(req: PrototypeRequest):
+    """
+    On-demand cardiac prediction for prototyping dashboard.
+    """
+    import numpy as np
+    try:
+        cardiac_service = get_cardiac_service()
+        if req.sequence and len(req.sequence) == 187:
+            seq = np.array(req.sequence, dtype=np.float32).reshape(1, 187, 1)
+        else:
+            hr = req.hr if req.hr is not None else 70.0
+            arrhythmia = req.arrhythmia if req.arrhythmia is not None else 'normal'
+            seq = cardiac_service.generate_synthetic_ecg(hr, arrhythmia)
+        
+        result = cardiac_service.predict_from_sequence(seq)
+        result['sequence'] = seq.flatten().tolist()
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
