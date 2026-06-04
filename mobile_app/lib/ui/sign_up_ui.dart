@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme/app_theme.dart';
+import '../providers/patient_provider.dart';
 import 'widgets/bento_widgets.dart';
 
 class SignUpUI extends StatefulWidget {
@@ -63,7 +65,7 @@ class _SignUpUIState extends State<SignUpUI> {
                                 ),
                                 const SizedBox(height: 54),
                                 Text(
-                                  '© 2024 KEEPBEAT MEDICAL SYSTEMS. LOCALLY\nPROCESSED. FULLY ENCRYPTED.',
+                                  '© 2026 KEEPBEAT MEDICAL SYSTEMS. LOCALLY\nPROCESSED. FULLY ENCRYPTED.',
                                   textAlign: TextAlign.center,
                                   style: AppTheme.textTheme.labelSmall?.copyWith(
                                     color: AppTheme.onSurfaceMuted.withOpacity(0.55),
@@ -188,7 +190,7 @@ class _HeroSection extends StatelessWidget {
 
 // Removed unused _PredictiveCareCard and _LogoShowcaseCard
 
-class _CreateAccountCard extends StatelessWidget {
+class _CreateAccountCard extends ConsumerWidget {
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
@@ -204,7 +206,7 @@ class _CreateAccountCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GlassCard(
       padding: const EdgeInsets.fromLTRB(26, 27, 26, 26),
       child: Column(
@@ -259,7 +261,11 @@ class _CreateAccountCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           StitchButton(
-            onTap: () => Navigator.of(context).pushReplacementNamed('/dashboard'),
+            onTap: () {
+              final name = nameController.text.trim();
+              ref.read(patientContextProvider.notifier).setActivePatient('PT_001', '#TP-8842', name.isEmpty ? 'New User' : name);
+              Navigator.of(context).pushReplacementNamed('/dashboard');
+            },
             text: 'Create My Account',
             icon: Icons.arrow_forward_rounded,
             height: 62,

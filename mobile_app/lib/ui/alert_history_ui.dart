@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme/app_theme.dart';
+import '../providers/patient_provider.dart';
 import 'widgets/bento_widgets.dart';
 
-class AlertHistoryUI extends StatelessWidget {
+class AlertHistoryUI extends ConsumerWidget {
   const AlertHistoryUI({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final patient = ref.watch(patientContextProvider);
+    final initials = patient.fullName.trim().split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join().toUpperCase();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -29,9 +34,17 @@ class AlertHistoryUI extends StatelessWidget {
                         letterSpacing: 1.5,
                       ),
                     ),
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 18,
-                      backgroundImage: AssetImage('assets/images/avatar.png'),
+                      backgroundColor: AppTheme.primary.withOpacity(0.1),
+                      child: Text(
+                        initials,
+                        style: AppTheme.textTheme.titleMedium?.copyWith(
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ],
                 ),

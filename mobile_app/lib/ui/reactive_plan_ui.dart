@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
+import '../providers/patient_provider.dart';
 import 'widgets/bento_widgets.dart';
 
 enum AlertType {
@@ -11,7 +13,7 @@ enum AlertType {
   normal
 }
 
-class ReactivePlanUI extends StatelessWidget {
+class ReactivePlanUI extends ConsumerWidget {
   final AlertType alertType;
 
   const ReactivePlanUI({
@@ -20,7 +22,10 @@ class ReactivePlanUI extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final patient = ref.watch(patientContextProvider);
+    final initials = patient.fullName.trim().split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join().toUpperCase();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -28,7 +33,7 @@ class ReactivePlanUI extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              _buildHeader(context),
+              _buildHeader(context, initials),
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -51,7 +56,7 @@ class ReactivePlanUI extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, String initials) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
       child: Row(
@@ -67,9 +72,17 @@ class ReactivePlanUI extends StatelessWidget {
             textSize: 16,
             redText: true,
           ),
-          const CircleAvatar(
+          CircleAvatar(
             radius: 18,
-            backgroundImage: AssetImage('assets/images/avatar.png'),
+            backgroundColor: AppTheme.primary.withOpacity(0.1),
+            child: Text(
+              initials,
+              style: AppTheme.textTheme.titleMedium?.copyWith(
+                color: AppTheme.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
           ),
         ],
       ),

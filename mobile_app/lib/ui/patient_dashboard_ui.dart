@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/vitals_provider.dart';
+import '../providers/patient_provider.dart';
 import '../services/hybrid_sensor_service.dart';
 import '../theme/app_theme.dart';
 import 'widgets/bento_widgets.dart';
@@ -44,6 +45,9 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
 
   @override
   Widget build(BuildContext context) {
+    final patient = ref.watch(patientContextProvider);
+    final initials = patient.fullName.trim().split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join().toUpperCase();
+
     final heartRate = ref.watch(heartRateProvider).value ?? 72;
     final glucose = ref.watch(glucoseProvider).value ?? 5.4;
     final batteryPct = ref.watch(batteryProvider).value ?? 82.0;
@@ -62,9 +66,16 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 22,
-                      backgroundImage: AssetImage('assets/images/avatar.png'),
+                      backgroundColor: AppTheme.primary.withOpacity(0.1),
+                      child: Text(
+                        initials,
+                        style: AppTheme.textTheme.titleMedium?.copyWith(
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -79,7 +90,7 @@ class _PatientDashboardUIState extends ConsumerState<PatientDashboardUI>
                           ),
                         ),
                         Text(
-                          'Wafa Queen',
+                          patient.fullName,
                           style: AppTheme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                             fontSize: 18,

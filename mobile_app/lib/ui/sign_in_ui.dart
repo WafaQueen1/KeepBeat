@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../theme/app_theme.dart';
+import '../providers/patient_provider.dart';
 import 'widgets/bento_widgets.dart';
 
 class SignInUI extends ConsumerStatefulWidget {
@@ -94,8 +95,17 @@ class _SignInUIState extends ConsumerState<SignInUI> {
                               ),
                               const SizedBox(height: 28),
                               StitchButton(
-                                onTap: () => Navigator.of(context)
-                                    .pushReplacementNamed('/dashboard'),
+                                onTap: () {
+                                  final email = _emailController.text;
+                                  String name = 'Unknown User';
+                                  if (email.contains('@')) {
+                                    final parts = email.split('@')[0].replaceAll(RegExp(r'[^a-zA-Z0-9]'), ' ').trim().split(' ');
+                                    name = parts.map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '').join(' ');
+                                  }
+                                  if (name.trim().isEmpty) name = 'User';
+                                  ref.read(patientContextProvider.notifier).setActivePatient('PT_001', '#TP-8842', name);
+                                  Navigator.of(context).pushReplacementNamed('/dashboard');
+                                },
                                 text: 'Sign In',
                                 icon: Icons.arrow_forward_rounded,
                                 height: 62,
@@ -130,7 +140,7 @@ class _SignInUIState extends ConsumerState<SignInUI> {
                         ),
                         const SizedBox(height: 60),
                         Text(
-                          '© 2024 KEEPBEAT MEDICAL SYSTEMS',
+                          '© 2026 KEEPBEAT MEDICAL SYSTEMS',
                           style: AppTheme.textTheme.labelSmall?.copyWith(
                             color: AppTheme.onSurfaceMuted.withOpacity(0.50),
                             fontSize: 10,

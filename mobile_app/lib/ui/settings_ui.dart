@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/patient_provider.dart';
 
 import '../theme/app_theme.dart';
 import 'widgets/bento_widgets.dart';
 
-class SettingsUI extends StatefulWidget {
+class SettingsUI extends ConsumerStatefulWidget {
   const SettingsUI({super.key});
 
   @override
-  State<SettingsUI> createState() => _SettingsUIState();
+  ConsumerState<SettingsUI> createState() => _SettingsUIState();
 }
 
-class _SettingsUIState extends State<SettingsUI> {
+class _SettingsUIState extends ConsumerState<SettingsUI> {
   bool _lowGlucose = true;
   bool _highPulse = true;
   bool _batteryCritical = false;
 
   @override
   Widget build(BuildContext context) {
+    final patient = ref.watch(patientContextProvider);
+    final initials = patient.fullName.trim().split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join().toUpperCase();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -61,9 +66,16 @@ class _SettingsUIState extends State<SettingsUI> {
                   ),
                   child: Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 32,
-                        backgroundImage: AssetImage('assets/images/avatar.png'),
+                        backgroundColor: AppTheme.primary.withOpacity(0.1),
+                        child: Text(
+                          initials,
+                          style: AppTheme.textTheme.titleLarge?.copyWith(
+                            color: AppTheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 20),
                       Expanded(
@@ -71,7 +83,7 @@ class _SettingsUIState extends State<SettingsUI> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Wafa Queen',
+                              patient.fullName,
                               style: AppTheme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 22,
