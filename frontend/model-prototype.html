@@ -168,6 +168,7 @@
         /* Loading overlay */
         .loading { opacity: 0.5; pointer-events: none; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -184,29 +185,21 @@
     <!-- INPUT PARAMS -->
     <div class="card" id="inputCard">
         <h2>Model Inputs</h2>
-        <div class="form-group">
-            <label>Heart Rate (bpm)</label>
-            <input type="number" id="hrInput" value="70" min="30" max="250">
+        <div style="margin-bottom: 20px; text-align: center;">
+            <div id="deviceBadge" style="display:inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; background: #b71c1c; color: #ffcdd2; transition: all 0.3s;">
+                Device Status: Disconnected
+            </div>
         </div>
         <div class="form-group">
-            <label>Arrhythmia Type</label>
-            <select id="arrhythmiaInput">
-                <option value="normal">Normal Sinus Rhythm</option>
-                <option value="tachycardia">Tachycardia</option>
-                <option value="bradycardia">Bradycardia</option>
-                <option value="arrhythmia">Arrhythmia (Unknown/General)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Or Paste Raw Sequence (187 values, comma separated) - Overrides above parameters</label>
+            <label>Or Paste Raw Sequence (187 values, comma separated) - Manual Override</label>
             <textarea id="rawSequence" rows="4" placeholder="Optional..."></textarea>
         </div>
-        <button onclick="runPrediction()" id="predictBtn">Run Prediction (Label Demande)</button>
+        <button onclick="runPrediction()" id="predictBtn">Run Prediction (CNN-LSTM)</button>
     </div>
 
     <!-- PREDICTION OUTPUT -->
     <div class="card" id="outputCard">
-        <h2>Cardiac Risk Prediction (BiLSTM)</h2>
+        <h2>Cardiac Risk Prediction (CNN-LSTM)</h2>
         
         <div id="resultArea" style="display:none; margin-top:20px;">
             <div class="result-label" id="riskLabel">--</div>
@@ -233,61 +226,141 @@
 </div>
 
 <script>
-    const API_URL = 'http://localhost:8000/api/v1/predictions/cardiac/prototype';
+    const API_PREDICT_URL = 'http://localhost:8000/api/model/cardiac/predict';
+    const API_LATEST_URL = 'http://localhost:8000/api/iot/ecg/latest';
+    const WS_URL = 'ws://localhost:8000/ws/ecg';
 
-    function drawSequence(sequence) {
-        const canvas = document.getElementById('sequenceCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Setup resolution
-        canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-        canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        
-        const W = canvas.offsetWidth;
-        const H = canvas.offsetHeight;
-        
-        ctx.clearRect(0, 0, W, H);
-        
-        // Draw grid
-        ctx.strokeStyle = '#3f1e2f';
-        ctx.lineWidth = 1;
-        for(let x=0; x<W; x+=40) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-        }
-        for(let y=0; y<H; y+=20) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-        }
+    let ecgChart = null;
+    let ws = null;
+    let fallbackInterval = null;
 
-        if(!sequence || sequence.length === 0) return;
+    function initChart() {
+        const ctx = document.getElementById('sequenceCanvas').getContext('2d');
+        ecgChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 187}, (_, i) => i),
+                datasets: [{
+                    label: 'ECG Signal',
+                    data: Array(187).fill(0),
+                    borderColor: '#f48fb1',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    x: { display: false },
+                    y: {
+                        display: true,
+                        grid: { color: '#3f1e2f' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
 
-        // Find min/max for scaling
-        let min = Math.min(...sequence);
-        let max = Math.max(...sequence);
-        if(min === max) { min -= 1; max += 1; }
-        const range = max - min;
-        
-        ctx.beginPath();
-        ctx.strokeStyle = '#f48fb1';
-        ctx.lineWidth = 2;
-        ctx.shadowColor = '#f48fb1';
-        ctx.shadowBlur = 8;
-        
-        for(let i=0; i<sequence.length; i++) {
-            const x = (i / (sequence.length - 1)) * W;
-            const normalized = (sequence[i] - min) / range;
-            const y = H - (normalized * H * 0.8 + H * 0.1); // pad 10%
-            
-            if(i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
+    function updateChart(sequence) {
+        if (!ecgChart || !sequence) return;
+        ecgChart.data.datasets[0].data = sequence;
+        ecgChart.update();
+    }
+
+    function setDeviceStatus(connected) {
+        const badge = document.getElementById('deviceBadge');
+        if (connected) {
+            badge.textContent = "Device Status: Connected & Streaming";
+            badge.style.background = "#1b5e20";
+            badge.style.color = "#c8e6c9";
+        } else {
+            badge.textContent = "Device Status: Disconnected";
+            badge.style.background = "#b71c1c";
+            badge.style.color = "#ffcdd2";
         }
-        ctx.stroke();
+    }
+
+    function updatePredictionUI(data) {
+        document.getElementById('waitingArea').style.display = 'none';
+        document.getElementById('resultArea').style.display = 'block';
+        
+        document.getElementById('riskScore').textContent = Math.round(data.risk_probability * 100);
+        document.getElementById('confidenceScore').textContent = Math.round(data.confidence_percent || 0);
+        document.getElementById('modelVersion').textContent = data.model_version;
+        
+        const labelEl = document.getElementById('riskLabel');
+        labelEl.textContent = `RISK LEVEL: ${data.risk_level.toUpperCase()}`;
+        labelEl.className = `result-label result-${data.risk_level}`;
+
+        if(data.sequence) {
+            updateChart(data.sequence);
+        }
+    }
+
+    function connectWebSocket() {
+        ws = new WebSocket(WS_URL);
+        
+        ws.onopen = () => {
+            console.log("WebSocket connected");
+            setDeviceStatus(true);
+            if (fallbackInterval) {
+                clearInterval(fallbackInterval);
+                fallbackInterval = null;
+            }
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                if (msg.type === "prediction" && msg.data) {
+                    updatePredictionUI(msg.data);
+                }
+            } catch (e) {
+                console.error("WS parse error", e);
+            }
+        };
+
+        ws.onclose = () => {
+            console.log("WebSocket disconnected. Retrying and using fallback polling...");
+            setDeviceStatus(false);
+            setTimeout(connectWebSocket, 5000);
+            if (!fallbackInterval) {
+                fallbackInterval = setInterval(pollLatestECG, 2000);
+            }
+        };
+        
+        ws.onerror = (err) => {
+            console.error("WebSocket error", err);
+            ws.close();
+        };
+    }
+
+    async function pollLatestECG() {
+        try {
+            const res = await fetch(API_LATEST_URL);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.sequence) {
+                    updateChart(data.sequence);
+                }
+                if (data.prediction) {
+                    updatePredictionUI(data.prediction);
+                }
+            }
+        } catch (e) {
+            console.error("Polling error", e);
+        }
     }
 
     async function runPrediction() {
         const btn = document.getElementById('predictBtn');
-        const hr = parseFloat(document.getElementById('hrInput').value);
-        const arrhythmia = document.getElementById('arrhythmiaInput').value;
         const rawSeqStr = document.getElementById('rawSequence').value.trim();
         
         let payload = {};
@@ -295,14 +368,14 @@
             try {
                 const seq = rawSeqStr.split(',').map(s => parseFloat(s.trim()));
                 if (seq.length !== 187) throw new Error("Sequence must be exactly 187 values.");
-                payload.sequence = seq;
+                payload.samples = seq;
             } catch(e) {
                 alert("Invalid sequence format. Ensure it is exactly 187 comma-separated numbers.");
                 return;
             }
         } else {
-            payload.hr = hr;
-            payload.arrhythmia = arrhythmia;
+            alert("Please paste a 187-value sequence or wait for Bluetooth streaming.");
+            return;
         }
 
         btn.textContent = "Running Inference...";
@@ -310,7 +383,7 @@
         document.getElementById('inputCard').classList.add('loading');
 
         try {
-            const response = await fetch(API_URL, {
+            const response = await fetch(API_PREDICT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -318,38 +391,27 @@
 
             const data = await response.json();
             
-            if(data.error) {
-                alert("Error from backend: " + data.error);
-                throw new Error(data.error);
+            if(data.detail) {
+                alert("Error from backend: " + JSON.stringify(data.detail));
+                throw new Error(JSON.stringify(data.detail));
             }
 
-            // Update UI
-            document.getElementById('waitingArea').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'block';
-            
-            document.getElementById('riskScore').textContent = Math.round(data.risk_probability * 100);
-            document.getElementById('confidenceScore').textContent = Math.round(data.confidence_percent || 89);
-            document.getElementById('modelVersion').textContent = data.model_version;
-            
-            const labelEl = document.getElementById('riskLabel');
-            labelEl.textContent = `RISK LEVEL: ${data.risk_level.toUpperCase()}`;
-            labelEl.className = `result-label result-${data.risk_level}`;
-
-            if(data.sequence) {
-                drawSequence(data.sequence);
-            }
+            updatePredictionUI(data);
             
         } catch(err) {
             console.error(err);
         } finally {
-            btn.textContent = "Run Prediction (Label Demande)";
+            btn.textContent = "Run Prediction (CNN-LSTM)";
             btn.disabled = false;
             document.getElementById('inputCard').classList.remove('loading');
         }
     }
 
-    // Draw empty grid on load
-    drawSequence([]);
+    // Initialize
+    window.addEventListener('load', () => {
+        initChart();
+        connectWebSocket();
+    });
 </script>
 
 </body>

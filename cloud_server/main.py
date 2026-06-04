@@ -1,8 +1,44 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import uuid
 from datetime import datetime
+import asyncio
+from pydantic import BaseModel
+import numpy as np
+import tensorflow as tf
+
+# Load the ML model
+MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "cardiac", "cardiac2", "best_model_cnn_lstm.keras")
+model = None
+
+# State & WebSocket
+latest_ecg_window = []
+latest_prediction = None
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        disconnected = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception:
+                disconnected.append(connection)
+        for d in disconnected:
+            self.disconnect(d)
+
+manager = ConnectionManager()
 
 # Local imports for Clean Code
 from db_manager import db
@@ -29,6 +65,13 @@ async def log_requests(request: Request, call_next):
 @app.on_event("startup")
 async def startup():
     """Connect and initialize database on startup."""
+    global model
+    try:
+        model = tf.keras.models.load_model(MODEL_PATH)
+        print(f"Loaded ML model from {MODEL_PATH}")
+    except Exception as e:
+        print(f"Warning: Could not load ML model: {e}")
+
     if await db.connect():
         await db.initialize_tables()
 
@@ -193,6 +236,82 @@ async def reassign_patient(id: str, data: PatientReassign):
     """Reassign an unassigned patient to a new clinician."""
     await db.execute("UPDATE patients SET doctor_id = $1, status = 'approved' WHERE id = $2", data.doctor_id, id)
     return {"status": "reassigned"}
+
+# --- ML & IoT ---
+class PredictRequest(BaseModel):
+    samples: list[float]
+
+@app.post("/api/model/cardiac/predict")
+async def predict_cardiac_risk(req: PredictRequest):
+    global latest_ecg_window, latest_prediction
+    if len(req.samples) != 187:
+        raise HTTPException(status_code=400, detail="Must provide exactly 187 samples")
+    
+    latest_ecg_window = req.samples
+    
+    if model is None:
+        raise HTTPException(status_code=503, detail="ML model not loaded")
+        
+    try:
+        # Normalize: divide by 4095
+        arr = np.array(req.samples, dtype=np.float32) / 4095.0
+        # Reshape to (1, 187, 1)
+        arr = arr.reshape(1, 187, 1)
+        
+        preds = model.predict(arr, verbose=0)[0] 
+        
+        predicted_class = int(np.argmax(preds))
+        confidence = float(preds[predicted_class])
+        
+        class_names = ["Normal", "Atrial Fibrillation", "Other Arrhythmia", "Noise"]
+        risk_levels = ["low", "high", "moderate", "low"]
+        
+        res = {
+            "prediction_class": predicted_class,
+            "label": class_names[predicted_class],
+            "risk_level": risk_levels[predicted_class],
+            "risk_probability": confidence,
+            "confidence_percent": confidence * 100,
+            "raw_scores": preds.tolist(),
+            "model_version": "CNN-LSTM v1.0",
+            "sequence": req.samples
+        }
+        latest_prediction = res
+        
+        # Broadcast to websockets
+        await manager.broadcast({
+            "type": "prediction",
+            "data": res
+        })
+        
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/iot/ecg/latest")
+async def get_latest_ecg():
+    if not latest_ecg_window:
+        return {"error": "No ECG data available yet"}
+    return {
+        "sequence": latest_ecg_window,
+        "prediction": latest_prediction
+    }
+
+@app.websocket("/ws/ecg")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        # Send latest state on connect
+        if latest_prediction:
+            await websocket.send_json({
+                "type": "prediction",
+                "data": latest_prediction
+            })
+        while True:
+            data = await websocket.receive_text()
+            # Keep connection open
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
 
 if __name__ == "__main__":
     import uvicorn
