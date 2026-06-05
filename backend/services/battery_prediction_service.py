@@ -4,7 +4,6 @@ Loads PINN-LSTM model and provides inference
 """
 import numpy as np
 import json
-from tensorflow import keras
 from typing import Dict, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
@@ -27,6 +26,7 @@ class BatteryPredictionService:
         
         if os.path.exists(model_path):
             try:
+                from tensorflow import keras
                 self.model = keras.models.load_model(
                     model_path,
                     custom_objects={'PhysicsLayer': self._create_physics_layer()}

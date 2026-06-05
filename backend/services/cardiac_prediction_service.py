@@ -5,7 +5,6 @@ Loads BiLSTM model and provides inference
 import numpy as np
 import json
 import os
-from tensorflow import keras
 from typing import Dict, Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
@@ -22,6 +21,7 @@ class CardiacPredictionService:
         for path in model_paths:
             if os.path.exists(path):
                 try:
+                    from tensorflow import keras
                     self.model = keras.models.load_model(path)
                     print(f"✅ Cardiac BiLSTM model loaded: {path}")
                     break

@@ -24,7 +24,7 @@ class HybridSensorService {
   Stream<String> get alertStream => _alertController.stream;
 
   HybridSensorService() {
-    client = MqttClientFactory.createClient('localhost', 'fog_reactive_agent_client');
+    client = MqttClientFactory.createClient('192.168.1.10', 'fog_reactive_agent_client');
   }
 
   Future<void> initializeMqtt() async {

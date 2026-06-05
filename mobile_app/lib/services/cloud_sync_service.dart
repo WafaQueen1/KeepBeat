@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import '../database/local_data_repository.dart';
 
 class CloudSyncService {
-  // Use 10.0.2.2 to access the host machine's localhost from the Android emulator
-  static const String _baseUrl = 'http://10.0.2.2:8000/api/v1/telemetry';
+  // Use the actual Wi-Fi IP of the backend PC
+  static const String _baseUrl = 'http://192.168.1.10:8000/api/v1/telemetry/bulk';
 
   /// Synchronizes local data logs with the cloud backend
   Future<void> syncData({required String patientId}) async {

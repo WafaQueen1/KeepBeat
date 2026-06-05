@@ -4,7 +4,6 @@ Loads Stacked LSTM and provides glucose predictions
 """
 import numpy as np
 import json
-from tensorflow import keras
 from typing import Dict, Optional, List
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
@@ -27,8 +26,9 @@ class MetabolicPredictionService:
         
         if os.path.exists(model_path):
             try:
+                from tensorflow import keras
                 self.model = keras.models.load_model(model_path)
-                print(f"✅ Metabolic LSTM loaded: {model_path}")
+                print(f"✅ Metabolic Stacked LSTM model loaded: {model_path}")
             except Exception as e:
                 print(f"⚠️ Error loading metabolic model: {e}")
         

@@ -126,8 +126,8 @@ if (isDashboard) {
     ecg = new ECGAnimator();
 }
 
-// --- Telemetry Polling ---
-const API_URL = `http://127.0.0.1:8000/api/v1/telemetry/${patientId || 'PT_001'}?limit=5`;
+// --- Telemetry & AI Polling ---
+const API_URL = `http://192.168.1.10:8000/api/v1/predictions/all/${patientId || 'PT_001'}`;
 const bpmElement = document.getElementById('bpm-value');
 
 async function fetchTelemetry() {
@@ -139,20 +139,22 @@ async function fetchTelemetry() {
         const data = await response.json();
         const signalWarning = document.getElementById('no-signal-warning');
 
-        if (data && data.length > 0) {
-            const latestPacemaker = data.find(item => item.sensor_type === 'pacemaker');
-            if (latestPacemaker) {
-                const val = Math.round(latestPacemaker.value);
-                if (bpmElement) {
-                    bpmElement.innerHTML = `${val}<span class="text-[0.6em] ml-1 font-medium opacity-80 text-white font-['Plus_Jakarta_Sans']">BPM</span>`;
-                }
-                if (ecg) {
-                    ecg.setBPM(val);
-                    ecg.setFlatline(false);
-                }
-                if (signalWarning) signalWarning.classList.add('hidden');
-                return;
+        if (data && data.cardiac && !data.cardiac.error) {
+            const val = Math.round(data.cardiac.heart_rate || 72);
+            if (bpmElement) {
+                bpmElement.innerHTML = `${val}<span class="text-[0.6em] ml-1 font-medium opacity-80 text-white font-['Plus_Jakarta_Sans']">BPM</span>`;
             }
+            if (ecg) {
+                ecg.setBPM(val);
+                ecg.setFlatline(false);
+            }
+            if (signalWarning) signalWarning.classList.add('hidden');
+            
+            // Example: Console log AI alerts for prototyping UI
+            if (data.alerts && data.alerts.length > 0) {
+                console.log("🔥 AI Alerts detected:", data.alerts);
+            }
+            return;
         }
         
         // No data found -> Flatline

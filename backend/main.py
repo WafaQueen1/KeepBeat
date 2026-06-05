@@ -20,6 +20,7 @@ from backend.models.telemetry import (
     TelemetryPostRequest,
     TelemetryPostResponse,
 )
+from pydantic import Field
 from backend.services.telemetry_storage_service import TelemetryStorageService
 from backend.services.battery_prediction_service import get_battery_service
 from backend.services.metabolic_prediction_service import get_metabolic_service
@@ -174,6 +175,35 @@ def post_telemetry(payload: TelemetryPostRequest, db: Session = Depends(get_db))
         stored=True,
         analysis=analysis,
     )
+
+class TelemetryBulkItem(BaseModel):
+    timestamp: str
+    patient_id: str
+    device_id: str
+    sensor_type: str
+    value: float
+    unit: str
+
+class TelemetryBulkRequest(BaseModel):
+    items: list[TelemetryBulkItem]
+
+@app.post("/api/v1/telemetry/bulk")
+def post_telemetry_bulk(payload: TelemetryBulkRequest, db: Session = Depends(get_db)):
+    processed = 0
+    for item in payload.items:
+        telemetry_data = {"timestamp": item.timestamp}
+        if item.sensor_type == "pacemaker" or item.sensor_type == "ecg":
+            # Just store heart rate for bulk
+            telemetry_data["heart_rate"] = item.value
+        elif item.sensor_type == "cgm" or item.sensor_type == "glucose":
+            telemetry_data["glucose_value"] = item.value
+        elif item.sensor_type == "battery":
+            telemetry_data["battery_voltage"] = item.value
+        
+        telemetry_service.process_and_store(db, item.patient_id, telemetry_data)
+        processed += 1
+        
+    return {"message": "Bulk sync successful", "processed": processed}
 
 
 @app.post("/api/v1/telemetry/ecg/latest")
