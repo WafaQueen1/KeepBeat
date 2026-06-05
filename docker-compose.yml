@@ -22,8 +22,8 @@ services:
     image: eclipse-mosquitto:2.0
     container_name: twinpac_mqtt
     ports:
-      - "${MQTT_PORT:-1883}:1883"
-      - "${MQTT_WS_PORT:-9001}:9001"
+      - "1884:1883"
+      - "9002:9001"
     volumes:
       - ./mosquitto/config:/mosquitto/config
       - ./mosquitto/data:/mosquitto/data

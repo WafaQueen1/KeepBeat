@@ -53,7 +53,7 @@
         /* ===== MAIN CONTAINER ===== */
         .main {
             padding: 32px;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -119,9 +119,15 @@
             cursor: pointer;
             width: 100%;
             transition: background 0.3s;
+            margin-top: 10px;
         }
 
         button:hover { background: #ad1457; }
+
+        .btn-secondary {
+            background: #4a2835;
+        }
+        .btn-secondary:hover { background: #6e1a3a; }
 
         /* ===== RESULTS DISPLAY ===== */
         .metric-big {
@@ -144,8 +150,12 @@
         }
 
         .result-high { background: #b71c1c; color: #ffcdd2; }
+        .result-hypoglycemia_risk { background: #b71c1c; color: #ffcdd2; }
+        .result-hyperglycemia_risk { background: #e65100; color: #ffe0b2; }
         .result-moderate { background: #e65100; color: #ffe0b2; }
         .result-low { background: #1b5e20; color: #c8e6c9; }
+        .result-normal { background: #1b5e20; color: #c8e6c9; }
+        .result-neutral { background: #37474f; color: #cfd8dc; }
 
         /* ===== CHART ===== */
         .chart-container {
@@ -182,51 +192,126 @@
 </div>
 
 <div class="main">
-    <!-- INPUT PARAMS -->
-    <div class="card" id="inputCard">
-        <h2>Model Inputs</h2>
+
+    <!-- ============================================== -->
+    <!-- SECTION 1: CARDIAC                             -->
+    <!-- ============================================== -->
+    <div class="card" id="inputCard_cardiac">
+        <h2>Cardiac Model Inputs</h2>
         <div style="margin-bottom: 20px; text-align: center;">
             <div id="deviceBadge" style="display:inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; background: #b71c1c; color: #ffcdd2; transition: all 0.3s;">
                 Device Status: Disconnected
             </div>
         </div>
         <div class="form-group">
-            <label>Or Paste Raw Sequence (187 values, comma separated) - Manual Override</label>
+            <label>Raw ECG Sequence (187 values, comma separated)</label>
             <textarea id="rawSequence" rows="4" placeholder="Optional..."></textarea>
         </div>
-        <button onclick="runPrediction()" id="predictBtn">Run Prediction (CNN-LSTM)</button>
+        <button onclick="runCardiacPrediction()" id="predictBtn_cardiac">Run Prediction (CNN-LSTM)</button>
     </div>
 
-    <!-- PREDICTION OUTPUT -->
-    <div class="card" id="outputCard">
+    <div class="card" id="outputCard_cardiac">
         <h2>Cardiac Risk Prediction (CNN-LSTM)</h2>
-        
-        <div id="resultArea" style="display:none; margin-top:20px;">
-            <div class="result-label" id="riskLabel">--</div>
+        <div id="resultArea_cardiac" style="display:none; margin-top:20px;">
+            <div class="result-label" id="riskLabel_cardiac">--</div>
             <div class="metric-big">
-                <span id="riskScore">--</span><span class="metric-unit">%</span>
+                <span id="riskScore_cardiac">--</span><span class="metric-unit">%</span>
             </div>
             <div style="text-align: center; color: #bcaaa4; margin-top: 10px;">
-                Confidence: <span id="confidenceScore">--</span>% <br/>
-                Model: <span id="modelVersion">--</span>
+                Confidence: <span id="confidenceScore_cardiac">--</span>% <br/>
+                Model: <span id="modelVersion_cardiac">--</span>
             </div>
         </div>
-        <div id="waitingArea" style="text-align:center; padding:40px; color:#bcaaa4;">
+        <div id="waitingArea_cardiac" style="text-align:center; padding:40px; color:#bcaaa4;">
             Submit parameters to run model inference...
         </div>
     </div>
 
-    <!-- SEQUENCE CHART -->
     <div class="card full-width">
-        <h2>Input Sequence (187 samples)</h2>
+        <h2>ECG Input Sequence (187 samples)</h2>
         <div class="chart-container">
             <canvas id="sequenceCanvas"></canvas>
         </div>
     </div>
+
+    <!-- ============================================== -->
+    <!-- SECTION 2: BATTERY                             -->
+    <!-- ============================================== -->
+    <div class="card" id="inputCard_battery">
+        <h2>Battery Model Inputs</h2>
+        <p style="font-size: 0.9rem; color: #bcaaa4; margin-bottom: 10px;">
+            Expects a 30-step timeseries with 4 features per step (Voltage, Current, Capacity, Temp).
+        </p>
+        <button onclick="fillBatteryDummyData()" class="btn-secondary">Auto-fill Dummy Battery Data</button>
+        <div class="form-group" style="margin-top: 10px;">
+            <label>Raw Battery Sequence JSON `[[v, i, c, t], ...]` (30 arrays)</label>
+            <textarea id="rawBatterySeq" rows="4" placeholder="[ [3.7, 0.5, 1.8, 37.0], ... ]"></textarea>
+        </div>
+        <button onclick="runBatteryPrediction()" id="predictBtn_battery">Run Prediction (PINN-LSTM)</button>
+    </div>
+
+    <div class="card" id="outputCard_battery">
+        <h2>Battery RUL Prediction (PINN-LSTM)</h2>
+        <div id="resultArea_battery" style="display:none; margin-top:20px;">
+            <div class="result-label result-neutral">RUL ESTIMATION</div>
+            <div class="metric-big">
+                <span id="rulScore">--</span><span class="metric-unit"> Days</span>
+            </div>
+            <div style="text-align: center; color: #bcaaa4; margin-top: 10px;">
+                Confidence: <span id="confidenceScore_battery">--</span>% <br/>
+                Model Test MAE: <span id="modelVersion_battery">--</span> cycles
+            </div>
+        </div>
+        <div id="waitingArea_battery" style="text-align:center; padding:40px; color:#bcaaa4;">
+            Submit parameters to run model inference...
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- SECTION 3: METABOLIC                           -->
+    <!-- ============================================== -->
+    <div class="card" id="inputCard_metabolic">
+        <h2>Metabolic (CGM) Model Inputs</h2>
+        <p style="font-size: 0.9rem; color: #bcaaa4; margin-bottom: 10px;">
+            Expects 12 historical glucose readings and 5 metadata features (CHO, insulin, Risk, LBGI, HBGI).
+        </p>
+        <button onclick="fillMetabolicDummyData()" class="btn-secondary">Auto-fill Dummy CGM Data</button>
+        <div class="form-group" style="margin-top: 10px;">
+            <label>Glucose History (12 values, mg/dL)</label>
+            <input type="text" id="metaGlucose" placeholder="110, 112, 115, ...">
+        </div>
+        <div class="form-group">
+            <label>Metadata [CHO, insulin, Risk, LBGI, HBGI]</label>
+            <input type="text" id="metaMeta" placeholder="0.0, 0.0, 0.5, 0.1, 0.1">
+        </div>
+        <button onclick="runMetabolicPrediction()" id="predictBtn_metabolic">Run Prediction (Stacked LSTM)</button>
+    </div>
+
+    <div class="card" id="outputCard_metabolic">
+        <h2>Glucose Prediction (Stacked LSTM)</h2>
+        <div id="resultArea_metabolic" style="display:none; margin-top:20px;">
+            <div class="result-label" id="riskLabel_metabolic">--</div>
+            <div class="metric-big">
+                <span id="glucoseScore">--</span><span class="metric-unit"> mg/dL</span>
+            </div>
+            <div style="text-align: center; color: #bcaaa4; margin-top: 10px;">
+                Expected in 1 Hour <br/>
+                Confidence: <span id="confidenceScore_metabolic">--</span>% <br/>
+                Model Test MAE: <span id="modelVersion_metabolic">--</span> mg/dL
+            </div>
+        </div>
+        <div id="waitingArea_metabolic" style="text-align:center; padding:40px; color:#bcaaa4;">
+            Submit parameters to run model inference...
+        </div>
+    </div>
+
 </div>
 
 <script>
-    const API_PREDICT_URL = 'http://localhost:8000/api/model/cardiac/predict';
+    const API_PREDICT_CARDIAC = 'http://localhost:8000/api/model/cardiac/predict';
+    const API_PREDICT_BATTERY = 'http://localhost:8000/api/model/battery/predict';
+    const API_PREDICT_METABOLIC = 'http://localhost:8000/api/model/metabolic/predict';
+    
     const API_LATEST_URL = 'http://localhost:8000/api/iot/ecg/latest';
     const WS_URL = 'ws://localhost:8000/ws/ecg';
 
@@ -287,15 +372,16 @@
         }
     }
 
-    function updatePredictionUI(data) {
-        document.getElementById('waitingArea').style.display = 'none';
-        document.getElementById('resultArea').style.display = 'block';
+    /* CARDIAC */
+    function updateCardiacUI(data) {
+        document.getElementById('waitingArea_cardiac').style.display = 'none';
+        document.getElementById('resultArea_cardiac').style.display = 'block';
         
-        document.getElementById('riskScore').textContent = Math.round(data.risk_probability * 100);
-        document.getElementById('confidenceScore').textContent = Math.round(data.confidence_percent || 0);
-        document.getElementById('modelVersion').textContent = data.model_version;
+        document.getElementById('riskScore_cardiac').textContent = Math.round(data.risk_probability * 100);
+        document.getElementById('confidenceScore_cardiac').textContent = Math.round(data.confidence_percent || 0);
+        document.getElementById('modelVersion_cardiac').textContent = data.model_version;
         
-        const labelEl = document.getElementById('riskLabel');
+        const labelEl = document.getElementById('riskLabel_cardiac');
         labelEl.textContent = `RISK LEVEL: ${data.risk_level.toUpperCase()}`;
         labelEl.className = `result-label result-${data.risk_level}`;
 
@@ -304,6 +390,154 @@
         }
     }
 
+    async function runCardiacPrediction() {
+        const btn = document.getElementById('predictBtn_cardiac');
+        const rawSeqStr = document.getElementById('rawSequence').value.trim();
+        
+        let payload = {};
+        if (rawSeqStr) {
+            try {
+                let seq = rawSeqStr.split(',')
+                                   .map(s => parseFloat(s.replace(/[^0-9.-]/g, '')))
+                                   .filter(n => !isNaN(n));
+                if (seq.length === 0) throw new Error("No valid numbers found.");
+                if (seq.length < 187) {
+                    const padVal = seq[seq.length - 1];
+                    while (seq.length < 187) seq.push(padVal);
+                } else if (seq.length > 187) {
+                    seq = seq.slice(0, 187);
+                }
+                payload.samples = seq;
+                document.getElementById('rawSequence').value = seq.join(', ');
+            } catch(e) {
+                alert("Invalid sequence format.");
+                return;
+            }
+        } else {
+            alert("Please paste a 187-value sequence.");
+            return;
+        }
+
+        btn.textContent = "Running Inference...";
+        btn.disabled = true;
+        document.getElementById('inputCard_cardiac').classList.add('loading');
+
+        try {
+            const response = await fetch(API_PREDICT_CARDIAC, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if(data.detail) throw new Error(JSON.stringify(data.detail));
+            updateCardiacUI(data);
+        } catch(err) {
+            alert("Error: " + err.message);
+        } finally {
+            btn.textContent = "Run Prediction (CNN-LSTM)";
+            btn.disabled = false;
+            document.getElementById('inputCard_cardiac').classList.remove('loading');
+        }
+    }
+
+    /* BATTERY */
+    function fillBatteryDummyData() {
+        // Generate 30 steps of V, I, C, T
+        let seq = [];
+        let cap = 1.8;
+        for(let i=0; i<30; i++) {
+            seq.push([3.7 - (i*0.01), 0.5, cap - (i*0.02), 37.0 + (i*0.05)]);
+        }
+        document.getElementById('rawBatterySeq').value = JSON.stringify(seq);
+    }
+
+    async function runBatteryPrediction() {
+        const btn = document.getElementById('predictBtn_battery');
+        const rawSeqStr = document.getElementById('rawBatterySeq').value.trim();
+        let payload = {};
+        try {
+            payload.sequence = JSON.parse(rawSeqStr);
+        } catch(e) {
+            alert("Invalid JSON array."); return;
+        }
+
+        btn.textContent = "Running Inference...";
+        btn.disabled = true;
+        document.getElementById('inputCard_battery').classList.add('loading');
+
+        try {
+            const response = await fetch(API_PREDICT_BATTERY, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if(data.detail) throw new Error(JSON.stringify(data.detail));
+            
+            document.getElementById('waitingArea_battery').style.display = 'none';
+            document.getElementById('resultArea_battery').style.display = 'block';
+            
+            document.getElementById('rulScore').textContent = data.rul_days.toFixed(1);
+            document.getElementById('confidenceScore_battery').textContent = Math.round(data.confidence_percent || 0);
+            document.getElementById('modelVersion_battery').textContent = data.model_mae.toFixed(1);
+        } catch(err) {
+            alert("Error: " + err.message);
+        } finally {
+            btn.textContent = "Run Prediction (PINN-LSTM)";
+            btn.disabled = false;
+            document.getElementById('inputCard_battery').classList.remove('loading');
+        }
+    }
+
+    /* METABOLIC */
+    function fillMetabolicDummyData() {
+        document.getElementById('metaGlucose').value = "110, 112, 115, 118, 120, 122, 125, 128, 130, 135, 138, 140";
+        document.getElementById('metaMeta').value = "0.0, 0.0, 0.5, 0.1, 0.1";
+    }
+
+    async function runMetabolicPrediction() {
+        const btn = document.getElementById('predictBtn_metabolic');
+        let ts = document.getElementById('metaGlucose').value.split(',').map(s => parseFloat(s.trim()));
+        let meta = document.getElementById('metaMeta').value.split(',').map(s => parseFloat(s.trim()));
+
+        if (ts.length !== 12 || meta.length !== 5) {
+            alert("Must provide exactly 12 glucose values and 5 metadata values.");
+            return;
+        }
+
+        btn.textContent = "Running Inference...";
+        btn.disabled = true;
+        document.getElementById('inputCard_metabolic').classList.add('loading');
+
+        try {
+            const response = await fetch(API_PREDICT_METABOLIC, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ timeseries: ts, metadata: meta })
+            });
+            const data = await response.json();
+            if(data.detail) throw new Error(JSON.stringify(data.detail));
+            
+            document.getElementById('waitingArea_metabolic').style.display = 'none';
+            document.getElementById('resultArea_metabolic').style.display = 'block';
+            
+            document.getElementById('glucoseScore').textContent = Math.round(data.glucose_1h_ahead_mgdl);
+            document.getElementById('confidenceScore_metabolic').textContent = Math.round(data.confidence_percent || 0);
+            document.getElementById('modelVersion_metabolic').textContent = data.model_mae_mgdl.toFixed(1);
+            
+            const labelEl = document.getElementById('riskLabel_metabolic');
+            labelEl.textContent = `STATUS: ${data.risk_level.toUpperCase().replace('_', ' ')}`;
+            labelEl.className = `result-label result-${data.risk_level}`;
+        } catch(err) {
+            alert("Error: " + err.message);
+        } finally {
+            btn.textContent = "Run Prediction (Stacked LSTM)";
+            btn.disabled = false;
+            document.getElementById('inputCard_metabolic').classList.remove('loading');
+        }
+    }
+
+    /* WEBSOCKET */
     function connectWebSocket() {
         ws = new WebSocket(WS_URL);
         
@@ -320,7 +554,7 @@
             try {
                 const msg = JSON.parse(event.data);
                 if (msg.type === "prediction" && msg.data) {
-                    updatePredictionUI(msg.data);
+                    updateCardiacUI(msg.data);
                 }
             } catch (e) {
                 console.error("WS parse error", e);
@@ -328,83 +562,10 @@
         };
 
         ws.onclose = () => {
-            console.log("WebSocket disconnected. Retrying and using fallback polling...");
+            console.log("WebSocket disconnected.");
             setDeviceStatus(false);
             setTimeout(connectWebSocket, 5000);
-            if (!fallbackInterval) {
-                fallbackInterval = setInterval(pollLatestECG, 2000);
-            }
         };
-        
-        ws.onerror = (err) => {
-            console.error("WebSocket error", err);
-            ws.close();
-        };
-    }
-
-    async function pollLatestECG() {
-        try {
-            const res = await fetch(API_LATEST_URL);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.sequence) {
-                    updateChart(data.sequence);
-                }
-                if (data.prediction) {
-                    updatePredictionUI(data.prediction);
-                }
-            }
-        } catch (e) {
-            console.error("Polling error", e);
-        }
-    }
-
-    async function runPrediction() {
-        const btn = document.getElementById('predictBtn');
-        const rawSeqStr = document.getElementById('rawSequence').value.trim();
-        
-        let payload = {};
-        if (rawSeqStr) {
-            try {
-                const seq = rawSeqStr.split(',').map(s => parseFloat(s.trim()));
-                if (seq.length !== 187) throw new Error("Sequence must be exactly 187 values.");
-                payload.samples = seq;
-            } catch(e) {
-                alert("Invalid sequence format. Ensure it is exactly 187 comma-separated numbers.");
-                return;
-            }
-        } else {
-            alert("Please paste a 187-value sequence or wait for Bluetooth streaming.");
-            return;
-        }
-
-        btn.textContent = "Running Inference...";
-        btn.disabled = true;
-        document.getElementById('inputCard').classList.add('loading');
-
-        try {
-            const response = await fetch(API_PREDICT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-            
-            if(data.detail) {
-                alert("Error from backend: " + JSON.stringify(data.detail));
-                throw new Error(JSON.stringify(data.detail));
-            }
-
-            updatePredictionUI(data);
-            
-        } catch(err) {
-            console.error(err);
-        } finally {
-            btn.textContent = "Run Prediction (CNN-LSTM)";
-            btn.disabled = false;
-            document.getElementById('inputCard').classList.remove('loading');
-        }
     }
 
     // Initialize

@@ -13,8 +13,8 @@ from backend.models.telemetry import ECGTelemetry
 
 class CardiacPredictionService:
     def __init__(self, 
-                 model_paths=['models/cardiac/cardiac_bilstm.keras', 'backend/models/cardiac_risk_lstm.keras', 'models/cardiac_bilstm.keras', 'backend/models/cardiac_bilstm.keras'],
-                 info_paths=['models/cardiac/cardiac_model_info.json', 'backend/models/cardiac_model_info.json', 'models/cardiac_model_info.json', 'backend/models/cardiac_model_info.json']):
+                 model_paths=['models/cardiac/cardiac2/best_model_cnn_lstm.keras', 'models/cardiac/cardiac_bilstm.keras', 'backend/models/cardiac_risk_lstm.keras', 'models/cardiac_bilstm.keras', 'backend/models/cardiac_bilstm.keras'],
+                 info_paths=['models/cardiac/cardiac2/training_history.json', 'models/cardiac/cardiac_model_info.json', 'backend/models/cardiac_model_info.json', 'models/cardiac_model_info.json', 'backend/models/cardiac_model_info.json']):
         """
         Initialize cardiac risk prediction service
         """

@@ -7,7 +7,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -74,6 +74,34 @@ class PrototypeRequest(BaseModel):
     hr: Optional[float] = None
     arrhythmia: Optional[str] = None
     sequence: Optional[list] = None
+
+# --- IoT Bluetooth & WebSocket State ---
+latest_ecg_window = []
+latest_prediction = None
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        disconnected = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception:
+                disconnected.append(connection)
+        for d in disconnected:
+            self.disconnect(d)
+
+manager = ConnectionManager()
 
 
 @app.on_event("startup")
@@ -315,6 +343,109 @@ def prototype_cardiac_prediction(req: PrototypeRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+class PredictRequest(BaseModel):
+    samples: list[float]
+
+@app.post("/api/model/cardiac/predict")
+async def predict_cardiac_risk(req: PredictRequest):
+    global latest_ecg_window, latest_prediction
+    if len(req.samples) != 187:
+        raise HTTPException(status_code=400, detail="Must provide exactly 187 samples")
+    
+    latest_ecg_window = req.samples
+    
+    try:
+        import numpy as np
+        cardiac_service = get_cardiac_service()
+        seq = np.array(req.samples, dtype=np.float32).reshape(1, 187, 1)
+        result = cardiac_service.predict_from_sequence(seq)
+        
+        # Ensure result has standard keys for frontend
+        prob = result.get('risk_probability', 0.0)
+        risk_level = result.get('risk_level', 'low')
+        
+        res = {
+            "prediction_class": 1 if risk_level in ['high', 'moderate'] else 0,
+            "label": risk_level.capitalize(),
+            "risk_level": risk_level,
+            "risk_probability": prob,
+            "confidence_percent": prob * 100,
+            "raw_scores": [],
+            "model_version": "CNN-LSTM v1.0",
+            "sequence": req.samples
+        }
+        latest_prediction = res
+        
+        await manager.broadcast({
+            "type": "prediction",
+            "data": res
+        })
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class BatteryPredictRequest(BaseModel):
+    # Shape: 30 steps, 4 features (voltage, current, capacity, temperature)
+    sequence: list[list[float]]
+
+@app.post("/api/model/battery/predict")
+async def predict_battery_rul_proto(req: BatteryPredictRequest):
+    if len(req.sequence) != 30 or any(len(step) != 4 for step in req.sequence):
+        raise HTTPException(status_code=400, detail="Must provide exactly 30 steps of 4 features")
+    
+    try:
+        import numpy as np
+        from backend.services.battery_prediction_service import get_battery_service
+        service = get_battery_service()
+        
+        seq = np.array(req.sequence, dtype=np.float32).reshape(1, 30, 4)
+        result = service.predict_from_sequence(seq)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class MetabolicPredictRequest(BaseModel):
+    # Shape: timeseries (12 steps of 1 feature), metadata (5 features)
+    timeseries: list[float]
+    metadata: list[float]
+
+@app.post("/api/model/metabolic/predict")
+async def predict_metabolic_proto(req: MetabolicPredictRequest):
+    if len(req.timeseries) != 12 or len(req.metadata) != 5:
+        raise HTTPException(status_code=400, detail="Must provide exactly 12 timeseries steps and 5 metadata features")
+    
+    try:
+        from backend.services.metabolic_prediction_service import get_metabolic_service
+        service = get_metabolic_service()
+        
+        result = service.predict_from_sequence(req.timeseries, req.metadata)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/iot/ecg/latest")
+async def get_latest_ecg():
+    if not latest_ecg_window:
+        return {"error": "No ECG data available yet"}
+    return {
+        "sequence": latest_ecg_window,
+        "prediction": latest_prediction
+    }
+
+@app.websocket("/ws/ecg")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        if latest_prediction:
+            await websocket.send_json({
+                "type": "prediction",
+                "data": latest_prediction
+            })
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
 
 @app.get("/api/v1/predictions/metabolic/{patient_id}")
 def predict_glucose_1h(patient_id: str, db: Session = Depends(get_db)):
