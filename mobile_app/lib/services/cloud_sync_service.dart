@@ -4,7 +4,7 @@ import '../database/local_data_repository.dart';
 
 class CloudSyncService {
   // Use the actual Wi-Fi IP of the backend PC
-  static const String _baseUrl = 'http://192.168.1.10:8000/api/v1/telemetry/bulk';
+  static const String _baseUrl = 'http://192.168.1.10:8001/api/v1/telemetry/bulk';
 
   /// Synchronizes local data logs with the cloud backend
   Future<void> syncData({required String patientId}) async {
