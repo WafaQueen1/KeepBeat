@@ -116,27 +116,51 @@ async def load_models() -> None:
         import os
         
         # Only load if model files exist
-        battery_path = 'backend/models/battery_rul_pinn_lstm.keras'
-        cardiac_path = 'models/cardiac/cardiac_bilstm.keras'
-        metabolic_path = 'backend/models/metabolic_lstm.keras'
-        
-        if os.path.exists(battery_path):
-            get_battery_service()
-            print("   [OK] Battery PINN-LSTM loaded")
+        battery_paths = [
+            'backend/models/battery_rul_pinn_lstm.keras',
+            'models/battery/battery_pinn_lstm.keras',
+            'models/battery_rul_pinn_lstm.keras'
+        ]
+        cardiac_paths = [
+            'models/cardiac/cardiac_bilstm.keras',
+            'models/cardiac/cardiac2/best_model_cnn_lstm.keras',
+            'backend/models/cardiac_risk_lstm.keras',
+            'models/cardiac_bilstm.keras'
+        ]
+        metabolic_paths = [
+            'models/metabolic/metabolic_stacked_lstm.keras',
+            'models/metabolic/metabolic_stacked_lstm_best.keras',
+            'models/metabolic_stacked_lstm_best.keras',
+            'models/metabolic_stacked_lstm.keras',
+            'backend/models/metabolic_lstm.keras'
+        ]
+
+        if any(os.path.exists(path) for path in battery_paths):
+            battery_service = get_battery_service()
+            if getattr(battery_service, 'model', None) is not None:
+                print("   [OK] Battery PINN-LSTM loaded")
+            else:
+                print("   [WARN] Battery model file found but failed to load; using fallback predictions")
         else:
-            print(f"   [WARN] Battery model not found: {battery_path}")
-        
-        if os.path.exists(cardiac_path):
-            get_cardiac_service()
-            print("   [OK] Cardiac BiLSTM loaded")
+            print(f"   [WARN] Battery model not found in any known path")
+
+        if any(os.path.exists(path) for path in cardiac_paths):
+            cardiac_service = get_cardiac_service()
+            if getattr(cardiac_service, 'model', None) is not None:
+                print("   [OK] Cardiac BiLSTM loaded")
+            else:
+                print("   [WARN] Cardiac model file found but failed to load; using fallback predictions")
         else:
-            print(f"   [WARN] Cardiac model not found: {cardiac_path}")
-        
-        if os.path.exists(metabolic_path):
-            get_metabolic_service()
-            print("   [OK] Metabolic LSTM loaded")
+            print(f"   [WARN] Cardiac model not found in any known path")
+
+        if any(os.path.exists(path) for path in metabolic_paths):
+            metabolic_service = get_metabolic_service()
+            if getattr(metabolic_service, 'model', None) is not None:
+                print("   [OK] Metabolic LSTM loaded")
+            else:
+                print("   [WARN] Metabolic model file found but failed to load; using fallback predictions")
         else:
-            print(f"   [WARN] Metabolic model not found: {metabolic_path}")
+            print(f"   [WARN] Metabolic model not found in any known path")
         
         print("[INFO] Model loading complete\n")
     
@@ -151,6 +175,25 @@ def health_check() -> dict:
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "service": "Smart TwinPac Backend",
+    }
+
+
+@app.get("/api/model/status")
+def model_status() -> dict:
+    """Report which trained model files are active for prototype testing."""
+    services = {
+        "battery": get_battery_service(),
+        "cardiac": get_cardiac_service(),
+        "metabolic": get_metabolic_service(),
+    }
+    return {
+        name: {
+            "loaded": getattr(service, "model", None) is not None,
+            "model_path": getattr(service, "model_path", None),
+            "info_path": getattr(service, "info_path", None),
+            "fallback": getattr(service, "model", None) is None,
+        }
+        for name, service in services.items()
     }
 
 
@@ -521,25 +564,30 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
     
     # ===== BATTERY PREDICTION =====
     try:
-        if os.path.exists('backend/models/battery_rul_pinn_lstm.keras'):
+        battery_available = any(os.path.exists(path) for path in [
+            'backend/models/battery_rul_pinn_lstm.keras',
+            'models/battery/battery_pinn_lstm.keras',
+            'models/battery_rul_pinn_lstm.keras'
+        ])
+        if battery_available:
             battery_service = get_battery_service()
             results['battery'] = battery_service.predict_from_db(db, patient_id)
             
             # Alert if battery critical
-            if results['battery'] and results['battery'].get('rul_days'):
+            if results['battery'] and results['battery'].get('rul_days') is not None:
                 rul = results['battery']['rul_days']
                 if rul < 30:
                     results['alerts'].append({
                         'type': 'battery_critical',
                         'severity': 'critical',
-                        'message': f'Battery RUL: {rul:.0f} days — Replacement URGENT',
+                        'message': f'Battery RUL: {rul:.0f} days - Replacement URGENT',
                         'value': rul
                     })
                 elif rul < 90:
                     results['alerts'].append({
                         'type': 'battery_low',
                         'severity': 'warning',
-                        'message': f'Battery RUL: {rul:.0f} days — Schedule replacement',
+                        'message': f'Battery RUL: {rul:.0f} days - Schedule replacement',
                         'value': rul
                     })
     except Exception as e:
@@ -547,25 +595,31 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
     
     # ===== CARDIAC PREDICTION =====
     try:
-        if os.path.exists('backend/models/cardiac_risk_lstm.keras'):
+        cardiac_available = any(os.path.exists(path) for path in [
+            'models/cardiac/cardiac_bilstm.keras',
+            'models/cardiac/cardiac2/best_model_cnn_lstm.keras',
+            'backend/models/cardiac_risk_lstm.keras',
+            'models/cardiac_bilstm.keras'
+        ])
+        if cardiac_available:
             cardiac_service = get_cardiac_service()
             results['cardiac'] = cardiac_service.predict_from_db(db, patient_id)
             
             # Alert if high cardiac risk
-            if results['cardiac'] and results['cardiac'].get('risk_probability'):
+            if results['cardiac'] and results['cardiac'].get('risk_probability') is not None:
                 prob = results['cardiac']['risk_probability']
                 if prob > 0.7:
                     results['alerts'].append({
                         'type': 'cardiac_high_risk',
                         'severity': 'critical',
-                        'message': f'Cardiac risk: {prob*100:.0f}% — Arrhythmia likely in 24h',
+                        'message': f'Cardiac risk: {prob*100:.0f}% - Arrhythmia likely in 24h',
                         'value': prob
                     })
                 elif prob > 0.5:
                     results['alerts'].append({
                         'type': 'cardiac_moderate_risk',
                         'severity': 'warning',
-                        'message': f'Cardiac risk: {prob*100:.0f}% — Monitor closely',
+                        'message': f'Cardiac risk: {prob*100:.0f}% - Monitor closely',
                         'value': prob
                     })
     except Exception as e:
@@ -573,7 +627,14 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
     
     # ===== METABOLIC PREDICTION =====
     try:
-        if os.path.exists('backend/models/metabolic_lstm.keras'):
+        metabolic_available = any(os.path.exists(path) for path in [
+            'models/metabolic/metabolic_stacked_lstm.keras',
+            'models/metabolic/metabolic_stacked_lstm_best.keras',
+            'models/metabolic_stacked_lstm_best.keras',
+            'models/metabolic_stacked_lstm.keras',
+            'backend/models/metabolic_lstm.keras'
+        ])
+        if metabolic_available:
             metabolic_service = get_metabolic_service()
             results['metabolic'] = metabolic_service.predict_from_db(db, patient_id)
             
@@ -586,14 +647,14 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
                     results['alerts'].append({
                         'type': 'glucose_hypo',
                         'severity': 'critical' if glucose < 60 else 'warning',
-                        'message': f'Glucose in 1h: {glucose:.0f} mg/dL — Hypoglycemia predicted',
+                        'message': f'Glucose in 1h: {glucose:.0f} mg/dL - Hypoglycemia predicted',
                         'value': glucose
                     })
                 elif risk == 'hyperglycemia_risk':
                     results['alerts'].append({
                         'type': 'glucose_hyper',
                         'severity': 'critical' if glucose > 250 else 'warning',
-                        'message': f'Glucose in 1h: {glucose:.0f} mg/dL — Hyperglycemia predicted',
+                        'message': f'Glucose in 1h: {glucose:.0f} mg/dL - Hyperglycemia predicted',
                         'value': glucose
                     })
     except Exception as e:

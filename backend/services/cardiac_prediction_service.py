@@ -10,23 +10,43 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from backend.models.telemetry import ECGTelemetry
 
+
+def _enable_quantization_compatibility():
+    try:
+        from tensorflow.keras.layers import Dense
+        if not getattr(Dense, '_quantization_compat_patched', False):
+            original_init = Dense.__init__
+
+            def patched_init(self, *args, quantization_config=None, **kwargs):
+                kwargs.pop('quantization_config', None)
+                return original_init(self, *args, **kwargs)
+
+            Dense.__init__ = patched_init
+            Dense._quantization_compat_patched = True
+    except Exception:
+        pass
+
 class CardiacPredictionService:
     def __init__(self, 
-                 model_paths=['models/cardiac/cardiac2/best_model_cnn_lstm.keras', 'models/cardiac/cardiac_bilstm.keras', 'backend/models/cardiac_risk_lstm.keras', 'models/cardiac_bilstm.keras', 'backend/models/cardiac_bilstm.keras'],
-                 info_paths=['models/cardiac/cardiac2/training_history.json', 'models/cardiac/cardiac_model_info.json', 'backend/models/cardiac_model_info.json', 'models/cardiac_model_info.json', 'backend/models/cardiac_model_info.json']):
+                 model_paths=['models/cardiac/cardiac_bilstm.keras', 'models/cardiac/cardiac2/best_model_cnn_lstm.keras', 'backend/models/cardiac_risk_lstm.keras', 'models/cardiac_bilstm.keras', 'backend/models/cardiac_bilstm.keras'],
+                 info_paths=['models/cardiac/cardiac_model_info.json', 'models/cardiac/cardiac2/training_history.json', 'backend/models/cardiac_model_info.json', 'models/cardiac_model_info.json', 'backend/models/cardiac_model_info.json']):
         """
         Initialize cardiac risk prediction service
         """
         self.model = None
+        self.model_path = None
+        self.info_path = None
         for path in model_paths:
             if os.path.exists(path):
                 try:
+                    _enable_quantization_compatibility()
                     from tensorflow import keras
-                    self.model = keras.models.load_model(path)
-                    print(f"✅ Cardiac BiLSTM model loaded: {path}")
+                    self.model = keras.models.load_model(path, compile=False)
+                    self.model_path = path
+                    print(f"[OK] Cardiac BiLSTM model loaded: {path}")
                     break
                 except Exception as e:
-                    print(f"⚠️ Error loading cardiac model from {path}: {e}")
+                    print(f"[WARN] Error loading cardiac model from {path}: {e}")
         
         self.model_info = {}
         for path in info_paths:
@@ -34,13 +54,14 @@ class CardiacPredictionService:
                 try:
                     with open(path, 'r') as f:
                         self.model_info = json.load(f)
-                    print(f"✅ Cardiac model info loaded: {path}")
+                    self.info_path = path
+                    print(f"[OK] Cardiac model info loaded: {path}")
                     break
                 except Exception as e:
-                    print(f"⚠️ Error loading cardiac model info from {path}: {e}")
+                    print(f"[WARN] Error loading cardiac model info from {path}: {e}")
                     
         if self.model is None:
-            print("⚠️ No cardiac model file found. Inference will use fallback classification.")
+            print("[WARN] No cardiac model file found. Inference will use fallback classification.")
 
     def generate_synthetic_ecg(self, hr: float, arrhythmia: str) -> np.ndarray:
         """
@@ -110,7 +131,7 @@ class CardiacPredictionService:
                 pred = self.model.predict(X, verbose=0)
                 risk_probability = float(pred[0][0])
             except Exception as e:
-                print(f"⚠️ Inference error, using fallback logic: {e}")
+                print(f"[WARN] Inference error, using fallback logic: {e}")
                 # Fallback rule-based probability
                 if arrhythmia == 'normal':
                     risk_probability = 0.05 + 0.1 * (hr - 70) / 100
@@ -156,7 +177,7 @@ class CardiacPredictionService:
                 pred = self.model.predict(sequence_array, verbose=0)
                 risk_probability = float(pred[0][0])
             except Exception as e:
-                print(f"⚠️ Inference error on sequence: {e}")
+                print(f"[WARN] Inference error on sequence: {e}")
                 return {'error': str(e), 'success': False}
                 
         # Classify risk level
