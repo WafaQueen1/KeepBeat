@@ -4,8 +4,8 @@ import random
 import paho.mqtt.client as mqtt
 
 MQTT_BROKER = "127.0.0.1"
-MQTT_PORT = 1883
-TOPIC = "twinpacemaker/sensors/pacemaker"
+MQTT_PORT = 1884
+TOPIC = "twinpac/patient/sarah_jenkins/battery"
 
 # Simplified Capacity Fade Physics State
 battery_capacity = 100.0

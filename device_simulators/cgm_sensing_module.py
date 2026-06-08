@@ -4,8 +4,8 @@ import random
 import paho.mqtt.client as mqtt
 
 MQTT_BROKER = "127.0.0.1"
-MQTT_PORT = 1883
-TOPIC = "twinpacemaker/sensors/cgm"
+MQTT_PORT = 1884
+TOPIC = "twinpac/patient/sarah_jenkins/glucose"
 
 def generate_cgm_data():
     # Simulate glucose variations focusing on Hyper/Hypo thresholds
