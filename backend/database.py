@@ -22,6 +22,8 @@ Base = declarative_base()
 def init_db() -> None:
     """Create telemetry tables and Timescale hypertables when available."""
     from backend.models.telemetry import BatteryTelemetry, ECGTelemetry, GlucoseTelemetry
+    from backend.models.doctor import Doctor
+    from backend.models.patient import Patient
 
     Base.metadata.create_all(bind=engine)
 

@@ -6,13 +6,16 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import uuid
 
 from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from backend.database import get_db, init_db
+from backend.database import get_db, init_db, SessionLocal
+from backend.models.doctor import Doctor
+from backend.models.patient import Patient
 from backend.models.telemetry import (
     BatteryTelemetry,
     ECGTelemetry,
@@ -20,6 +23,7 @@ from backend.models.telemetry import (
     TelemetryPostRequest,
     TelemetryPostResponse,
 )
+from backend.security.auth import PasswordManager
 from pydantic import Field
 from backend.services.telemetry_storage_service import TelemetryStorageService
 from backend.services.battery_prediction_service import get_battery_service
@@ -67,6 +71,105 @@ app.add_middleware(
 telemetry_service = TelemetryStorageService()
 
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class DoctorCreateRequest(BaseModel):
+    full_name: str
+    email: str
+    password: str
+    status: str = "pending"
+    role: str = "doctor"
+
+
+class PatientCreateRequest(BaseModel):
+    doctor_id: str
+    full_name: str
+    dob: str
+    medical_id: str
+    affiliation: str
+    diagnosis_notes: str | None = None
+
+
+class ReassignRequest(BaseModel):
+    doctor_id: str
+
+
+def doctor_to_dict(doctor: Doctor) -> dict:
+    return {
+        "id": doctor.id,
+        "full_name": doctor.full_name,
+        "email": doctor.email,
+        "role": doctor.role,
+        "status": doctor.status,
+        "created_at": doctor.created_at.isoformat() if doctor.created_at else None,
+    }
+
+
+def patient_to_dict(patient: Patient) -> dict:
+    return {
+        "id": patient.id,
+        "full_name": patient.full_name,
+        "dob": patient.dob.date().isoformat() if patient.dob else None,
+        "medical_id": patient.medical_id,
+        "affiliation": patient.affiliation,
+        "diagnosis_notes": patient.diagnosis_notes,
+        "doctor_id": patient.doctor_id,
+        "status": patient.status,
+        "last_sync": patient.last_sync.isoformat() if patient.last_sync else None,
+        "created_at": patient.created_at.isoformat() if patient.created_at else None,
+    }
+
+
+def seed_initial_accounts() -> None:
+    db = SessionLocal()
+    try:
+        admin = db.query(Doctor).filter_by(email="julian.sterling@keepbeat.com").first()
+        if not admin:
+            admin = Doctor(
+                id=str(uuid.uuid4()),
+                full_name="Julian Sterling",
+                email="julian.sterling@keepbeat.com",
+                password_hash=PasswordManager.hash_password("password123"),
+                role="admin",
+                status="approved",
+            )
+            db.add(admin)
+
+        clinician = db.query(Doctor).filter_by(email="emma.clark@keepbeat.com").first()
+        if not clinician:
+            clinician = Doctor(
+                id=str(uuid.uuid4()),
+                full_name="Emma Clark",
+                email="emma.clark@keepbeat.com",
+                password_hash=PasswordManager.hash_password("password123"),
+                role="doctor",
+                status="approved",
+            )
+            db.add(clinician)
+
+        patient = db.query(Patient).filter_by(id="srarah.jenkins@keepbeat.com").first()
+        if not patient:
+            patient = Patient(
+                id="srarah.jenkins@keepbeat.com",
+                full_name="Sarah Jenkins",
+                dob=datetime(1985, 6, 18, tzinfo=timezone.utc),
+                medical_id="TP-0001",
+                affiliation="KeepBeat Cardiology",
+                diagnosis_notes="Type 2 Diabetes, Dual-chamber pacemaker",
+                doctor_id=clinician.id,
+                status="approved",
+                last_sync=datetime.now(timezone.utc),
+            )
+            db.add(patient)
+
+        db.commit()
+    finally:
+        db.close()
+
+
 class TelemetryQuery(BaseModel):
     patient_id: str
     hours_ago: Optional[int] = 24
@@ -109,6 +212,7 @@ manager = ConnectionManager()
 async def load_models() -> None:
     print("Starting Smart TwinPac Backend...")
     init_db()
+    seed_initial_accounts()
     print("Backend ready")
     
     print("\n[INFO] Loading AI Models...")
@@ -195,6 +299,175 @@ def model_status() -> dict:
         }
         for name, service in services.items()
     }
+
+
+@app.post("/api/v1/auth/login")
+def login(payload: LoginRequest, db: Session = Depends(get_db)) -> dict:
+    doctor = db.query(Doctor).filter(Doctor.email == payload.email.strip().lower()).first()
+    if not doctor:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if doctor.status != "approved":
+        raise HTTPException(status_code=403, detail="Account not approved")
+    if not PasswordManager.verify_password(payload.password, doctor.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {
+        "id": doctor.id,
+        "full_name": doctor.full_name,
+        "email": doctor.email,
+        "role": doctor.role,
+        "status": doctor.status,
+    }
+
+
+@app.get("/api/v1/doctors")
+def list_doctors(db: Session = Depends(get_db)) -> list[dict]:
+    doctors = db.query(Doctor).order_by(Doctor.created_at.desc()).all()
+    return [doctor_to_dict(d) for d in doctors]
+
+
+@app.post("/api/v1/doctors")
+def create_doctor(payload: DoctorCreateRequest, db: Session = Depends(get_db)) -> dict:
+    existing = db.query(Doctor).filter(Doctor.email == payload.email.strip().lower()).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="A doctor with that email already exists")
+    doctor = Doctor(
+        id=str(uuid.uuid4()),
+        full_name=payload.full_name.strip(),
+        email=payload.email.strip().lower(),
+        password_hash=PasswordManager.hash_password(payload.password),
+        role=payload.role,
+        status=payload.status,
+    )
+    db.add(doctor)
+    db.commit()
+    return doctor_to_dict(doctor)
+
+
+@app.get("/api/v1/admin/pending_doctors")
+def list_pending_doctors(db: Session = Depends(get_db)) -> list[dict]:
+    doctors = db.query(Doctor).filter(Doctor.status == "pending").order_by(Doctor.created_at.asc()).all()
+    return [doctor_to_dict(d) for d in doctors]
+
+
+@app.put("/api/v1/admin/approve_doctor/{doctor_id}")
+def approve_doctor(doctor_id: str, db: Session = Depends(get_db)) -> dict:
+    doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+    doctor.status = "approved"
+    db.commit()
+    return doctor_to_dict(doctor)
+
+
+@app.put("/api/v1/admin/refuse_doctor/{doctor_id}")
+def refuse_doctor(doctor_id: str, db: Session = Depends(get_db)) -> dict:
+    doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+    doctor.status = "rejected"
+    db.commit()
+    return doctor_to_dict(doctor)
+
+
+@app.delete("/api/v1/doctors/{doctor_id}")
+def delete_doctor(doctor_id: str, db: Session = Depends(get_db)) -> dict:
+    doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+    db.query(Patient).filter(Patient.doctor_id == doctor.id).update({Patient.doctor_id: None})
+    db.delete(doctor)
+    db.commit()
+    return {"message": "Doctor removed"}
+
+
+@app.post("/api/v1/patients")
+def create_patient(payload: PatientCreateRequest, db: Session = Depends(get_db)) -> dict:
+    if db.query(Patient).filter(Patient.medical_id == payload.medical_id.strip()).first():
+        raise HTTPException(status_code=400, detail="A patient with that medical ID already exists")
+
+    doctor = db.query(Doctor).filter(Doctor.id == payload.doctor_id).first()
+    if not doctor or doctor.status != "approved":
+        raise HTTPException(status_code=400, detail="Assigned doctor is not approved or does not exist")
+
+    try:
+        dob = datetime.fromisoformat(payload.dob)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format for dob")
+
+    patient = Patient(
+        id=str(uuid.uuid4()),
+        full_name=payload.full_name.strip(),
+        dob=dob,
+        medical_id=payload.medical_id.strip(),
+        affiliation=payload.affiliation.strip(),
+        diagnosis_notes=(payload.diagnosis_notes or "").strip(),
+        doctor_id=doctor.id,
+        status="approved",
+    )
+    db.add(patient)
+    db.commit()
+    return patient_to_dict(patient)
+
+
+@app.get("/api/v1/patients")
+def list_patients(doctor_id: str, db: Session = Depends(get_db)) -> list[dict]:
+    patients = db.query(Patient).filter(Patient.doctor_id == doctor_id).order_by(Patient.created_at.desc()).all()
+    return [patient_to_dict(p) for p in patients]
+
+
+@app.get("/api/v1/patients/all")
+def list_all_patients(db: Session = Depends(get_db)) -> list[dict]:
+    patients = db.query(Patient).order_by(Patient.created_at.desc()).all()
+    return [patient_to_dict(p) for p in patients]
+
+
+@app.get("/api/v1/admin/pending_patients")
+def list_pending_patients(db: Session = Depends(get_db)) -> list[dict]:
+    patients = db.query(Patient).filter(Patient.status == "pending").order_by(Patient.created_at.asc()).all()
+    return [patient_to_dict(p) for p in patients]
+
+
+@app.put("/api/v1/admin/approve_patient/{patient_id}")
+def approve_patient(patient_id: str, db: Session = Depends(get_db)) -> dict:
+    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    patient.status = "approved"
+    db.commit()
+    return patient_to_dict(patient)
+
+
+@app.put("/api/v1/admin/refuse_patient/{patient_id}")
+def refuse_patient(patient_id: str, db: Session = Depends(get_db)) -> dict:
+    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    patient.status = "rejected"
+    db.commit()
+    return patient_to_dict(patient)
+
+
+@app.put("/api/v1/admin/reassign_patient/{patient_id}")
+def reassign_patient(patient_id: str, payload: ReassignRequest, db: Session = Depends(get_db)) -> dict:
+    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    doctor = db.query(Doctor).filter(Doctor.id == payload.doctor_id, Doctor.status == "approved").first()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    if not doctor:
+        raise HTTPException(status_code=400, detail="Target doctor not found or not approved")
+    patient.doctor_id = doctor.id
+    db.commit()
+    return patient_to_dict(patient)
+
+
+@app.delete("/api/v1/patients/{patient_id}")
+def delete_patient(patient_id: str, db: Session = Depends(get_db)) -> dict:
+    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    db.delete(patient)
+    db.commit()
+    return {"message": "Patient removed"}
 
 
 @app.post("/api/v1/telemetry", response_model=TelemetryPostResponse)

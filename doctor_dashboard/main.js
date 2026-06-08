@@ -127,7 +127,7 @@ if (isDashboard) {
 }
 
 // --- Telemetry & AI Polling ---
-const API_URL = `http://192.168.1.10:8001/api/v1/predictions/all/${patientId || 'PT_001'}`;
+const API_URL = `http://127.0.0.1:8000/api/v1/predictions/all/${patientId || 'PT_001'}`;
 const bpmElement = document.getElementById('bpm-value');
 
 async function fetchTelemetry() {

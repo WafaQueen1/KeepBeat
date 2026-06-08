@@ -10,6 +10,7 @@ from backend.models.telemetry import (
     GlucoseTelemetry,
     timestamp_from_payload,
 )
+from backend.models.patient import Patient
 from backend.services.edge_detection_service import EdgeDetectionService
 
 
@@ -62,6 +63,10 @@ class TelemetryStorageService:
                     timestamp=timestamp,
                 )
             )
+
+        patient = db.query(Patient).filter_by(id=patient_id).first()
+        if patient:
+            patient.last_sync = timestamp
 
         db.commit()
         return analysis
