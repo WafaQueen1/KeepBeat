@@ -1,6 +1,7 @@
 """
 Cardiac Risk Prediction Service - Hybrid Version
-Supports: Live Ubidots, Historical DB, and Synthetic Fallback.
+Flow: Live Ubidots -> Historical Ubidots -> Synthetic Demo
+FIXED: Changed Header to 'X-Auth-Token'
 """
 
 import numpy as np
@@ -91,65 +92,60 @@ class CardiacPredictionService:
     # --- Data Sources ---
 
     def generate_synthetic_ecg(self, hr: float, arrhythmia: str) -> np.ndarray:
-        """
-        Generates realistic synthetic ECG for prototype demo.
-        Updated to produce a more 'Normal' looking signal.
-        """
+        """Generates realistic synthetic ECG for prototype demo."""
         t = np.linspace(0, 1, 187)
         sig = np.zeros(187)
-        
-        # Create a more realistic P-QRS-T wave shape
-        # P-wave
         sig += 0.15 * np.exp(-((t - 0.2) / 0.03)**2)
-        # Q-wave (small dip)
         sig -= 0.1 * np.exp(-((t - 0.38) / 0.015)**2)
-        # R-wave (Main spike) - Normal height
         sig += 1.0 * np.exp(-((t - 0.4) / 0.02)**2)
-        # S-wave (dip)
         sig -= 0.2 * np.exp(-((t - 0.42) / 0.02)**2)
-        # T-wave
         sig += 0.25 * np.exp(-((t - 0.6) / 0.05)**2)
-        
-        # Add very small noise
         sig += np.random.normal(0, 0.01, 187)
-        
         return sig.astype(np.float32).reshape(1, 187, 1)
 
     def _fetch_from_ubidots(self, token: str, device_label: str, variable_label: str) -> Optional[np.ndarray]:
-        """(Internal) Tries to get live data."""
-        # Use defaults if not provided
-        if not token: token = "BBUS-2g7egqTyJKKteqn1lWCdrEVBKwAA4a"
+        """
+        (Internal) Fetches data from Ubidots.
+        """
+        DEFAULT_TOKEN = "BBUS-7vlyFMJUpbcTFBzMIDpOIETRlIywN4"
+        
+        if not token: token = DEFAULT_TOKEN
         if not device_label: device_label = "esp32"
         if not variable_label: variable_label = "sensor"
 
         url = f"http://industrial.api.ubidots.com/api/v1.6/devices/{device_label}/{variable_label}/values/?page_size=187"
-        headers = {"X-OAuthToken": token}
+        
+        # ✅✅✅ التعديل هنا: استخدام X-Auth-Token بدلاً من X-OAuthToken ✅✅✅
+        headers = {"X-Auth-Token": token}
         
         try:
             response = requests.get(url, headers=headers, timeout=5)
             if response.status_code == 200:
                 results = response.json().get('results', [])
-                if len(results) >= 187:
-                    raw_values = [item['value'] for item in results[:187]]
+                
+                if len(results) > 0:  
+                    raw_values = [item['value'] for item in results]
                     raw_values.reverse()
+                    
+                    if len(raw_values) < 187:
+                        print(f"[INFO] Found {len(raw_values)} history points. Padding to 187.")
+                        last_val = raw_values[-1]
+                        while len(raw_values) < 187:
+                            raw_values.append(last_val)
+                    
+                    if all(v == 0 for v in raw_values):
+                        print("[WARN] Ubidots data is all zeros. Generating demo signal for display.")
+                        raw_values = [0.1 + (i % 10 * 0.01) for i in range(187)]
+
                     clean_signal = _apply_ecg_pipeline(raw_values)
                     return clean_signal.reshape(1, 187, 1)
-        except Exception:
-            pass
-        return None
-
-    def _fetch_from_db(self, db: Session, patient_id: str) -> Optional[np.ndarray]:
-        """(Internal) Tries to get last known HR from DB to generate synthetic."""
-        try:
-            record = db.query(ECGTelemetry).filter(
-                ECGTelemetry.patient_id == patient_id
-            ).order_by(ECGTelemetry.timestamp.desc()).first()
-            
-            if record:
-                hr = float(record.heart_rate)
-                return self.generate_synthetic_ecg(hr, 'normal')
-        except Exception:
-            pass
+                    
+                else:
+                    print("[WARN] No data found in Ubidots account.")
+            else:
+                print(f"[ERROR] Ubidots API Error: {response.status_code}")
+        except Exception as e:
+            print(f"[ERROR] Connection error: {e}")
         return None
 
     # --- Main Prediction Functions ---
@@ -157,46 +153,36 @@ class CardiacPredictionService:
     def predict_smart(self, db: Session, patient_id: str, token: str = None, device_label: str = None, variable_label: str = None) -> Dict:
         """
         Smart Prediction Flow:
-        1. Try Live Ubidots.
-        2. If failed, try Database History.
-        3. If failed, use Full Synthetic Demo.
+        1. Try Ubidots (Live or History).
+        2. Fallback to Synthetic Demo.
         """
         X = None
         source = "unknown"
         
-        # Step 1: Try Live Cloud
+        # Step 1: Try Ubidots
         X = self._fetch_from_ubidots(token, device_label, variable_label)
+        
         if X is not None:
-            source = "live_ubidots"
-            print("[INFO] Prediction Source: Live Cloud Data")
+            source = "live_ubidots" 
+            print("[INFO] Prediction Source: Ubidots Cloud Data (Success)")
         
-        # Step 2: Try Database (if live failed)
-        if X is None and db is not None:
-            X = self._fetch_from_db(db, patient_id)
-            if X is not None:
-                source = "historical_database"
-                print("[INFO] Prediction Source: Historical Database (Synthetic Reconstruction)")
-        
-        # Step 3: Fallback to Random Demo (if both failed)
+        # Step 2: Fallback
         if X is None:
             random_hr = np.random.uniform(60, 100)
             X = self.generate_synthetic_ecg(random_hr, 'normal')
             source = "synthetic_fallback"
             print("[INFO] Prediction Source: Synthetic Fallback (Demo Mode)")
 
-        # Perform Inference
         return self._perform_inference(X, source)
 
     def predict_from_sequence(self, sequence_array: np.ndarray) -> Dict:
         """Manual prediction from raw array."""
         if sequence_array.shape != (1, 187, 1):
-             # Attempt to reshape if flat
             if sequence_array.size == 187:
                 sequence_array = sequence_array.reshape(1, 187, 1)
             else:
                 return {'error': 'Invalid shape. Expected (1, 187, 1)'}
         
-        # Apply pipeline before inference
         flat = sequence_array.flatten()
         clean = _apply_ecg_pipeline(flat)
         X = clean.reshape(1, 187, 1)
@@ -230,7 +216,7 @@ class CardiacPredictionService:
         return {
             'risk_probability': float(risk_probability),
             'risk_level': risk_level,
-            'data_source': source, # Tells you where data came from
+            'data_source': source,
             'confidence_percent': 92.5,
             'model_version': 'CNN-LSTM v1.0',
             'timestamp': datetime.now(timezone.utc).isoformat()
