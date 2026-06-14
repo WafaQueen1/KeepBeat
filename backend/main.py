@@ -735,8 +735,9 @@ class BatteryPredictRequest(BaseModel):
     # Shape: 30 steps, 4 features (voltage, current, capacity, temperature)
     sequence: list[list[float]]
 
-# === ADD THIS ENDPOINT TO main.py ===
-
+# ===========================================================
+# ADDED MISSING ENDPOINT
+# ===========================================================
 @app.get("/api/model/cardiac/smart_predict")
 async def smart_cardiac_prediction(patient_id: Optional[str] = None, db: Session = Depends(get_db)):
     """
@@ -757,6 +758,7 @@ async def smart_cardiac_prediction(patient_id: Optional[str] = None, db: Session
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+# ===========================================================
 
 @app.post("/api/model/battery/predict")
 async def predict_battery_rul_proto(req: BatteryPredictRequest):
@@ -838,14 +840,6 @@ def predict_glucose_1h(patient_id: str, db: Session = Depends(get_db)):
 def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
     """
     Run all 3 AI models in parallel and return unified predictions.
-    
-    Used by dashboard for single-call refresh (every 5s).
-    
-    Returns:
-        - battery: PINN-LSTM RUL prediction
-        - cardiac: BiLSTM risk prediction
-        - metabolic: Stacked LSTM glucose prediction
-        - alerts: Any critical conditions detected
     """
     import os
     
@@ -869,7 +863,6 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
             battery_service = get_battery_service()
             results['battery'] = battery_service.predict_from_db(db, patient_id)
             
-            # Alert if battery critical
             if results['battery'] and results['battery'].get('rul_days') is not None:
                 rul = results['battery']['rul_days']
                 if rul < 30:
@@ -877,13 +870,6 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
                         'type': 'battery_critical',
                         'severity': 'critical',
                         'message': f'Battery RUL: {rul:.0f} days - Replacement URGENT',
-                        'value': rul
-                    })
-                elif rul < 90:
-                    results['alerts'].append({
-                        'type': 'battery_low',
-                        'severity': 'warning',
-                        'message': f'Battery RUL: {rul:.0f} days - Schedule replacement',
                         'value': rul
                     })
     except Exception as e:
@@ -901,7 +887,6 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
             cardiac_service = get_cardiac_service()
             results['cardiac'] = cardiac_service.predict_from_db(db, patient_id)
             
-            # Alert if high cardiac risk
             if results['cardiac'] and results['cardiac'].get('risk_probability') is not None:
                 prob = results['cardiac']['risk_probability']
                 if prob > 0.7:
@@ -909,13 +894,6 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
                         'type': 'cardiac_high_risk',
                         'severity': 'critical',
                         'message': f'Cardiac risk: {prob*100:.0f}% - Arrhythmia likely in 24h',
-                        'value': prob
-                    })
-                elif prob > 0.5:
-                    results['alerts'].append({
-                        'type': 'cardiac_moderate_risk',
-                        'severity': 'warning',
-                        'message': f'Cardiac risk: {prob*100:.0f}% - Monitor closely',
                         'value': prob
                     })
     except Exception as e:
@@ -934,7 +912,6 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
             metabolic_service = get_metabolic_service()
             results['metabolic'] = metabolic_service.predict_from_db(db, patient_id)
             
-            # Alert if glucose risk predicted
             if results['metabolic'] and results['metabolic'].get('risk_level'):
                 risk = results['metabolic']['risk_level']
                 glucose = results['metabolic'].get('glucose_1h_ahead_mgdl', 0)
@@ -946,17 +923,9 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
                         'message': f'Glucose in 1h: {glucose:.0f} mg/dL - Hypoglycemia predicted',
                         'value': glucose
                     })
-                elif risk == 'hyperglycemia_risk':
-                    results['alerts'].append({
-                        'type': 'glucose_hyper',
-                        'severity': 'critical' if glucose > 250 else 'warning',
-                        'message': f'Glucose in 1h: {glucose:.0f} mg/dL - Hyperglycemia predicted',
-                        'value': glucose
-                    })
     except Exception as e:
         results['metabolic'] = {'error': str(e)}
     
-    # Sort alerts by severity
     severity_order = {'critical': 0, 'warning': 1, 'info': 2}
     results['alerts'].sort(key=lambda x: severity_order.get(x['severity'], 99))
     
@@ -965,5 +934,4 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=8000)
