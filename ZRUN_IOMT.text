@@ -1,0 +1,9 @@
+docker run 
+
+
+check curl -X POST http://127.0.0.1:8000/api/model/cardiac/predict -H "Content-Type: application/json" -d "{}"
+
+C:\Users\DELL > cd "D:\Vibe Coding\TwinPacemaker\IOMT"
+D:\Vibe Coding\TwinPacemaker\IOMT > python main_ai_app.py
+
+

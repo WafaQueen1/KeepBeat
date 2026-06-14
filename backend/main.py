@@ -735,6 +735,29 @@ class BatteryPredictRequest(BaseModel):
     # Shape: 30 steps, 4 features (voltage, current, capacity, temperature)
     sequence: list[list[float]]
 
+# === ADD THIS ENDPOINT TO main.py ===
+
+@app.get("/api/model/cardiac/smart_predict")
+async def smart_cardiac_prediction(patient_id: Optional[str] = None, db: Session = Depends(get_db)):
+    """
+    Intelligent Prediction Endpoint:
+    1. Tries Live Ubidots (Friend's ESP32).
+    2. If offline, tries Local Database History.
+    3. If empty, generates Synthetic Demo Data.
+    """
+    try:
+        service = get_cardiac_service()
+        
+        # Call the smart logic from your service
+        # We pass db and patient_id so it can check history if live fails
+        result = service.predict_smart(db=db, patient_id=patient_id)
+        
+        # The result contains 'data_source' which tells the UI where data came from
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/model/battery/predict")
 async def predict_battery_rul_proto(req: BatteryPredictRequest):
     if len(req.sequence) != 30 or any(len(step) != 4 for step in req.sequence):
