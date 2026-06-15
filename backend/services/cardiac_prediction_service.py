@@ -1,7 +1,7 @@
 """
 Cardiac Risk Prediction Service - Hybrid Version
 Flow: Live Ubidots -> Historical Ubidots -> Synthetic Demo
-FIXED: Changed Header to 'X-Auth-Token'
+FIXED: Restored correct Cardiac Inference Logic
 """
 
 import numpy as np
@@ -115,7 +115,6 @@ class CardiacPredictionService:
 
         url = f"http://industrial.api.ubidots.com/api/v1.6/devices/{device_label}/{variable_label}/values/?page_size=187"
         
-        # ✅✅✅ التعديل هنا: استخدام X-Auth-Token بدلاً من X-OAuthToken ✅✅✅
         headers = {"X-Auth-Token": token}
         
         try:
@@ -173,7 +172,11 @@ class CardiacPredictionService:
             source = "synthetic_fallback"
             print("[INFO] Prediction Source: Synthetic Fallback (Demo Mode)")
 
-        return self._perform_inference(X, source)
+        # Add sequence to result for frontend chart
+        result = self._perform_inference(X, source)
+        result['sequence'] = X.flatten().tolist()
+        
+        return result
 
     def predict_from_sequence(self, sequence_array: np.ndarray) -> Dict:
         """Manual prediction from raw array."""
@@ -192,6 +195,10 @@ class CardiacPredictionService:
     # --- Core Logic ---
 
     def _perform_inference(self, X: np.ndarray, source: str) -> Dict:
+        """
+        Correct Cardiac Inference Logic.
+        Calculates Risk Probability, not RUL days.
+        """
         risk_probability = 0.1
         
         if self.model is not None:
