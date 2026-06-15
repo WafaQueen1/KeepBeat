@@ -46,19 +46,10 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Mount frontend
+# Mount frontend (Prototype Dashboard)
 if os.path.exists("frontend"):
     app.mount("/static", StaticFiles(directory="frontend"), name="static")
-    
-    @app.get("/")
-    def serve_dashboard():
-        return FileResponse("frontend/dashboard.html")
-    
-    print("[OK] Dashboard mounted at /")
-else:
-    @app.get("/")
-    def root():
-        return {"message": "Smart TwinPac API running", "docs": "/docs"}
+    print("[OK] Prototype Dashboard mounted at /static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -711,12 +702,15 @@ async def predict_cardiac_risk(req: PredictRequest):
         prob = result.get('risk_probability', 0.0)
         risk_level = result.get('risk_level', 'low')
         
+        # confidence = how certain the model is (distance from 50/50 → 0-100%)
+        confidence = abs(prob - 0.5) * 200  # 50% prob → 0% confident, 100% → 100% confident
+        
         res = {
             "prediction_class": 1 if risk_level in ['high', 'moderate'] else 0,
             "label": risk_level.capitalize(),
             "risk_level": risk_level,
             "risk_probability": prob,
-            "confidence_percent": prob * 100,
+            "confidence_percent": round(confidence, 1),
             "raw_scores": [],
             "model_version": "CNN-LSTM v1.0",
             "sequence": req.samples
@@ -931,6 +925,16 @@ def get_all_predictions(patient_id: str, db: Session = Depends(get_db)):
     
     return results
 
+
+# Mount doctor_dashboard at root (Must be at the end to not shadow API routes)
+dist_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "doctor_dashboard", "dist")
+if os.path.exists(dist_path):
+    app.mount("/", StaticFiles(directory=dist_path, html=True), name="dashboard")
+    print(f"[OK] Doctor Dashboard mounted at /")
+else:
+    @app.get("/")
+    def root():
+        return {"message": "Smart TwinPac API running", "docs": "/docs"}
 
 if __name__ == "__main__":
     import uvicorn
