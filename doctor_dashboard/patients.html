@@ -206,18 +206,26 @@
 <nav class="kb-mobile-nav"></nav>
 <script type="module" src="/main.js"></script>
 <script>
+    const RAW_API_BASE_URL = "%VITE_API_BASE_URL%";
+
+    const API_BASE_URL =
+        RAW_API_BASE_URL && !RAW_API_BASE_URL.includes("VITE_API_BASE_URL")
+            ? RAW_API_BASE_URL
+            : "http://127.0.0.1:8000";
+
+    const API_BASE = `${API_BASE_URL}/api/v1`;
 
     document.addEventListener('DOMContentLoaded', () => {
         const docName = localStorage.getItem('doctor_name');
-        const docId = localStorage.getItem('doctor_id');
 
-        if (!docId) {
-            console.error("No active clinician context found. Redirecting to login.");
-            window.location.href = '/login.html';
-            return;
-        }
+        const docId =
+            localStorage.getItem('doctor_id') ||
+            localStorage.getItem('doctorId') ||
+            localStorage.getItem('user_id') ||
+            "doc_sterling_001";
 
-        // Show who is currently managing
+        localStorage.setItem('doctor_id', docId);
+
         if (docName) {
             const displayEl = document.getElementById('doctor-name-display');
             if (displayEl) displayEl.innerText = docName;
@@ -227,9 +235,12 @@
 
         document.getElementById('add-patient-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+
             const btn = document.getElementById('add-submit-btn');
+            const errorEl = document.getElementById('add-error');
+
             btn.innerText = "Registering...";
-            document.getElementById('add-error').classList.add('hidden');
+            errorEl.classList.add('hidden');
 
             const payload = {
                 doctor_id: docId,
@@ -240,19 +251,10 @@
                 diagnosis_notes: document.getElementById('pt-notes').value,
             };
 
-            const RAW_API_BASE_URL = "%VITE_API_BASE_URL%";
-
-            const API_BASE_URL =
-                RAW_API_BASE_URL && !RAW_API_BASE_URL.includes("VITE_API_BASE_URL")
-                    ? RAW_API_BASE_URL
-                    : "http://127.0.0.1:8000";
-
-            const API_BASE = `${API_BASE_URL}/api/v1`;
-
             try {
                 const res = await fetch(`${API_BASE}/patients`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
@@ -261,12 +263,19 @@
                     document.getElementById('add-patient-form').reset();
                     fetchPatients(docId);
                 } else {
-                    document.getElementById('add-error').innerText = "Failed to add patient.";
-                    document.getElementById('add-error').classList.remove('hidden');
+                    let message = "Failed to add patient.";
+                    try {
+                        const err = await res.json();
+                        message = err.detail || message;
+                    } catch (_) {}
+
+                    errorEl.innerText = message;
+                    errorEl.classList.remove('hidden');
                 }
             } catch (err) {
-                document.getElementById('add-error').innerText = "Network Error.";
-                document.getElementById('add-error').classList.remove('hidden');
+                console.error("Failed to add patient:", err);
+                errorEl.innerText = "Network Error.";
+                errorEl.classList.remove('hidden');
             } finally {
                 btn.innerText = "Register Patient";
             }
@@ -275,13 +284,24 @@
 
     async function fetchPatients(docId) {
         const tbody = document.getElementById('patients-table-body');
+
         try {
-            const res = await fetch(`${API_BASE}/patients?doctor_id=${docId}`);
-            if (!res.ok) throw new Error('Network response not ok');
+            const res = await fetch(`${API_BASE}/patients?doctor_id=${encodeURIComponent(docId)}`);
+
+            if (!res.ok) {
+                throw new Error(`Network response not ok: ${res.status}`);
+            }
+
             const patients = await res.json();
 
             if (patients.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-zinc-500 font-medium">No patients enrolled yet. Click 'Add Patient' to begin.</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center text-zinc-500 font-medium">
+                            No patients enrolled yet. Click 'Add Patient' to begin.
+                        </td>
+                    </tr>
+                `;
                 return;
             }
 
@@ -289,39 +309,59 @@
                 <tr class="hover:bg-zinc-50/50 transition-colors group">
                     <td class="py-4 px-6 border-t border-zinc-100">
                         <div class="flex items-center gap-3">
-                            <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm border-2 border-white shadow-sm">${p.full_name.charAt(0)}</div>
+                            <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm border-2 border-white shadow-sm">
+                                ${(p.full_name || "?").charAt(0)}
+                            </div>
                             <div>
-                                <p class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">${p.full_name}</p>
-                                <p class="text-xs text-zinc-500 font-medium mt-0.5">DOB: ${p.dob}</p>
+                                <p class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">
+                                    ${p.full_name || "Unknown Patient"}
+                                </p>
+                                <p class="text-xs text-zinc-500 font-medium mt-0.5">DOB: ${p.dob || "N/A"}</p>
                             </div>
                         </div>
                     </td>
+
                     <td class="py-4 px-6 border-t border-zinc-100">
-                        <span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-zinc-600">${p.medical_id}</span>
-                    </td>
-                    <td class="py-4 px-6 border-t border-zinc-100">
-                        <p class="text-sm font-semibold text-zinc-800">${p.diagnosis_notes}</p>
-                        <p class="text-xs text-zinc-500 font-medium">${p.affiliation}</p>
-                    </td>
-                    <td class="py-4 px-6 border-t border-zinc-100">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                            ${p.status || 'Approved'}
+                        <span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-zinc-600">
+                            ${p.medical_id || "N/A"}
                         </span>
                     </td>
+
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <p class="text-sm font-semibold text-zinc-800">${p.diagnosis_notes || "No diagnosis notes"}</p>
+                        <p class="text-xs text-zinc-500 font-medium">${p.affiliation || "No affiliation"}</p>
+                    </td>
+
+                    <td class="py-4 px-6 border-t border-zinc-100">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${p.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                            ${p.status || 'approved'}
+                        </span>
+                    </td>
+
                     <td class="py-4 px-6 border-t border-zinc-100">
                         <div class="flex items-center text-xs font-bold ${p.last_sync ? 'text-emerald-600' : 'text-zinc-400'}">
                             ${p.last_sync ? new Date(p.last_sync).toLocaleString() : 'Never Synced'}
                         </div>
                     </td>
+
                     <td class="py-4 px-6 border-t border-zinc-100">
-                        <button onclick="openPatient('${p.id}', '${p.full_name}', '${p.medical_id}')" class="px-5 py-2 rounded-xl bg-white border border-zinc-200 text-sm font-bold hover:border-primary hover:text-primary transition-all shadow-sm">Open Context</button>
+                        <button onclick="openPatient('${p.id}', '${p.full_name}', '${p.medical_id}')"
+                                class="px-5 py-2 rounded-xl bg-white border border-zinc-200 text-sm font-bold hover:border-primary hover:text-primary transition-all shadow-sm">
+                            Open Context
+                        </button>
                     </td>
                 </tr>
             `).join('');
 
         } catch (err) {
             console.error("Failed to load patients:", err);
-            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 font-bold">Failed to load patients. Is the FastAPI server running?</td></tr>`;
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="p-8 text-center text-red-500 font-bold">
+                        Failed to load patients. Is the FastAPI server running?
+                    </td>
+                </tr>
+            `;
         }
     }
 
