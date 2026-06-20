@@ -130,14 +130,39 @@ async def get_patients(doctor_id: str):
 
 @app.post("/api/v1/patients", status_code=201)
 async def create_patient(data: PatientCreate):
-    """Create a new patient request (starts in pending status)."""
+    """Create a new patient request."""
     new_id = f"PT_{uuid.uuid4().hex[:8]}"
+
+    safe_medical_id = str(data.medical_id).lower().replace(" ", "_").replace("#", "")
+    patient_email = f"{safe_medical_id}@keepbeat.local"
+    patient_password = "patient123"
+
     await db.execute(
-        "INSERT INTO patients (id, doctor_id, full_name, dob, medical_id, affiliation, diagnosis_notes, status) "
-        "VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')", 
-        new_id, data.doctor_id, data.full_name, data.dob, data.medical_id, data.affiliation, data.diagnosis_notes
+        "INSERT INTO patients (id, doctor_id, full_name, email, password, dob, medical_id, affiliation, diagnosis_notes, status) "
+        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'approved')",
+        new_id,
+        data.doctor_id,
+        data.full_name,
+        patient_email,
+        patient_password,
+        data.dob,
+        data.medical_id,
+        data.affiliation,
+        data.diagnosis_notes
     )
-    return {"id": new_id, "status": "pending"}
+
+    return {
+        "id": new_id,
+        "doctor_id": data.doctor_id,
+        "full_name": data.full_name,
+        "email": patient_email,
+        "password": patient_password,
+        "dob": data.dob,
+        "medical_id": data.medical_id,
+        "affiliation": data.affiliation,
+        "diagnosis_notes": data.diagnosis_notes,
+        "status": "approved"
+    }
 
 @app.get("/api/v1/patients/all")
 async def get_all_patients():
