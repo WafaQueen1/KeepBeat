@@ -5,9 +5,11 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>KeepBeat Pro - Registration</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"
+          rel="stylesheet"/>
     <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -31,15 +33,31 @@
                         "body": ["Plus Jakarta Sans"],
                         "label": ["Inter"]
                     },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1.5rem", "3xl": "2rem", "4xl": "2.5rem" },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.5rem",
+                        "3xl": "2rem",
+                        "4xl": "2.5rem"
+                    },
                 },
             },
         }
     </script>
     <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #fdf0f5; }
-        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #fdf0f5;
+        }
+
         .split-layout {
             position: relative;
             height: 100vh;
@@ -75,310 +93,367 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 15%, rgba(255,255,255,1) 35%);
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 15%, rgba(255, 255, 255, 1) 35%);
             z-index: -1;
             pointer-events: none;
         }
-        
+
         .fade-overlay {
             display: none; /* Removing the old overlay since we handle it via login-section */
         }
 
         .form-field-shadow {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02), inset 0 1px 2px rgba(0,0,0,0.01);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02), inset 0 1px 2px rgba(0, 0, 0, 0.01);
         }
 
         @media (max-width: 1024px) {
-            .login-section { width: 100%; }
+            .login-section {
+                width: 100%;
+            }
+
             /* When mobile, mostly hide the 3D background */
-            .login-section::after { background: rgba(255,255,255,0.9); }
+            .login-section::after {
+                background: rgba(255, 255, 255, 0.9);
+            }
         }
     </style>
 </head>
 <body class="font-body text-on-surface">
 
-    <div class="split-layout">
-        
-        <!-- Full Screen Dark Medical Visualization -->
-        <div id="canvas-bg">
-            <!-- Technical Branding -->
-            <div class="absolute top-10 left-10 z-10 flex items-center gap-3">
-                <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">monitor_heart</span>
-                <span class="font-headline font-extrabold text-2xl tracking-tighter text-white/90">KeepBeat <span class="text-primary font-black">Pro</span></span>
-            </div>
+<div class="split-layout">
 
-            <!-- Clinical Messaging -->
-            <div class="absolute bottom-20 left-10 z-[15] w-full max-w-md pointer-events-none">
-                <h1 class="font-headline text-5xl font-black text-white leading-tight mb-4">Empowering The Next Era of Cardiovascular Care.</h1>
-                <p class="font-body text-sm text-white/70 leading-relaxed font-medium">Join an elite network of cardiologists leveraging AI-driven diagnostics and real-time patient twin monitoring.</p>
-            </div>
-            
-            <!-- Standardized Protocol Badge -->
-            <div class="absolute bottom-8 left-10 z-[15] flex items-center gap-2 pointer-events-none">
-                <span class="material-symbols-outlined text-green-400 text-lg">verified</span>
-                <span class="font-label text-[10px] tracking-widest uppercase text-white/60 font-bold">STANDARDIZED CLINICAL PROTOCOL</span>
-            </div>
+    <!-- Full Screen Dark Medical Visualization -->
+    <div id="canvas-bg">
+        <!-- Technical Branding -->
+        <div class="absolute top-10 left-10 z-10 flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">monitor_heart</span>
+            <span class="font-headline font-extrabold text-2xl tracking-tighter text-white/90">KeepBeat <span
+                    class="text-primary font-black">Pro</span></span>
         </div>
 
-        <!-- Right Side: Professional Registration Form -->
-        <div class="login-section">
-            <div class="w-full max-w-[460px] space-y-8 overflow-y-auto max-h-screen py-8 pl-4 pr-4 custom-scrollbar relative z-20">
-                
-                <!-- Clinical Header (Fixed missing text due to blur) -->
-                <div class="text-left space-y-2 mb-2 relative z-30">
-                    <h2 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface">Registration</h2>
-                    <p class="font-body text-on-surface-variant text-sm font-medium">Initialize your medical workstation access.</p>
-                </div>
+        <!-- Clinical Messaging -->
+        <div class="absolute bottom-20 left-10 z-[15] w-full max-w-md pointer-events-none">
+            <h1 class="font-headline text-5xl font-black text-white leading-tight mb-4">Empowering The Next Era of
+                Cardiovascular Care.</h1>
+            <p class="font-body text-sm text-white/70 leading-relaxed font-medium">Join an elite network of
+                cardiologists leveraging AI-driven diagnostics and real-time patient twin monitoring.</p>
+        </div>
 
-                <!-- Form Card -->
-                <div class="bg-white border border-outline-variant/30 rounded-[2rem] p-8 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.06)] relative z-20">
-                    <form class="space-y-4" id="registration-form">
-                        
-                        <!-- Role Selector -->
-                        <div class="flex p-1 bg-surface-container-high rounded-xl mb-4">
-                            <button type="button" onclick="setRole('doctor')" id="role-btn-doctor" class="flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all">Doctor</button>
-                            <button type="button" onclick="setRole('patient')" id="role-btn-patient" class="flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all">Patient</button>
-                        </div>
-                        <input type="hidden" id="user-role" value="doctor" />
-                        
-                        <!-- Common Field: Full Name -->
-                        <div class="space-y-1.5">
-                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="name" id="name-label">Full Medical Name</label>
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">person</span>
-                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="name" required placeholder="Dr. Julian Sterling" type="text" />
-                            </div>
-                        </div>
-
-                        <!-- DOCTOR SPECIFIC FIELDS -->
-                        <div id="doctor-fields" class="space-y-4">
-                            <!-- Institutional Email -->
-                            <div class="space-y-1.5">
-                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="email">Institutional Email</label>
-                                <div class="relative">
-                                    <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">mail</span>
-                                    <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="email" placeholder="j.sterling@chi.med" type="email" />
-                                </div>
-                            </div>
-
-                            <!-- Password Input -->
-                            <div class="space-y-1.5 pb-2">
-                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="password">Security Key</label>
-                                <div class="relative">
-                                    <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">lock</span>
-                                    <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all tracking-widest form-field-shadow text-lg" id="password" placeholder="••••••••" type="password" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- PATIENT SPECIFIC FIELDS -->
-                        <div id="patient-fields" class="space-y-4 hidden">
-                            <!-- DOB & Medical ID -->
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1.5">
-                                    <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="dob">Date of Birth</label>
-                                    <div class="relative">
-                                        <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">calendar_month</span>
-                                        <input class="w-full h-12 pl-12 pr-3 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-xs" id="dob" type="date" />
-                                    </div>
-                                </div>
-                                <div id="medical-id-field" class="space-y-1.5">
-                                    <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="medical_id">Medical ID</label>
-                                    <div class="relative">
-                                        <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[18px]">badge</span>
-                                        <input class="w-full h-12 pl-10 pr-3 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-xs" id="medical_id" placeholder="ID-4029" type="text" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Doctor Selection -->
-                            <div class="space-y-1.5">
-                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="assigned_doctor">Assigned Doctor</label>
-                                <div class="relative">
-                                    <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">stethoscope</span>
-                                    <select class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-sm" id="assigned_doctor">
-                                        <option value="" disabled selected>Loading doctors...</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Diagnosis Notes -->
-                            <div class="space-y-1.5">
-                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="diagnosis">Initial Diagnosis Notes</label>
-                                <div class="relative">
-                                    <span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant/50 text-[20px]">medical_information</span>
-                                    <textarea class="w-full h-20 pt-3 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-sm resize-none" id="diagnosis" placeholder="Brief patient history..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Common Field: Affiliation -->
-                        <div class="space-y-1.5">
-                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1" for="affiliation" id="affiliation-label">Hospital Affiliation</label>
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">apartment</span>
-                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm" id="affiliation" placeholder="Central Heart Institute" type="text" />
-                            </div>
-                        </div>
-
-                        <!-- Status/Error Message -->
-                        <div id="reg-msg" class="hidden font-bold text-sm text-center py-2 rounded-lg"></div>
-
-                        
-                        <!-- Submit Button -->
-                        <button class="w-full h-14 bg-primary text-white font-headline font-bold text-[15px] rounded-xl shadow-[0_10px_20px_rgba(182,23,30,0.25)] hover:bg-primary-container hover:scale-[0.99] transition-all flex items-center justify-center gap-2" type="submit">
-                            <span>Request Practitioner Access</span>
-                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
-                        </button>
-                        
-                        <!-- Verification text -->
-                        <div class="flex items-center justify-center gap-2 bg-[#f4effc] rounded-xl py-2 mt-2 border border-[#e8dcf8]">
-                            <span class="material-symbols-outlined text-[#8952e0] text-[14px]">auto_awesome</span>
-                            <span class="font-label text-[9px] font-extrabold tracking-widest text-[#7c43d4] uppercase">Verification usually takes 2-4 hours</span>
-                        </div>
-                    </form>
-                </div>
-                
-                <!-- Bottom Action -->
-                <div class="text-center mt-6">
-                    <p class="font-body text-[13px] text-on-surface-variant font-medium">
-                        Already an authenticated provider? 
-                        <a class="text-primary hover:text-primary-container transition-colors ml-1 font-bold" href="/login.html">Secure Sign In &rarr;</a>
-                    </p>
-                </div>
-
-            </div>
+        <!-- Standardized Protocol Badge -->
+        <div class="absolute bottom-8 left-10 z-[15] flex items-center gap-2 pointer-events-none">
+            <span class="material-symbols-outlined text-green-400 text-lg">verified</span>
+            <span class="font-label text-[10px] tracking-widest uppercase text-white/60 font-bold">STANDARDIZED CLINICAL PROTOCOL</span>
         </div>
     </div>
 
-    <!-- Script Integration -->
-    <script type="module" src="/register.js"></script>
-    <style>
-        /* CustomScrollbar for overflow prevention */
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
-        .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: #bdbdbd; }
-    </style>
-    <script>
-        async function fetchDoctors() {
-            try {
-                const res = await fetch('http://127.0.0.1:8000/api/v1/doctors');
-                if (res.ok) {
-                    const doctors = await res.json();
-                    const docSelect = document.getElementById('assigned_doctor');
-                    docSelect.innerHTML = '<option value="" disabled selected>Select a verified physician</option>';
-                    doctors.forEach(d => {
-                        const opt = document.createElement('option');
-                        opt.value = d.id;
-                        opt.textContent = d.full_name;
-                        docSelect.appendChild(opt);
-                    });
-                }
-            } catch (e) {
-                console.error("Failed to fetch doctors", e);
-            }
-        }
-        
-        // Execute on load
-        document.addEventListener('DOMContentLoaded', fetchDoctors);
+    <!-- Right Side: Professional Registration Form -->
+    <div class="login-section">
+        <div class="w-full max-w-[460px] space-y-8 overflow-y-auto max-h-screen py-8 pl-4 pr-4 custom-scrollbar relative z-20">
 
-        function setRole(role) {
-            document.getElementById('user-role').value = role;
-            const btnDoc = document.getElementById('role-btn-doctor');
-            const btnPat = document.getElementById('role-btn-patient');
-            const docFields = document.getElementById('doctor-fields');
-            const patFields = document.getElementById('patient-fields');
-            const nameLabel = document.getElementById('name-label');
-            const nameInput = document.getElementById('name');
+            <!-- Clinical Header (Fixed missing text due to blur) -->
+            <div class="text-left space-y-2 mb-2 relative z-30">
+                <h2 class="font-headline font-extrabold text-3xl tracking-tight text-on-surface">Registration</h2>
+                <p class="font-body text-on-surface-variant text-sm font-medium">Initialize your medical workstation
+                    access.</p>
+            </div>
 
-            if (role === 'doctor') {
-                btnDoc.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all";
-                btnPat.className = "flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all";
-                docFields.classList.remove('hidden');
-                patFields.classList.add('hidden');
-                nameLabel.innerText = "Full Medical Name";
-                nameInput.placeholder = "Dr. Julian Sterling";
-                
-                document.getElementById('email').required = true;
-                document.getElementById('password').required = true;
-                document.getElementById('dob').required = false;
-                document.getElementById('medical_id').required = true;
-                document.getElementById('medical-id-field').classList.remove('hidden');
-                document.getElementById('assigned_doctor').required = false;
-            } else {
-                btnPat.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all";
-                btnDoc.className = "flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all";
-                docFields.classList.add('hidden');
-                patFields.classList.remove('hidden');
-                nameLabel.innerText = "Patient Legal Name";
-                nameInput.placeholder = "Alexander Pierce";
+            <!-- Form Card -->
+            <div class="bg-white border border-outline-variant/30 rounded-[2rem] p-8 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.06)] relative z-20">
+                <form class="space-y-4" id="registration-form">
 
-                document.getElementById('email').required = false;
-                document.getElementById('password').required = false;
-                document.getElementById('dob').required = true;
-                document.getElementById('medical_id').required = false;
-                document.getElementById('medical-id-field').classList.add('hidden');
-                document.getElementById('assigned_doctor').required = true;
-            }
-        }
-        
-        // Handle Submission
-        document.getElementById('registration-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const role = document.getElementById('user-role').value;
-            const msgBox = document.getElementById('reg-msg');
-            msgBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
-            msgBox.innerText = "Submitting request...";
+                    <!-- Role Selector -->
+                    <div class="flex p-1 bg-surface-container-high rounded-xl mb-4">
+                        <button type="button" onclick="setRole('doctor')" id="role-btn-doctor"
+                                class="flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all">
+                            Doctor
+                        </button>
+                        <button type="button" onclick="setRole('patient')" id="role-btn-patient"
+                                class="flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all">
+                            Patient
+                        </button>
+                    </div>
+                    <input type="hidden" id="user-role" value="doctor"/>
 
-            let url = "";
-            let payload = {};
+                    <!-- Common Field: Full Name -->
+                    <div class="space-y-1.5">
+                        <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1"
+                               for="name" id="name-label">Full Medical Name</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">person</span>
+                            <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm"
+                                   id="name" required placeholder="Dr. Julian Sterling" type="text"/>
+                        </div>
+                    </div>
 
-            if (role === 'doctor') {
-                url = 'http://127.0.0.1:8000/api/v1/doctors';
-                payload = {
-                    full_name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    password: document.getElementById('password').value
-                };
-            } else {
-                url = 'http://127.0.0.1:8000/api/v1/patients';
-                const medicalIdRaw = document.getElementById('medical_id').value;
-                const autoMedicalId = medicalIdRaw || `KB-${Math.floor(Math.random()*9000) + 1000}`;
-                
-                payload = {
-                    doctor_id: document.getElementById('assigned_doctor').value,
-                    full_name: document.getElementById('name').value,
-                    dob: document.getElementById('dob').value,
-                    medical_id: autoMedicalId,
-                    affiliation: document.getElementById('affiliation').value,
-                    diagnosis_notes: document.getElementById('diagnosis').value || ""
-                };
-            }
+                    <!-- DOCTOR SPECIFIC FIELDS -->
+                    <div id="doctor-fields" class="space-y-4">
+                        <!-- Institutional Email -->
+                        <div class="space-y-1.5">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1"
+                                   for="email">Institutional Email</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">mail</span>
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm"
+                                       id="email" placeholder="j.sterling@chi.med" type="email"/>
+                            </div>
+                        </div>
 
-            try {
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                        <!-- Password Input -->
+                        <div class="space-y-1.5 pb-2">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1"
+                                   for="password">Security Key</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">lock</span>
+                                <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all tracking-widest form-field-shadow text-lg"
+                                       id="password" placeholder="••••••••" type="password"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PATIENT SPECIFIC FIELDS -->
+                    <div id="patient-fields" class="space-y-4 hidden">
+                        <!-- DOB & Medical ID -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1.5">
+                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1"
+                                       for="dob">Date of Birth</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">calendar_month</span>
+                                    <input class="w-full h-12 pl-12 pr-3 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-xs"
+                                           id="dob" type="date"/>
+                                </div>
+                            </div>
+                            <div id="medical-id-field" class="space-y-1.5">
+                                <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1"
+                                       for="medical_id">Medical ID</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[18px]">badge</span>
+                                    <input class="w-full h-12 pl-10 pr-3 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-xs"
+                                           id="medical_id" placeholder="ID-4029" type="text"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Doctor Selection -->
+                        <div class="space-y-1.5">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1"
+                                   for="assigned_doctor">Assigned Doctor</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">stethoscope</span>
+                                <select class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-sm"
+                                        id="assigned_doctor">
+                                    <option value="" disabled selected>Loading doctors...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Diagnosis Notes -->
+                        <div class="space-y-1.5">
+                            <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1"
+                                   for="diagnosis">Initial Diagnosis Notes</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-4 text-on-surface-variant/50 text-[20px]">medical_information</span>
+                                <textarea
+                                        class="w-full h-20 pt-3 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent text-on-surface font-medium text-sm resize-none"
+                                        id="diagnosis" placeholder="Brief patient history..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Field: Affiliation -->
+                    <div class="space-y-1.5">
+                        <label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase px-1"
+                               for="affiliation" id="affiliation-label">Hospital Affiliation</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-on-surface-variant/50 text-[20px]">apartment</span>
+                            <input class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container-high border border-transparent focus:border-primary/20 focus:ring-0 text-on-surface font-medium transition-all form-field-shadow text-sm"
+                                   id="affiliation" placeholder="Central Heart Institute" type="text"/>
+                        </div>
+                    </div>
+
+                    <!-- Status/Error Message -->
+                    <div id="reg-msg" class="hidden font-bold text-sm text-center py-2 rounded-lg"></div>
+
+
+                    <!-- Submit Button -->
+                    <button class="w-full h-14 bg-primary text-white font-headline font-bold text-[15px] rounded-xl shadow-[0_10px_20px_rgba(182,23,30,0.25)] hover:bg-primary-container hover:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                            type="submit">
+                        <span>Request Practitioner Access</span>
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </button>
+
+                    <!-- Verification text -->
+                    <div class="flex items-center justify-center gap-2 bg-[#f4effc] rounded-xl py-2 mt-2 border border-[#e8dcf8]">
+                        <span class="material-symbols-outlined text-[#8952e0] text-[14px]">auto_awesome</span>
+                        <span class="font-label text-[9px] font-extrabold tracking-widest text-[#7c43d4] uppercase">Verification usually takes 2-4 hours</span>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bottom Action -->
+            <div class="text-center mt-6">
+                <p class="font-body text-[13px] text-on-surface-variant font-medium">
+                    Already an authenticated provider?
+                    <a class="text-primary hover:text-primary-container transition-colors ml-1 font-bold"
+                       href="/login.html">Secure Sign In &rarr;</a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Script Integration -->
+<script type="module" src="/register.js"></script>
+<style>
+    /* CustomScrollbar for overflow prevention */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e0e0e0;
+        border-radius: 4px;
+    }
+
+    .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+        background: #bdbdbd;
+    }
+</style>
+<script>
+    async function fetchDoctors() {
+        try {
+            const RAW_API_BASE_URL = "%VITE_API_BASE_URL%";
+
+            const API_BASE_URL =
+                RAW_API_BASE_URL && !RAW_API_BASE_URL.includes("VITE_API_BASE_URL")
+                    ? RAW_API_BASE_URL
+                    : "http://127.0.0.1:8000";
+
+            const API_BASE = `${API_BASE_URL}/api/v1`;
+
+            const res = await fetch(`${API_BASE}/doctors`);
+            if (res.ok) {
+                const doctors = await res.json();
+                const docSelect = document.getElementById('assigned_doctor');
+                docSelect.innerHTML = '<option value="" disabled selected>Select a verified physician</option>';
+                doctors.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = d.full_name;
+                    docSelect.appendChild(opt);
                 });
-
-                if (res.ok) {
-                    msgBox.classList.add('bg-emerald-100', 'text-emerald-700');
-                    if (role === 'doctor') {
-                        msgBox.innerText = "Registration successful. Awaiting admin approval.";
-                    } else {
-                        msgBox.innerText = "Details submitted. Awaiting administration link.";
-                    }
-                    setTimeout(() => { window.location.href = '/login.html'; }, 3000);
-                } else {
-                    throw new Error("Failed to register");
-                }
-            } catch (err) {
-                msgBox.classList.add('bg-red-100', 'text-red-700');
-                msgBox.innerText = "Error submitting registration. Please try again.";
             }
-        });
-    </script>
+        } catch (e) {
+            console.error("Failed to fetch doctors", e);
+        }
+    }
+
+    // Execute on load
+    document.addEventListener('DOMContentLoaded', fetchDoctors);
+
+    function setRole(role) {
+        document.getElementById('user-role').value = role;
+        const btnDoc = document.getElementById('role-btn-doctor');
+        const btnPat = document.getElementById('role-btn-patient');
+        const docFields = document.getElementById('doctor-fields');
+        const patFields = document.getElementById('patient-fields');
+        const nameLabel = document.getElementById('name-label');
+        const nameInput = document.getElementById('name');
+
+        if (role === 'doctor') {
+            btnDoc.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all";
+            btnPat.className = "flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all";
+            docFields.classList.remove('hidden');
+            patFields.classList.add('hidden');
+            nameLabel.innerText = "Full Medical Name";
+            nameInput.placeholder = "Dr. Julian Sterling";
+
+            document.getElementById('email').required = true;
+            document.getElementById('password').required = true;
+            document.getElementById('dob').required = false;
+            document.getElementById('medical_id').required = true;
+            document.getElementById('medical-id-field').classList.remove('hidden');
+            document.getElementById('assigned_doctor').required = false;
+        } else {
+            btnPat.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-on-surface transition-all";
+            btnDoc.className = "flex-1 py-2 text-sm font-bold rounded-lg text-on-surface-variant hover:text-on-surface transition-all";
+            docFields.classList.add('hidden');
+            patFields.classList.remove('hidden');
+            nameLabel.innerText = "Patient Legal Name";
+            nameInput.placeholder = "Alexander Pierce";
+
+            document.getElementById('email').required = false;
+            document.getElementById('password').required = false;
+            document.getElementById('dob').required = true;
+            document.getElementById('medical_id').required = false;
+            document.getElementById('medical-id-field').classList.add('hidden');
+            document.getElementById('assigned_doctor').required = true;
+        }
+    }
+
+    // Handle Submission
+    document.getElementById('registration-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const role = document.getElementById('user-role').value;
+        const msgBox = document.getElementById('reg-msg');
+        msgBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
+        msgBox.innerText = "Submitting request...";
+
+        let url = "";
+        let payload = {};
+
+        if (role === 'doctor') {
+            url = `${API_BASE}/doctors`;
+            payload = {
+                full_name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+        } else {
+            url = `${API_BASE}/patients`;
+            const medicalIdRaw = document.getElementById('medical_id').value;
+            const autoMedicalId = medicalIdRaw || `KB-${Math.floor(Math.random() * 9000) + 1000}`;
+
+            payload = {
+                doctor_id: document.getElementById('assigned_doctor').value,
+                full_name: document.getElementById('name').value,
+                dob: document.getElementById('dob').value,
+                medical_id: autoMedicalId,
+                affiliation: document.getElementById('affiliation').value,
+                diagnosis_notes: document.getElementById('diagnosis').value || ""
+            };
+        }
+
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                msgBox.classList.add('bg-emerald-100', 'text-emerald-700');
+                if (role === 'doctor') {
+                    msgBox.innerText = "Registration successful. Awaiting admin approval.";
+                } else {
+                    msgBox.innerText = "Details submitted. Awaiting administration link.";
+                }
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 3000);
+            } else {
+                throw new Error("Failed to register");
+            }
+        } catch (err) {
+            msgBox.classList.add('bg-red-100', 'text-red-700');
+            msgBox.innerText = "Error submitting registration. Please try again.";
+        }
+    });
+</script>
 </body>
 </html>

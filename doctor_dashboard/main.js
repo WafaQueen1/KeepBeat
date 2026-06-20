@@ -1,5 +1,6 @@
 import './style.css';
 import { renderNavigation, renderHeader } from './navigation.js';
+import { API_V1_BASE_URL } from "./config.js";
 
 // Context Retrieval
 const docId = localStorage.getItem('doctor_id');
@@ -127,7 +128,7 @@ if (isDashboard) {
 }
 
 // --- Telemetry & AI Polling ---
-const API_URL = `http://127.0.0.1:8000/api/v1/predictions/all/${patientId || 'PT_001'}`;
+const API_URL = `${API_V1_BASE_URL}/predictions/all/${patientId || "PT_001"}`;
 const bpmElement = document.getElementById('bpm-value');
 
 async function fetchTelemetry() {

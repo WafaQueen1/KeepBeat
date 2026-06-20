@@ -1,3 +1,5 @@
+import { API_V1_BASE_URL } from "./config.js";
+
 export function renderNavigation() {
     const docName = localStorage.getItem('doctor_name') || 'Dr. Unknown';
     const role = localStorage.getItem('doctor_role') || 'doctor';
@@ -209,7 +211,7 @@ export async function showPatientSelector(isMandatory = false) {
     if (closeBtn) closeBtn.onclick = () => modal.remove();
 
     try {
-        const res = await fetch(`http://127.0.0.1:8000/api/v1/patients?doctor_id=${docId}`);
+        const res = await fetch(`${API_V1_BASE_URL}/patients?doctor_id=${docId}`);
         const patients = await res.json();
         const grid = document.getElementById('patient-grid');
         

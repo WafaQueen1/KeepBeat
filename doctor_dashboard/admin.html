@@ -220,7 +220,14 @@
 <nav class="kb-mobile-nav"></nav>
 <script type="module" src="/main.js"></script>
 <script>
-    const API_BASE = "http://127.0.0.1:8000/api/v1";
+    const RAW_API_BASE_URL = "%VITE_API_BASE_URL%";
+
+    const API_BASE_URL =
+        RAW_API_BASE_URL && !RAW_API_BASE_URL.includes("VITE_API_BASE_URL")
+            ? RAW_API_BASE_URL
+            : "http://127.0.0.1:8000";
+
+    const API_BASE = `${API_BASE_URL}/api/v1`;
 
     document.addEventListener('DOMContentLoaded', () => {
         const role = localStorage.getItem('doctor_role');
