@@ -206,14 +206,6 @@
 <nav class="kb-mobile-nav"></nav>
 <script type="module" src="/main.js"></script>
 <script>
-    const RAW_API_BASE_URL = "%VITE_API_BASE_URL%";
-
-    const API_BASE_URL =
-        RAW_API_BASE_URL && !RAW_API_BASE_URL.includes("VITE_API_BASE_URL")
-            ? RAW_API_BASE_URL
-            : "http://127.0.0.1:8000";
-
-    const API_BASE = `${API_BASE_URL}/api/v1`;
 
     document.addEventListener('DOMContentLoaded', () => {
         const docName = localStorage.getItem('doctor_name');
@@ -328,7 +320,8 @@
             `).join('');
 
         } catch (err) {
-            tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-500 font-bold">Failed to load patients. Is the FastAPI server running?</td></tr>`;
+            console.error("Failed to load patients:", err);
+            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 font-bold">Failed to load patients. Is the FastAPI server running?</td></tr>`;
         }
     }
 
